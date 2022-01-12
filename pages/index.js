@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Meta from "../components/Meta"
-import useUser from "../lib/useUser";
-import fetchJson, { FetchError } from "../lib/fetchJson";
+import Meta from "../components/Meta";
+import useUser from "../lib/iron-session/useUser";
+import fetchJson, { FetchError } from "../lib/iron-session/fetchJson";
 
 import {
   Button,

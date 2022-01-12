@@ -1,6 +1,6 @@
 import { SWRConfig } from "swr";
 
-import fetchJson from "../lib/fetchJson";
+import fetchJson from "../lib/iron-session/fetchJson";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/globals.css'
