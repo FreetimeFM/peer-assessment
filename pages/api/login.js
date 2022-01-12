@@ -1,5 +1,13 @@
 import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../lib/session";
+import { getErrorMessage } from "../../lib/errors";
+function createErrorPayload(errorCode) {
+  return {
+    error: true,
+    errorCode: errorCode,
+    message: getErrorMessage(errorCode),
+  };
+}
+
 export default withIronSessionApiRoute(async (req, res) => {
   try {
 
