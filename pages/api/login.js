@@ -2,6 +2,8 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
 import { getUserDetailsByEmail } from "../../lib/database";
 import { getErrorMessage } from "../../lib/errors";
+import isEmail from "validator/lib/isEmail";
+import normalizeEmail from "validator/lib/normalizeEmail";
 import bcryptjs from "bcryptjs";
 
 function createErrorPayload(errorCode) {
@@ -12,14 +14,29 @@ function createErrorPayload(errorCode) {
   };
 }
 
+function validateLoginDetails(email) {
+
+  if (!isEmail(email)) return createErrorPayload(103);
+
+  return {
+    error: false,
+    email: normalizeEmail(email)
+  }
+
+}
+
 export default withIronSessionApiRoute(async (req, res) => {
   const { email, password } = await req.body;
 
   // If 'email' or 'password' is not seen in POST request body, then return error.
   if (!email || !password) return res.status(400).json(createErrorPayload(104));
 
+  const checkDetails = validateLoginDetails(email);
+
+  if (checkDetails.error) return res.status(401).json(checkDetails);
+
   try {
-    const details = await getUserDetailsByEmail(email); // Fetches user details by email.
+    const details = await getUserDetailsByEmail(checkDetails.email); // Fetches user details by email.
 
     // If there has been a error.
     if (details.error) {
