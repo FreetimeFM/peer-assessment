@@ -1,19 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Meta from "../components/Meta";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson, { FetchError } from "../lib/iron-session/fetchJson";
 
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  Container,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-} from "reactstrap"
+import { Button, Card, CardHeader, CardBody, Container, Form, FormGroup, Input, Label } from "reactstrap";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -35,21 +25,19 @@ export default function Home() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
           },
-          body: JSON.stringify({"email": email, "password": password}),
-        }),
+          body: JSON.stringify({ email: email, password: password }),
+        })
       );
-
     } catch (error) {
       if (error instanceof FetchError) {
-        console.log(error)
+        console.log(error);
       } else {
         console.error("An unexpected error happened:", error);
       }
     }
   }
-
 
   return (
     <>
@@ -93,7 +81,6 @@ export default function Home() {
                 <FormGroup className="text-end">
                   <Button className="px-4 py-2">Login</Button>
                 </FormGroup>
-
               </Form>
             </CardBody>
           </Card>
