@@ -1,6 +1,7 @@
 import Head from "next/head";
 
-const Meta = ({children, title, iconLink}) => {
+// Used to add and spedify html metadata.
+const Meta = ({ children, title, iconLink }) => {
   return (
     <Head>
       <title>{title}</title>
@@ -8,12 +9,13 @@ const Meta = ({children, title, iconLink}) => {
       <link rel="icon" href={iconLink} />
       {children}
     </Head>
-  )
-}
+  );
+};
 
+// The default values for the parameters.
 Meta.defaultProps = {
   title: "Peer assessment system",
-  iconLink: "/favicon.ico"
-}
+  iconLink: "/favicon.ico",
+};
 
-export default Meta
+export default Meta;
