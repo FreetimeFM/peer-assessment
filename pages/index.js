@@ -11,7 +11,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [apiError, setApiError] = useState("An error has occured server-side. Please contact your administrator.");
+  const [apiError, setApiError] = useState("");
   const [formCheck, setFormCheck] = useState(false);
 
   // here we just check if user is already logged in and redirect to profile
