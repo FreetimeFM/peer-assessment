@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
-import { getUserDetailsByEmail } from "../../lib/database";
+import getUserDetailsByEmail from "../../lib/database";
 import { getErrorMessage } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
 import bcryptjs from "bcryptjs";
@@ -46,11 +46,11 @@ export default withIronSessionApiRoute(async (req, res) => {
     }
 
     // Compare password input to hashed password.
-    bcryptjs.compare(password, details.result.data.password).then(res => {
-
-      // If passwords don't match then send error.
-      if (!res) return res.status(403).json(createErrorPayload(102));
+    const checkPassword = await bcryptjs.compare(password, details.result.data.password).then(res => {
+      return res;
     })
+
+    if (!checkPassword) return res.status(403).json(createErrorPayload(102));
 
     // Saves session to browser.
     const user = { isLoggedIn: true, details: details.result };
