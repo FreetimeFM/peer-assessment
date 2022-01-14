@@ -39,7 +39,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     if (details.error) {
 
       // If the account doesn't exist.
-      if (details.error.description === "Set not found.") return res.status(403).json(createErrorPayload(101));
+      if (details.error.description === "Set not found.") return res.status(401).json(createErrorPayload(101));
 
       // Unknown error possibly from the database.
       return res.status(500).json(createErrorPayload(100));
@@ -50,7 +50,7 @@ export default withIronSessionApiRoute(async (req, res) => {
       return res;
     })
 
-    if (!checkPassword) return res.status(403).json(createErrorPayload(102));
+    if (!checkPassword) return res.status(401).json(createErrorPayload(102));
 
     // Saves session to browser.
     const user = { isLoggedIn: true, details: details.result };
