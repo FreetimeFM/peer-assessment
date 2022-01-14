@@ -28,11 +28,9 @@ export default function Home() {
     setPasswordError("");
     setApiError("");
 
-    setEmail(email.trim());
-    setPassword(password.trim());
-
     const emailCheck = Joi.string()
     .email({tlds: false})
+    .trim()
     .required()
     .messages({
       "string.email": "Invalid email address",
@@ -44,6 +42,7 @@ export default function Home() {
 
     const passwordCheck = Joi.string()
     .max(150)
+    .trim()
     .required()
     .messages({
       "string.max": "Too long",
