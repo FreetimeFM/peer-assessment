@@ -3,7 +3,6 @@ import { sessionOptions } from "../../lib/iron-session/session";
 import { getUserDetailsByEmail } from "../../lib/database";
 import { getErrorMessage } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
-import normalizeEmail from "validator/lib/normalizeEmail";
 import bcryptjs from "bcryptjs";
 
 function createErrorPayload(errorCode) {
@@ -14,15 +13,15 @@ function createErrorPayload(errorCode) {
   };
 }
 
-function validateLoginDetails(email) {
+function validateLoginDetails(email, password) {
+
+  if (email === "" || password === "") return createErrorPayload(105);
 
   if (!isEmail(email)) return createErrorPayload(103);
 
   return {
     error: false,
-    email: normalizeEmail(email)
   }
-
 }
 
 export default withIronSessionApiRoute(async (req, res) => {
@@ -31,12 +30,10 @@ export default withIronSessionApiRoute(async (req, res) => {
   // If 'email' or 'password' is not seen in POST request body, then return error.
   if (!email || !password) return res.status(400).json(createErrorPayload(104));
 
-  const checkDetails = validateLoginDetails(email);
-
-  if (checkDetails.error) return res.status(401).json(checkDetails);
+  if (validateLoginDetails(email, password).error) return res.status(401).json(checkDetails);
 
   try {
-    const details = await getUserDetailsByEmail(checkDetails.email); // Fetches user details by email.
+    const details = await getUserDetailsByEmail(email); // Fetches user details by email.
 
     // If there has been a error.
     if (details.error) {
@@ -44,7 +41,7 @@ export default withIronSessionApiRoute(async (req, res) => {
       // If the account doesn't exist.
       if (details.error.description === "Set not found.") return res.status(403).json(createErrorPayload(101));
 
-      // Unknown error.
+      // Unknown error possibly from the database.
       return res.status(500).json(createErrorPayload(100));
     }
 
@@ -56,7 +53,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     })
 
     // Saves session to browser.
-    const user = { isLoggedIn: true, created: Date.now(), details: details.result };
+    const user = { isLoggedIn: true, details: details.result };
     req.session.user = user;
     await req.session.save();
     res.status(200).json({ name: details.result.data.name });

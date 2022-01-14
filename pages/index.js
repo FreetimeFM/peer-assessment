@@ -80,6 +80,10 @@ export default function Home() {
             setApiError("The details you have entered are incorrect.");
             break;
 
+          case 105:
+            setApiError("The email address or password cannot be empty.");
+            break;
+
           default:
             setApiError("An unknown error has occured.Please contact your administrator.");
             break;
