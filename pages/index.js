@@ -28,6 +28,9 @@ export default function Home() {
     setPasswordError("");
     setApiError("");
 
+    setEmail(email.trim());
+    setPassword(password.trim());
+
     const emailCheck = Joi.string()
     .email({tlds: false})
     .required()
