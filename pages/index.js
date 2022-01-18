@@ -71,8 +71,23 @@ export default function Home() {
     } catch (error) {
       if (error instanceof FetchError) {
 
-        if (error.data.clientMessage) setApiError(error.data.clientMessage);
-        else setApiError("An error has occured. Please contact your administrator.");
+        switch (error.data.errorCode) {
+          case 100 || 300:
+            setApiError("An error has occured server-side. Please contact your administrator.");
+            break;
+
+          case 101 || 102 || 103:
+            setApiError("The details you have entered are incorrect.");
+            break;
+
+          case 105:
+            setApiError("The email address or password cannot be empty.");
+            break;
+
+          default:
+            setApiError("An unknown error has occured.Please contact your administrator.");
+            break;
+        }
 
       } else {
         setApiError("An error has occured server-side. Please contact your administrator.");
