@@ -4,6 +4,8 @@ import { useRouter } from "next/router"
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
 
+import DashboardLayout from "../../layouts/DashboardLayout";
+
 
 export default function index({ user }) {
 
@@ -15,9 +17,9 @@ export default function index({ user }) {
 
 
   return (
-    <div>
+    <DashboardLayout>
       <h1>Aloha</h1>
-    </div>
+    </DashboardLayout>
   )
 }
 
