@@ -3,7 +3,6 @@ import { SWRConfig } from "swr";
 import fetchJson from "../lib/iron-session/fetchJson";
 
 import 'semantic-ui-css/semantic.min.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 function MyApp({ Component, pageProps }) {
   return (
