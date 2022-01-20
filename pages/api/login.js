@@ -1,7 +1,7 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
 import getUserDetailsByEmail from "../../lib/database";
-import { getErrorMessage } from "../../lib/errors";
+import { ErrorMessages } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
 import bcryptjs from "bcryptjs";
 
@@ -9,7 +9,7 @@ function createErrorPayload(errorCode) {
   return {
     error: true,
     errorCode: errorCode,
-    message: getErrorMessage(errorCode),
+    ...ErrorMessages[errorCode],
   };
 }
 
