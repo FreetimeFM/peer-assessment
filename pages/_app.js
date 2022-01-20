@@ -2,8 +2,7 @@ import { SWRConfig } from "swr";
 
 import fetchJson from "../lib/iron-session/fetchJson";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/globals.css'
+import 'semantic-ui-css/semantic.min.css';
 
 function MyApp({ Component, pageProps }) {
   return (
