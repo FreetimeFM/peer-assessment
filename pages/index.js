@@ -3,8 +3,7 @@ import Joi from "joi";
 import Meta from "../components/Meta";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson, { FetchError } from "../lib/iron-session/fetchJson";
-
-import { Alert, Button, Card, CardHeader, CardBody, Container, Form, FormFeedback, FormGroup, Input, Label, Spinner } from "reactstrap";
+import { Grid, Segment, Form, Button, Header, Icon, Divider, Message } from "semantic-ui-react";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -31,8 +30,10 @@ export default function Home() {
     const emailCheck = Joi.string()
     .email({tlds: false})
     .trim()
+    .max(500)
     .required()
     .messages({
+      "string.max": "Too long",
       "string.email": "Invalid email address",
       "string.empty": "Cannot be empty"
     })
@@ -41,8 +42,8 @@ export default function Home() {
     if (emailCheck.error) setEmailError(emailCheck.error.details[0].message)
 
     const passwordCheck = Joi.string()
-    .max(150)
     .trim()
+    .max(150)
     .required()
     .messages({
       "string.max": "Too long",
@@ -84,73 +85,60 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <>
       <Meta />
 
-      <Container className="d-flex justify-content-center">
-        <div className="position-absolute top-50 translate-middle-y">
-          <Card className="shadow-lg b-5 rounded m-3">
-            <CardHeader className="text-center p-sm-5">
-              <h4>Welcome to the Peer Assessment System</h4>
-              <p className="mb-0">Please enter your login details</p>
-            </CardHeader>
+      <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
+        <Grid.Column style={{ maxWidth: 450 }}>
+          <Form onSubmit={onSubmitHandler} loading={formCheck} error={apiError !== ""}>
+            <Segment stacked>
+              <Header as="h2" icon style={{ marginBottom: 0 }}>
+                <Icon name="sign in" />
+                Peer Assessment System
+                <Header.Subheader>Please enter your login details.</Header.Subheader>
+              </Header>
+              <Divider />
+              <Message content={apiError} error/>
+              <Form.Input
+                fluid
+                icon="user"
+                iconPosition="left"
+                placeholder="E-mail address"
+                onChange={(e) => setEmail(e.target.value)}
+                error={
+                  emailError === ""
+                    ? false
+                    : {
+                        content: emailError,
+                        pointing: "below",
+                      }
+                }
+                required
+              />
+              <Form.Input
+                fluid
+                icon="lock"
+                iconPosition="left"
+                placeholder="Password"
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+                error={
+                  passwordError === ""
+                    ? false
+                    : {
+                        content: passwordError,
+                      }
+                }
+                required
+              />
 
-            <CardBody className="px-sm-5 py-sm-4 pb-0">
-              <Alert className="p-2 text-center" color="danger" hidden={apiError === ""}><p className="mb-0">{apiError}</p></Alert>
-              <Form method="POST" onSubmit={onSubmitHandler} inline>
-                <FormGroup floating>
-                  <Input
-                    id="emailField"
-                    name="email"
-                    placeholder=" "
-                    type="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    invalid={emailError !== ""}
-                    disabled={formCheck}
-                    required
-                  />
-                  <Label for="emailField">Email</Label>
-                  <FormFeedback>
-                    {emailError}
-                  </FormFeedback>
-                </FormGroup>
-                <FormGroup floating>
-                  <Input
-                    id="pwField"
-                    name="password"
-                    placeholder=" "
-                    type="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    invalid={passwordError !== ""}
-                    disabled={formCheck}
-                    maxLength={150}
-                    required
-                  />
-                  <Label for="pwField">Password</Label>
-                  <FormFeedback>
-                    {passwordError}
-                  </FormFeedback>
-                </FormGroup>
-                {/* <FormGroup check>
-                  <Input type="checkbox" />
-                  <Label check>Remember Me</Label>
-                </FormGroup> */}
-
-                <FormGroup className="text-center">
-                  <Button
-                    className="px-4 py-2"
-                    disabled={formCheck}
-                  >
-                    {
-                      formCheck ? <Spinner size="sm" /> : "Login"
-                    }
-                  </Button>
-                </FormGroup>
-              </Form>
-            </CardBody>
-          </Card>
-        </div>
-      </Container>
-    </div>
+              <Button type="submit" size="large" fluid>
+                Login
+              </Button>
+            </Segment>
+          </Form>
+        </Grid.Column>
+      </Grid>
+    </>
   );
 }
