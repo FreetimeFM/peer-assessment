@@ -1,6 +1,3 @@
-import React from "react";
-import { useRouter } from "next/router"
-
 import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
 
@@ -8,13 +5,6 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 
 
 export default function index({ user }) {
-
-  const router = useRouter();
-
-  if (!user.isLoggedIn) {
-    router.push("/");
-  }
-
 
   return (
     <DashboardLayout>
@@ -29,7 +19,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
   if (user === undefined) {
     res.setHeader("location", "/");
     res.statusCode = 302;
-    res.end();
+    // res.end();
 
     return {
       props: {

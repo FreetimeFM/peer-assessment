@@ -14,7 +14,6 @@ async function userRoute(req, res) {
   } else {
     res.json({
       isLoggedIn: false,
-      details: null
     });
   }
 }
