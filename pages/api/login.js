@@ -57,6 +57,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     // Saves session to browser.
     req.session.user = {
       isLoggedIn: true,
+      ref: result[0],
       email: email,
       name: result[1],
       userType: result[3]
