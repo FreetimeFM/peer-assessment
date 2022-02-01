@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
-import getUserDetailsByEmail from "../../lib/database";
+import { getUserDetailsByEmail } from "../../lib/database";
 import { ErrorMessages } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
 import bcryptjs from "bcryptjs";
