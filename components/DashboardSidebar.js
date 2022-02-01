@@ -13,8 +13,16 @@ const DashboardSidebar = ({name}) => {
         Home
       </Menu.Item>
       <Menu.Item as="a">
+      <Menu.Item as="a" onClick={async (e) => {
+        e.preventDefault();
+        mutateUser(
+          await fetchJson("/api/logout", { method: "POST" }),
+          false,
+        );
+        location.href = "/";
+      }}>
         <Icon name="log out" />
-        Log out
+        Sign Out
       </Menu.Item>
     </Sidebar>
   );
