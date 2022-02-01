@@ -1,6 +1,7 @@
-import React from 'react'
+import { Sidebar, Menu, Icon, MenuItem } from "semantic-ui-react";
 
-import { Sidebar, Menu, Icon, Header, Divider, MenuItem } from "semantic-ui-react";
+import useUser from "../lib/iron-session/useUser";
+import fetchJson from "../lib/iron-session/fetchJson";
 
 const DashboardSidebar = ({name}) => {
   return (
