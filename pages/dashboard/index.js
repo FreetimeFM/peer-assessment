@@ -1,12 +1,25 @@
+import { useState } from "react";
 import { withIronSessionSsr } from "iron-session/next";
-import { sessionOptions } from "../../lib/iron-session/session";
 
+import { sessionOptions } from "../../lib/iron-session/session";
+import { pages } from "../../lib/pages";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentList from "../../components/AssessmentList";
 
 
 
 export default function index({ user }) {
+
+  const [pageIndex, setPageIndex] = useState(0);
+  // const { getItem, setItem } = useStorage()
+
+  // if (getItem("pageIndex")) setPageIndex(getItem("pageIndex"));
+  // else setItem("pageIndex", 0);
+
+  function handleSetPageIndex(pageIndex) {
+    sessionStorage.setItem("pageIndex", pageIndex);
+    setPageIndex(pageIndex);
+  }
 
   let dashboard;
 
@@ -15,9 +28,10 @@ export default function index({ user }) {
   } else {
     dashboard = <h1>UserType: {user.userType}</h1>
   }
+
   return (
-    <DashboardLayout>
-      <h1>Aloha</h1>
+    <DashboardLayout username={user.name} pages={pages[user.userType]} currentPage={pageIndex} onDashboardSidebarPageClick={handleSetPageIndex}>
+      {dashboard}
     </DashboardLayout>
   )
 }
