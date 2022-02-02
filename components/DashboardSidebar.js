@@ -3,15 +3,18 @@ import { Sidebar, Menu, Icon, MenuItem } from "semantic-ui-react";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
 
-export default function DashboardSidebar({ pages, currentPage, user, onPageClick }) {
+export default function DashboardSidebar({ pages, currentPage, username, device, onPageClick, visible = true }) {
   const { mutateUser } = useUser();
+  let isMobile = (device === "mobile");
 
   return (
-    <Sidebar as={Menu} direction="left" vertical visible>
-      <MenuItem style={{ marginBottom: 0 }}>
-        <h2>Peer Assessment System</h2>
-        <h4 style={{ marginTop: 10 }}>Hello, {user.name}.</h4>
-      </MenuItem>
+
+      <SidebarHeader
+        username={username}
+        visible={!isMobile}
+        isTablet={device === "tablet"}
+      />
+
       {
         pages.map((page, index) =>
         <SidebarButton
@@ -38,9 +41,19 @@ export default function DashboardSidebar({ pages, currentPage, user, onPageClick
   );
 }
 
-function SidebarButton({ iconName, content, active, onItemClick }) {
+function SidebarHeader({ visible, username, isTablet }) {
+  if (visible) return (
+    <Menu.Item style={{ marginBottom: 0 }}>
+      { isTablet ? <h3>Peer Assessment System</h3> : <h2>Peer Assessment System</h2> }
+      <h4 style={{ marginTop: 10 }}>Hello, {username}.</h4>
+    </Menu.Item>
+  )
+  return null;
+}
+
+function SidebarButton({ iconName, iconHidden, content, active, onItemClick }) {
   return (
-    <MenuItem
+    <Menu.Item
       as="a"
       active={active}
       onClick={e => {
@@ -48,8 +61,8 @@ function SidebarButton({ iconName, content, active, onItemClick }) {
         onItemClick();
       }}
     >
-      <Icon name={iconName} />
+      { iconHidden ? null : <Icon name={iconName} /> }
       {content}
-    </MenuItem>
+    </Menu.Item>
   )
 }
