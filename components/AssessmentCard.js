@@ -8,6 +8,11 @@ export default function AssessmentCard({ details }) {
       <Card.Content>
         <Card.Header>{details.name}</Card.Header>
         <Card.Meta>{details.module}</Card.Meta>
+        <Divider/>
+        <Card.Description>{details.description}</Card.Description>
+      </Card.Content>
+      <Card.Content extra>
+        <InfoModal details={details}/>
         <Link href={details.link}>
           <Button primary>
             { details.started ? "Continue" : "Start" }
