@@ -1,4 +1,4 @@
-import { Sidebar, Menu, Icon, MenuItem } from "semantic-ui-react";
+import { Sidebar, Menu, Icon } from "semantic-ui-react";
 
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
@@ -8,6 +8,15 @@ export default function DashboardSidebar({ pages, currentPage, username, device,
   let isMobile = (device === "mobile");
 
   return (
+    <Sidebar
+      as={Menu}
+      direction={isMobile ? "bottom" : "left"}
+      width={device === "tablet" ? "thin" : undefined}
+      size={isMobile ? "huge" : undefined}
+      visible={visible}
+      vertical
+
+    >
 
       <SidebarHeader
         username={username}
@@ -20,12 +29,14 @@ export default function DashboardSidebar({ pages, currentPage, username, device,
         <SidebarButton
           key={index}
           iconName={page.iconName}
+          iconHidden={device === "tablet"}
           content={page.name}
           active={currentPage === index}
           onItemClick={_e => onPageClick(index)}
         />)
       }
-      <Menu.Item as="a" color="primary" onClick={async (e) => {
+
+      <Menu.Item as="a" onClick={async (e) => {
         e.preventDefault();
         mutateUser(
           await fetchJson("/api/logout", { method: "POST" }),
@@ -34,9 +45,10 @@ export default function DashboardSidebar({ pages, currentPage, username, device,
         sessionStorage.clear();
         location.href = "/";
       }}>
-        <Icon name="log out" />
+        { device === "tablet" ? null : <Icon name="log out" /> }
         Sign Out
       </Menu.Item>
+
     </Sidebar>
   );
 }
