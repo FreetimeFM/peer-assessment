@@ -32,7 +32,7 @@ export default function DashboardLayout({ children, user }) {
 
   return (
     <>
-      <DashboardSidebar user={user} pages={pages} device={device} />
+      <DashboardSidebar user={user} currentPage={currentPage.path} pages={pages} device={device} />
       <Sidebar.Pusher style={{ width: "calc(100% - 260px)", padding: "10px 20px" }}>
         <PageHeader heading={currentPage.name} subHeading={currentPage.subHeading} iconName={currentPage.iconName} />
         <main>
