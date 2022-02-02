@@ -1,8 +1,8 @@
-import AssessmentCard from "./AssessmentCard";
-import { Card, Segment, Header, Icon, Button } from "semantic-ui-react";
+import { Card, Button } from "semantic-ui-react";
 import Link from "next/link";
 
-export default function AssessmentList({ assessments, userType = 2 }) {
+import AssessmentCard from "./AssessmentCard";
+import Placeholder from "./Placeholder";
 
   if (!assessments) return (
     <Placeholder
@@ -32,16 +32,4 @@ export default function AssessmentList({ assessments, userType = 2 }) {
       extraContent={ userType === 1 ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null }
     />
   );
-}
-
-function Placeholder({ message, iconName, extraContent = null }) {
-  return (
-    <Segment placeholder textAlign="center">
-      <Header icon>
-        <Icon name={iconName}/>
-        {message}
-      </Header>
-      {extraContent}
-    </Segment>
-  )
 }
