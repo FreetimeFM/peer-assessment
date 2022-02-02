@@ -1,45 +1,17 @@
 import AssessmentCard from "./AssessmentCard";
-import { Card } from "semantic-ui-react";
+import { Card, Segment, Header, Icon, Button } from "semantic-ui-react";
 
-export default function AssessmentList({ assessments }) {
+export default function AssessmentList({ assessments, userType = 2 }) {
 
-  assessments = [
-    {
-      name: "Assessment 1",
-      module: "ACXXXXX - Module name",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis ex facilis alias veniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-      link: "/dashboard",
-      lecturer: "Jeff",
-      startDate: Date.now(),
-      submissionDeadline: Date.now(),
-      markingDeadline: Date.now(),
-      started: false
-    },
-    {
-      name: "Assessment 2",
-      module: "ACXXXXX - Module name",
-      description: "Lorem ipsum dolor, eniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-      link: "/dashboard",
-      lecturer: "Jeff",
-      startDate: Date.now(),
-      submissionDeadline: Date.now(),
-      markingDeadline: Date.now(),
-      started: false
-    },
-    {
-      name: "Assessment 3",
-      module: "ACXXXXX - Module name",
-      description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis ex facilis alias veniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-      link: "/dashboard",
-      lecturer: "Jeff",
-      startDate: Date.now(),
-      submissionDeadline: Date.now(),
-      markingDeadline: Date.now(),
-      started: true
-    },
-  ];
+  if (!assessments) return (
+    <Placeholder
+      message="We're having trouble fetching your assessments."
+      iconName="close"
+      extraContent={<p>Please contact your administrator.</p>}
+    />
+  )
 
-  return (
+  if (assessments.length > 0) return (
     <Card.Group>
       {assessments.map(a => {
         return (
@@ -50,5 +22,25 @@ export default function AssessmentList({ assessments }) {
         );
       })}
     </Card.Group>
+  );
+
+  else return (
+    <Placeholder
+      message="There are no assessments to display."
+      iconName="thumbs up"
+      extraContent={ userType === 1 ? <Button primary>Create Assessment</Button> : null }
+    />
+  );
+}
+
+function Placeholder({ message, iconName, extraContent = null }) {
+  return (
+    <Segment placeholder textAlign="center">
+      <Header icon>
+        <Icon name={iconName}/>
+        {message}
+      </Header>
+      {extraContent}
+    </Segment>
   )
 }
