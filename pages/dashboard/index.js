@@ -55,6 +55,21 @@ export default function index({ user }) {
     setPageIndex(pageIndex);
   }
 
+  function StudentDashboard() {
+
+    if (pageIndex === 0) return <AssessmentList assessments={assessments} />
+    else return <h1>Past Assessments</h1>
+
+  }
+
+  function LecturerDashboard() {
+
+    if (pageIndex === 0) return <AssessmentList userType={user.userType} />
+    else if (pageIndex === 1) return <h1>Past Assessments</h1>
+    else return <h1>Page index: {pageIndex}</h1>
+
+  }
+
   let dashboard;
 
   switch (user.userType) {
