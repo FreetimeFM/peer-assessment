@@ -10,7 +10,7 @@ currentPage - integer which is the index for pages array.
 username - the name of the logged in user as string.
 onPageClick - a method to tell parent to change the page. Method takes in parameter "index" as integer.
 */
-export default function DashboardSidebar({ pages, currentPage, username, device, onPageClick, visible = true }) {
+export default function DashboardSidebar({ user, device, pages, currentPage, visible = true }) {
   const { mutateUser } = useUser();
   let isMobile = (device === "mobile");
 
@@ -22,24 +22,23 @@ export default function DashboardSidebar({ pages, currentPage, username, device,
       size={isMobile ? "huge" : undefined}
       visible={visible}
       vertical
-
     >
 
       <SidebarHeader
-        username={username}
+        username={user.name}
         visible={!isMobile}
         isTablet={device === "tablet"}
       />
 
       {
-        pages.map((page, index) =>
+        pages[user.userType].map((page) =>
         <SidebarButton
-          key={index}
+          key={page.path}
           iconName={page.iconName}
           iconHidden={device === "tablet"}
           content={page.name}
-          active={currentPage === index}
-          onItemClick={_e => onPageClick(index)}
+          active={page.path === currentPage}
+          path={page.path}
         />)
       }
 
@@ -70,17 +69,14 @@ function SidebarHeader({ visible, username, isTablet }) {
   return null;
 }
 
-function SidebarButton({ iconName, iconHidden, content, active, onItemClick }) {
+function SidebarButton({ iconName, iconHidden, content, active, path }) {
   return (
     <Menu.Item
       as="a"
       active={active}
-      onClick={e => {
-        e.preventDefault();
-        onItemClick();
-      }}
+      href={path}
     >
-      { iconHidden ? null : <Icon name={iconName} /> }
+      {iconHidden ? null : <Icon name={iconName} />}
       {content}
     </Menu.Item>
   )

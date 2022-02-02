@@ -1,94 +1,21 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { withIronSessionSsr } from "iron-session/next";
 
 import { sessionOptions } from "../../lib/iron-session/session";
+import useUser from "../../lib/iron-session/useUser";
 import { pages } from "../../lib/pages";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import AssessmentList from "../../components/AssessmentList";
+import { useRouter } from "next/router";
 
 export default function index({ user }) {
 
-  const [pageIndex, setPageIndex] = useState(0);
-  // const { getItem, setItem } = useStorage();
+  const router = useRouter();
 
-  // if (getItem("pageIndex")) setPageIndex(getItem("pageIndex"));
-  // else setItem("pageIndex", 0);
-
-  const assessments = [
-    // {
-    //   name: "Assessment 1",
-    //   module: "ACXXXXX - Module name",
-    //   description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis ex facilis alias veniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-    //   link: "/dashboard",
-    //   lecturer: "Jeff",
-    //   startDate: Date.now(),
-    //   submissionDeadline: Date.now(),
-    //   markingDeadline: Date.now(),
-    //   started: false
-    // },
-    // {
-    //   name: "Assessment 2",
-    //   module: "ACXXXXX - Module name",
-    //   description: "Lorem ipsum dolor, eniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-    //   link: "/dashboard",
-    //   lecturer: "Jeff",
-    //   startDate: Date.now(),
-    //   submissionDeadline: Date.now(),
-    //   markingDeadline: Date.now(),
-    //   started: false
-    // },
-    // {
-    //   name: "Assessment 3",
-    //   module: "ACXXXXX - Module name",
-    //   description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Blanditiis ex facilis alias veniam adipisci dicta numquam placeat, recusandae, quidem, excepturi temporibus a tempore architecto at? Necessitatibus eius laborum aspernatur quae!",
-    //   link: "/dashboard",
-    //   lecturer: "Jeff",
-    //   startDate: Date.now(),
-    //   submissionDeadline: Date.now(),
-    //   markingDeadline: Date.now(),
-    //   started: true
-    // },
-  ];
-
-  function handleSetPageIndex(pageIndex) {
-    sessionStorage.setItem("pageIndex", pageIndex);
-    setPageIndex(pageIndex);
-  }
-
-  function StudentDashboard() {
-
-    if (pageIndex === 0) return <AssessmentList assessments={assessments} />
-    else return <h1>Past Assessments</h1>
-
-  }
-
-  function LecturerDashboard() {
-
-    if (pageIndex === 0) return <AssessmentList userType={user.userType} />
-    else if (pageIndex === 1) return <h1>Past Assessments</h1>
-    else return <h1>Page index: {pageIndex}</h1>
-
-  }
-
-  let dashboard;
-
-  switch (user.userType) {
-    case 0:
-      dashboard = <h1>Hello Admin</h1>
-      break;
-    case 1:
-      dashboard = <LecturerDashboard pageIndex={pageIndex} />
-      break;
-
-    default:
-      dashboard = <StudentDashboard pageIndex={pageIndex} />
-      break;
-  }
+  useEffect(() => {
+    router.push(pages[user.userType][0].path);
+  })
 
   return (
-    <DashboardLayout username={user.name} pages={pages[user.userType]} currentPage={pageIndex} onDashboardSidebarPageClick={handleSetPageIndex}>
-      {dashboard}
-    </DashboardLayout>
+    <div/>
   )
 }
 
@@ -98,7 +25,6 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
   if (user === undefined) {
     res.setHeader("location", "/");
     res.statusCode = 302;
-    // res.end();
 
     return {
       props: {

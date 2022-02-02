@@ -1,6 +1,6 @@
 import { Header, Segment, Icon } from "semantic-ui-react";
 
-export default function PageHeader({ iconName, heading, subHeading }) {
+export default function PageHeader({ iconName, heading, subHeading = "" }) {
   return (
     <Segment>
       <Header as="h2" size="huge">
