@@ -1,5 +1,4 @@
-
-
+import AssessmentCard from "./AssessmentCard";
 import { Card } from "semantic-ui-react";
 
 export default function AssessmentList({ assessments }) {
@@ -41,5 +40,15 @@ export default function AssessmentList({ assessments }) {
   ];
 
   return (
+    <Card.Group>
+      {assessments.map(a => {
+        return (
+          <AssessmentCard
+            key={a.name}
+            details={a}
+          />
+        );
+      })}
+    </Card.Group>
   )
 }
