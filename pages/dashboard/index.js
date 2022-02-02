@@ -2,10 +2,19 @@ import { withIronSessionSsr } from "iron-session/next";
 import { sessionOptions } from "../../lib/iron-session/session";
 
 import DashboardLayout from "../../layouts/DashboardLayout";
+import AssessmentList from "../../components/AssessmentList";
+
 
 
 export default function index({ user }) {
 
+  let dashboard;
+
+  if (user.userType === 2) {
+    dashboard = <StudentDashboard pageIndex={pageIndex} />
+  } else {
+    dashboard = <h1>UserType: {user.userType}</h1>
+  }
   return (
     <DashboardLayout>
       <h1>Aloha</h1>
@@ -32,3 +41,10 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
     props: { user: req.session.user },
   };
 }, sessionOptions);
+
+function StudentDashboard({ pageIndex }) {
+
+  if (pageIndex === 0) return <AssessmentList/>
+  else return <h1>Past Assessments</h1>
+
+}
