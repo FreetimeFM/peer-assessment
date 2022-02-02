@@ -77,7 +77,7 @@ export default function index({ user }) {
       dashboard = <h1>Hello Admin</h1>
       break;
     case 1:
-      dashboard = <h1>Hello Lecturer</h1>
+      dashboard = <LecturerDashboard pageIndex={pageIndex} />
       break;
 
     default:
@@ -111,11 +111,3 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
     props: { user: req.session.user },
   };
 }, sessionOptions);
-
-function StudentDashboard({ pageIndex }) {
-
-  if (pageIndex === 0) return <AssessmentList/>
-  else return <h1>Past Assessments</h1>
-
-}
-
