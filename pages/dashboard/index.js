@@ -6,12 +6,10 @@ import { pages } from "../../lib/pages";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentList from "../../components/AssessmentList";
 
-
-
 export default function index({ user }) {
 
   const [pageIndex, setPageIndex] = useState(0);
-  // const { getItem, setItem } = useStorage()
+  // const { getItem, setItem } = useStorage();
 
   // if (getItem("pageIndex")) setPageIndex(getItem("pageIndex"));
   // else setItem("pageIndex", 0);
@@ -23,10 +21,17 @@ export default function index({ user }) {
 
   let dashboard;
 
-  if (user.userType === 2) {
-    dashboard = <StudentDashboard pageIndex={pageIndex} />
-  } else {
-    dashboard = <h1>UserType: {user.userType}</h1>
+  switch (user.userType) {
+    case 0:
+      dashboard = <h1>Hello Admin</h1>
+      break;
+    case 1:
+      dashboard = <h1>Hello Lecturer</h1>
+      break;
+
+    default:
+      dashboard = <StudentDashboard pageIndex={pageIndex} />
+      break;
   }
 
   return (
@@ -62,3 +67,4 @@ function StudentDashboard({ pageIndex }) {
   else return <h1>Past Assessments</h1>
 
 }
+
