@@ -3,6 +3,13 @@ import { Sidebar, Menu, Icon } from "semantic-ui-react";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
 
+/*
+Sidebar which is displayed on the left of the dashboard.
+pages - an array of page information for the usertype.
+currentPage - integer which is the index for pages array.
+username - the name of the logged in user as string.
+onPageClick - a method to tell parent to change the page. Method takes in parameter "index" as integer.
+*/
 export default function DashboardSidebar({ pages, currentPage, username, device, onPageClick, visible = true }) {
   const { mutateUser } = useUser();
   let isMobile = (device === "mobile");
