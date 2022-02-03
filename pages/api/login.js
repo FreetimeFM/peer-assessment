@@ -1,17 +1,10 @@
 import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../lib/iron-session/session";
-import { getUserDetailsByEmail } from "../../lib/database";
-import { ErrorMessages } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
 import bcryptjs from "bcryptjs";
 
-function createErrorPayload(errorCode) {
-  return {
-    error: true,
-    errorCode: errorCode,
-    ...ErrorMessages[errorCode],
-  };
-}
+import { sessionOptions } from "../../lib/iron-session/session";
+import { getUserDetailsByEmail } from "../../lib/database";
+import { createErrorPayload } from "../../lib/errors";
 
 function validateLoginDetails(email, password) {
 
