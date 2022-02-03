@@ -1,21 +1,17 @@
-import { withIronSessionSsr } from "iron-session/next";
-
-import { sessionOptions } from "../../lib/iron-session/session";
+import { withSessionSsr } from "../../lib/iron-session/withSession";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentList from "../../components/AssessmentList";
 
-export default function PastAssessments({ user, assessments }) {
+export default function PastAssessments({ user, result }) {
 
   return (
     <DashboardLayout user={user}>
-      <AssessmentList assessments={assessments} userType={user.userType}/>
+      <AssessmentList assessments={result.assessments} userType={user.userType} past/>
     </DashboardLayout>
   )
-
 }
 
-export const getServerSideProps = withIronSessionSsr(async function ({req, res,}) {
-  const user = req.session.user;
+export const getServerSideProps = withSessionSsr(async function ({req, res}) {
   const assessments = [
     {
       name: "Assessment 1",
@@ -25,7 +21,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
       lecturer: "Jeff",
       startDate: Date.now(),
       submissionDeadline: Date.now(),
-      markingDeadline: Date.now(),
+      markingDeadline: 1650997035,
       started: true,
       closed: true,
     },
@@ -43,18 +39,10 @@ export const getServerSideProps = withIronSessionSsr(async function ({req, res,}
     },
   ];
 
-  if (user === undefined) {
-    res.setHeader("location", "/");
-    res.statusCode = 302;
-
-    return {
-      props: {
-        user: { isLoggedIn: false },
-      },
-    };
-  }
-
   return {
-    props: { user: req.session.user, assessments: assessments },
-  };
-}, sessionOptions);
+    error: false,
+    result: {
+      assessments: assessments
+    }
+  }
+})
