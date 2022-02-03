@@ -1,29 +1,39 @@
 import Link from "next/link"
-import { Card, Button, Modal, Table, Divider } from "semantic-ui-react"
+import { Card, Button, Modal, Table, Menu } from "semantic-ui-react"
 import { useState } from "react"
 
-export default function AssessmentCard({ details }) {
+export default function AssessmentCard({ details, past = false }) {
   return (
     <Card style={{ width: "400px" }}>
-      <Card.Content>
-        <Card.Header>{details.name}</Card.Header>
-        <Card.Meta>{details.module}</Card.Meta>
-        <Divider/>
-        <Card.Description>{details.description}</Card.Description>
-      </Card.Content>
+      <Card.Content
+        header={details.name}
+        meta={details.module}
+      />
+      <Card.Content
+        description={details.description}
+      />
+      {
+        past ? null :
+        <Card.Content>
+          <div>Submit by {details.submissionDeadline}</div>
+          <div>Mark by {details.markingDeadline}</div>
+        </Card.Content>
+      }
       <Card.Content extra>
-        <InfoModal details={details}/>
-        <Link href={details.link}>
-          <Button primary>
-            { details.started ? "Continue" : "Start" }
-          </Button>
-        </Link>
+        <Button.Group fluid widths={2} >
+        <InfoModal details={details} past/>
+          <Link href={details.link}>
+            <Button primary>
+              { past ? "View" : (details.started ? "Continue" : "Start")}
+            </Button>
+          </Link>
+        </Button.Group>
       </Card.Content>
     </Card>
   )
 }
 
-function InfoModal({trigger=<Button>Learn More</Button>, details}) {
+function InfoModal({trigger = <Button>Learn More</Button>, details, past = false}) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -75,7 +85,7 @@ function InfoModal({trigger=<Button>Learn More</Button>, details}) {
         />
         <Link href={details.link}>
           <Button primary>
-            { details.started ? "Continue" : "Start" }
+            { past ? "View" : (details.started ? "Continue" : "Start") }
           </Button>
         </Link>
       </Modal.Actions>

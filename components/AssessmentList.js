@@ -4,9 +4,11 @@ import Link from "next/link";
 import AssessmentCard from "./AssessmentCard";
 import Placeholder from "./Placeholder";
 
+export default function AssessmentList({ assessments, userType = 2, past = false }) {
+
   if (!assessments) return (
     <Placeholder
-      message="We're having trouble fetching your assessments."
+      message={`We're having trouble fetching your ${past ? "past" : ""} assessments.`}
       iconName="close"
       extraContent={<p>Please contact your administrator.</p>}
     />
@@ -14,11 +16,12 @@ import Placeholder from "./Placeholder";
 
   if (assessments.length > 0) return (
     <Card.Group>
-      {assessments.map(a => {
+      {assessments.map((assessment, index) => {
         return (
           <AssessmentCard
-            key={a.name}
-            details={a}
+            key={index}
+            details={assessment}
+            past={past}
           />
         );
       })}
