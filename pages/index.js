@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Joi from "joi";
-import Meta from "../components/Meta";
+import Metadata from "../components/Metadata";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson, { FetchError } from "../lib/iron-session/fetchJson";
 import { Grid, Segment, Form, Button, Header, Icon, Divider, Message } from "semantic-ui-react";
@@ -86,7 +86,7 @@ export default function Home() {
 
   return (
     <>
-      <Meta />
+      <Metadata />
 
       <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
         <Grid.Column style={{ maxWidth: 450 }}>
