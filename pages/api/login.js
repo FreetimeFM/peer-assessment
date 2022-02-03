@@ -1,17 +1,10 @@
 import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../lib/iron-session/session";
-import getUserDetailsByEmail from "../../lib/database";
-import { ErrorMessages } from "../../lib/errors";
 import isEmail from "validator/lib/isEmail";
 import bcryptjs from "bcryptjs";
 
-function createErrorPayload(errorCode) {
-  return {
-    error: true,
-    errorCode: errorCode,
-    ...ErrorMessages[errorCode],
-  };
-}
+import { sessionOptions } from "../../lib/iron-session/session";
+import { getUserDetailsByEmail } from "../../lib/database";
+import { createErrorPayload } from "../../lib/errors";
 
 function validateLoginDetails(email, password) {
 
@@ -45,21 +38,28 @@ export default withIronSessionApiRoute(async (req, res) => {
       return res.status(500).json(createErrorPayload(100));
     }
 
+    const { result } = details;
+
     // Compare password input to hashed password.
-    const checkPassword = await bcryptjs.compare(password, details.result.data.password).then(res => {
+    const checkPassword = await bcryptjs.compare(password, result[2]).then(res => {
       return res;
     })
 
     if (!checkPassword) return res.status(401).json(createErrorPayload(102));
 
     // Saves session to browser.
-    const user = { isLoggedIn: true, details: details.result };
-    req.session.user = user;
+    req.session.user = {
+      isLoggedIn: true,
+      ref: result[0],
+      email: email,
+      name: result[1],
+      userType: result[3]
+    };
     await req.session.save();
-    res.status(200).json({ name: details.result.data.name });
+
+    res.status(200).json({ error: false });
 
   } catch (error) {
     res.status(500).json(createErrorPayload(300));
   }
-
 }, sessionOptions);
