@@ -68,7 +68,7 @@ export default function Home() {
 
     await validate();
 
-    if (emailError != "" || passwordError != "") {
+    if (emailError !== "" || passwordError !== "") {
       setFormCheck(false);
       return;
     }
@@ -88,11 +88,9 @@ export default function Home() {
       return;
 
     } catch (error) {
-      if (error instanceof FetchError) {
-        if (error.data.clientMessage) setApiError(error.data.clientMessage);
-      }
 
-      if (apiError === "") setApiError("An error has occured server-side. Please contact your administrator.");
+      if (error.data.hasOwnProperty("clientMessage")) setApiError(error.data.clientMessage);
+      else setApiError("An error has occured. Please contact your administrator.");
       console.error("Error: ", error, error.data);
     }
     setFormCheck(false);
