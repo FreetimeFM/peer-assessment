@@ -1,4 +1,4 @@
-import { Form, Segment } from "semantic-ui-react";
+import { Form, Segment, Popup, Button } from "semantic-ui-react";
 
 export default function CreateAssessment() {
 
@@ -6,28 +6,50 @@ export default function CreateAssessment() {
     <Segment>
       <Form>
         <Form.Group widths="equal">
-          <Form.Input label="Assessment Name" name="name" type="text" placeholder="Required" maxLength={100} required />
+          <Form.Field required>
+            <label>Name <InputPopup message="The name of the assessment. 100 characters maximum. Required."/></label>
+            <input
+              name="name"
+              type="text"
+              placeholder="Required."
+              maxLength={100}
+              required
+            />
+          </Form.Field>
         </Form.Group>
-        <Form.TextArea
-          label="Brief Description"
-          name="briefDescription"
-          placeholder="This description will be displayed as an overview in the dashboard. 500 characters maximum."
-          maxLength={300}
-          rows={3}
-        />
-        <Form.TextArea
-          label="Description"
-          name="description"
-          placeholder="A detailed description about the assessment. 5000 characters maximum."
-          maxLength={5000}
-          rows={11}
-        />
+        <Form.Field>
+          <label>Brief Description <InputPopup message="This description will be displayed as an overview in the dashboard. 500 characters maximum."/></label>
+          <textarea
+            name="briefDescription"
+            placeholder="Optional. This description will be displayed as an overview in the dashboard. 500 characters maximum."
+            maxLength={300}
+            rows={3}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Description <InputPopup message="A detailed description about the assessment. 5000 characters maximum."/></label>
+          <textarea
+            name="description"
+            placeholder="A detailed description about the assessment. 5000 characters maximum."
+            maxLength={5000}
+            rows={11}
+          />
+        </Form.Field>
         <Form.Group widths="equal">
-          <Form.Input label="Release Date" name="releaseDate" type="datetime-local" />
+          <Form.Field>
+            <label>Release Date <InputPopup message="The assessment will be accessible to students at this date. This is optional as you can manually release the assessment."/></label>
+            <input type="datetime-local" name="releaseDate"/>
+          </Form.Field>
         </Form.Group>
         <Form.Group widths="equal">
-          <Form.Input label="Submission Deadline" name="submissionDeadline" type="datetime-local" required />
-          <Form.Input label="Marking Deadline" name="markingDeadline" type="datetime-local" required />
+          <Form.Field required>
+            <label>Submission Deadline <InputPopup message="The date students have to submit by. Required."/></label>
+            <input type="datetime-local" name="submissionDeadline" required/>
+          </Form.Field>
+          <Form.Field required>
+            <label>Marking Deadline <InputPopup message="The date students have to mark by. Required."/></label>
+            <input type="datetime-local" name="markingDeadline" required/>
+          </Form.Field>
         </Form.Group>
       </Form>
     </Segment>
