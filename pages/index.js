@@ -100,41 +100,34 @@ export default function Home() {
               <Divider />
               <Message content={apiError} error/>
               <Form.Input
-                fluid
                 icon="user"
                 iconPosition="left"
                 placeholder="E-mail address"
+                maxLength={500}
                 onChange={(e) => setEmail(e.target.value)}
-                error={
-                  emailError === ""
-                    ? false
-                    : {
-                        content: emailError,
-                        pointing: "below",
-                      }
-                }
+                error={ emailError === "" ? false : {content: emailError, pointing: "below"} }
                 required
+                fluid
               />
               <Form.Input
-                fluid
                 icon="lock"
                 iconPosition="left"
                 placeholder="Password"
                 type="password"
+                maxLength={150}
                 onChange={(e) => setPassword(e.target.value)}
-                error={
-                  passwordError === ""
-                    ? false
-                    : {
-                        content: passwordError,
-                      }
-                }
+                error={ passwordError === "" ? false : {content: passwordError} }
                 required
+                fluid
               />
 
-              <Button type="submit" size="large" fluid>
-                Login
-              </Button>
+              <Button
+                type="submit"
+                content="Sign in"
+                size="large"
+                primary
+                fluid
+              />
             </Segment>
           </Form>
         </Grid.Column>
