@@ -42,7 +42,7 @@ export default function Home() {
       "string.email": "Invalid email address",
       "string.empty": "Cannot be empty"
     })
-    .validate(email);
+    .validate(details.email);
 
     const passwordCheck = Joi.string()
     .trim()
@@ -52,7 +52,7 @@ export default function Home() {
       "string.max": "Too long",
       "string.empty": "Cannot be empty"
     })
-    .validate(password);
+    .validate(details.password);
 
     if (emailCheck.error) setEmailError(emailCheck.error.details[0].message);
     if (passwordCheck.error) setPasswordError(passwordCheck.error.details[0].message);
@@ -68,7 +68,7 @@ export default function Home() {
 
     await validate();
 
-    if (emailCheck.error || passwordCheck.error) {
+    if (emailError != "" || passwordError != "") {
       setFormCheck(false);
       return;
     }
@@ -81,7 +81,7 @@ export default function Home() {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body: JSON.stringify({ email: email, password: password }),
+          body: JSON.stringify({ email: details.email, password: details.password }),
         })
       );
     } catch (error) {
