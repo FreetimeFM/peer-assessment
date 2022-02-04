@@ -13,15 +13,15 @@ export default function Home() {
     redirectIfFound: true,
   });
 
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [apiError, setApiError] = useState("");
-  const [formCheck, setFormCheck] = useState(false);
-
   const [ details, setDetails ] = useState({
     email: "",
     password: ""
   });
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [formCheck, setFormCheck] = useState(false);
 
   function handleChange(_e, { name, value }) {
     setDetails({
@@ -30,13 +30,7 @@ export default function Home() {
     })
   }
 
-  async function onSubmitHandler(e) {
-
-    e.preventDefault();
-    setFormCheck(true);
-    setEmailError("");
-    setPasswordError("");
-    setApiError("");
+  async function validate() {
 
     const emailCheck = Joi.string()
     .email({tlds: false})
@@ -50,8 +44,6 @@ export default function Home() {
     })
     .validate(email);
 
-    if (emailCheck.error) setEmailError(emailCheck.error.details[0].message)
-
     const passwordCheck = Joi.string()
     .trim()
     .max(150)
@@ -60,9 +52,21 @@ export default function Home() {
       "string.max": "Too long",
       "string.empty": "Cannot be empty"
     })
-    .validate(password)
+    .validate(password);
 
-    if (passwordCheck.error) setPasswordError(passwordCheck.error.details[0].message)
+    if (emailCheck.error) setEmailError(emailCheck.error.details[0].message);
+    if (passwordCheck.error) setPasswordError(passwordCheck.error.details[0].message);
+  }
+
+  async function onSubmitHandler(e) {
+
+    e.preventDefault();
+    setFormCheck(true);
+    setEmailError("");
+    setPasswordError("");
+    setApiError("");
+
+    await validate();
 
     if (emailCheck.error || passwordCheck.error) {
       setFormCheck(false);
