@@ -33,3 +33,13 @@ export default function CreateAssessment() {
     </Segment>
   );
 }
+
+function InputPopup({ message }) {
+  return (
+    <Popup
+      trigger={<Button icon="help" size="tiny" style={{ padding: 3 }} />}
+      content={message}
+      position="right center"
+    />
+  )
+}
