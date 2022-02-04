@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Joi from "joi";
+import { Grid, Segment, Form, Button, Header, Icon, Divider, Message } from "semantic-ui-react";
+
 import Metadata from "../components/Metadata";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
-import { Grid, Segment, Form, Button, Header, Icon, Divider, Message } from "semantic-ui-react";
 
 export default function Home() {
 
