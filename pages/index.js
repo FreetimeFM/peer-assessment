@@ -84,6 +84,9 @@ export default function Home() {
           body: JSON.stringify({ email: details.email, password: details.password }),
         })
       );
+
+      return;
+
     } catch (error) {
       if (error instanceof FetchError) {
         if (error.data.clientMessage) setApiError(error.data.clientMessage);
