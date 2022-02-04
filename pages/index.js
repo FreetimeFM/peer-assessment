@@ -125,7 +125,7 @@ export default function Home() {
                 type="submit"
                 content="Sign in"
                 size="large"
-                primary
+                color={emailError || passwordError || apiError ? "red" : "blue"}
                 fluid
               />
             </Segment>
