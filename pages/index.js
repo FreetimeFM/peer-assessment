@@ -82,14 +82,10 @@ export default function Home() {
       );
     } catch (error) {
       if (error instanceof FetchError) {
-
         if (error.data.clientMessage) setApiError(error.data.clientMessage);
-        else setApiError("An error has occured. Please contact your administrator.");
-
-      } else {
-        setApiError("An error has occured server-side. Please contact your administrator.");
       }
 
+      if (apiError === "") setApiError("An error has occured server-side. Please contact your administrator.");
       console.error("Error: ", error, error.data);
     }
     setFormCheck(false);
