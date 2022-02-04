@@ -6,18 +6,29 @@ import fetchJson, { FetchError } from "../lib/iron-session/fetchJson";
 import { Grid, Segment, Form, Button, Header, Icon, Divider, Message } from "semantic-ui-react";
 
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [apiError, setApiError] = useState("");
-  const [formCheck, setFormCheck] = useState(false);
 
   // here we just check if user is already logged in and redirect to profile
   const { mutateUser } = useUser({
     redirectTo: "/dashboard",
     redirectIfFound: true,
   });
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [formCheck, setFormCheck] = useState(false);
+
+  const [ details, setDetails ] = useState({
+    email: "",
+    password: ""
+  });
+
+  function handleChange(_e, { name, value }) {
+    setDetails({
+      ...details,
+      [name]: value
+    })
+  }
 
   async function onSubmitHandler(e) {
 
@@ -91,7 +102,7 @@ export default function Home() {
       <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
         <Grid.Column style={{ maxWidth: 450 }}>
           <Form onSubmit={onSubmitHandler} loading={formCheck} error={apiError !== ""}>
-            <Segment stacked>
+            <Segment>
               <Header as="h2" icon style={{ marginBottom: 0 }}>
                 <Icon name="sign in" />
                 Peer Assessment System
@@ -100,22 +111,25 @@ export default function Home() {
               <Divider />
               <Message content={apiError} error/>
               <Form.Input
+                name="email"
+                type="email"
                 icon="user"
                 iconPosition="left"
                 placeholder="E-mail address"
                 maxLength={500}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChange}
                 error={ emailError === "" ? false : {content: emailError, pointing: "below"} }
                 required
                 fluid
               />
               <Form.Input
+                name="password"
+                type="password"
                 icon="lock"
                 iconPosition="left"
                 placeholder="Password"
-                type="password"
                 maxLength={150}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleChange}
                 error={ passwordError === "" ? false : {content: passwordError} }
                 required
                 fluid
