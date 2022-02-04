@@ -33,11 +33,11 @@ export default function Home() {
   async function validate() {
 
     const emailCheck = Joi.string()
-    .email({tlds: false})
-    .trim()
-    .max(500)
-    .required()
-    .messages({
+    .required() // Checks if field is empty.
+    .trim() // Removes leading and trailing whitespace.
+    .max(500) // Checks if its too long (500 chars).
+    .email({tlds: false}) // Checks email.
+    .messages({ // Various error messages according to which test it failed.
       "string.max": "Too long",
       "string.email": "Invalid email address",
       "string.empty": "Cannot be empty"
@@ -45,9 +45,9 @@ export default function Home() {
     .validate(details.email);
 
     const passwordCheck = Joi.string()
+    .required()
     .trim()
     .max(150)
-    .required()
     .messages({
       "string.max": "Too long",
       "string.empty": "Cannot be empty"
