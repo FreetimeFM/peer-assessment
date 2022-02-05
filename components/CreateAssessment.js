@@ -11,6 +11,7 @@ export default function CreateAssessment() {
     submissionDeadline: "",
     markingDeadline: ""
   });
+
   function updateForm(_e, { name, value }) {
     setFormData({
       ...formData,
