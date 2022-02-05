@@ -1,29 +1,31 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import isEmail from "validator/lib/isEmail";
+import isEmpty from "validator/lib/isEmpty";
+import trim from "validator/lib/trim";
 import bcryptjs from "bcryptjs";
 
 import { sessionOptions } from "../../lib/iron-session/session";
 import { getUserDetailsByEmail } from "../../lib/database";
 import { createErrorPayload } from "../../lib/errors";
 
-function validateLoginDetails(email, password) {
-
-  if (email === "" || password === "") return createErrorPayload(105);
-
-  if (!isEmail(email)) return createErrorPayload(103);
-
-  return {
-    error: false,
-  }
-}
-
 export default withIronSessionApiRoute(async (req, res) => {
-  const { email, password } = await req.body;
+
+  let { email, password } = await req.body;
 
   // If 'email' or 'password' is not seen in POST request body, then return error.
-  if (!email || !password) return res.status(400).json(createErrorPayload(104));
+  if (!email || !password) return res.status(400).createErrorPayload(104);
 
-  if (validateLoginDetails(email, password).error) return res.status(401).json(checkDetails);
+  // Trims the email and password.
+  email = trim(email);
+  password = trim(password);
+
+  // Checks if the email and password are empty.
+  if (isEmpty(email) || isEmpty(password)) return res.status(401).json(createErrorPayload(105));
+
+  if (email.length > 500 || password.length > 150) return res.status(401).json(createErrorPayload(106));
+
+  // Checks if the email is an email address.
+  if (!isEmail(email)) return res.status(401).json(createErrorPayload(103));
 
   try {
     const details = await getUserDetailsByEmail(email); // Fetches user details by email.
@@ -41,7 +43,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     const { result } = details;
 
     // Compare password input to hashed password.
-    const checkPassword = await bcryptjs.compare(password, result[2]).then(res => {
+    const checkPassword = await bcryptjs.compare(password, result.data.password).then(res => {
       return res;
     })
 
@@ -50,11 +52,12 @@ export default withIronSessionApiRoute(async (req, res) => {
     // Saves session to browser.
     req.session.user = {
       isLoggedIn: true,
-      ref: result[0],
+      ref: result.ref,
       email: email,
-      name: result[1],
-      userType: result[3]
+      name: result.data.name,
+      userType: result.data.userType
     };
+
     await req.session.save();
 
     res.status(200).json({ error: false });
