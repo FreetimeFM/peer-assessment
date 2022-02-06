@@ -6,7 +6,7 @@ export default function createAssessment({ user }) {
 
   return (
     <DashboardLayout user={user}>
-      <CreateAssessment />
+      <CreateAssessment ref={user.ref} />
     </DashboardLayout>
   )
 }
@@ -21,5 +21,7 @@ export const getServerSideProps = withSessionSsr(async function ({ req }) {
     },
   }
 
-  return null;
+  return {
+    user: req.session.user
+  };
 });
