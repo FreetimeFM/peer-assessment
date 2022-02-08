@@ -124,7 +124,7 @@ function Stage1({ submitFormData }) {
 function InputPopup({ message }) {
   return (
     <Popup
-      trigger={<Button icon="help" size="tiny" style={{ padding: 3 }} />}
+      trigger={<Icon name="help" size="small" bordered style={{ backgroundColor: "lightGrey" }} />}
       content={message}
       position="right center"
     />
