@@ -37,12 +37,6 @@ export default withIronSessionApiRoute(async (req, res) => {
     // Incorrect details or account doesn't exist.
     if (!result.auth) return res.status(401).json(createErrorPayload(102));
 
-    console.log({
-      ...result.data,
-      refID: result.refID,
-      isLoggedIn: true,
-    })
-
     // Saves session to browser.
     req.session.user = {
       ...result.data,
