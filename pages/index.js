@@ -105,7 +105,7 @@ export default function Home() {
     } catch (error) {
 
       // Checks if there is custom error data and displays it.
-      if (error.data.hasOwnProperty("clientMessage")) setApiError(error.data.clientMessage);
+      if (error?.data?.hasOwnProperty("clientMessage")) setApiError(error.data.clientMessage);
 
       // If no custom error data is found.
       else setApiError("An error has occured. Please contact your administrator.");
