@@ -79,9 +79,6 @@ export default function CreateAssessment({ userRef }) {
         />
 
         <Form.Group widths="equal">
-        </Form.Group>
-
-        <Form.Group widths="equal">
           <Form.Input
             name="submissionDeadline"
             label={<label>Submission Deadline <InputPopup message="The date students have to submit their work by. Required."/></label>}
