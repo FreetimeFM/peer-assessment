@@ -1,3 +1,5 @@
+import { Checkbox, Table } from "semantic-ui-react";
+
 export default function UserTable({ users }) {
 
   return (
@@ -14,4 +16,16 @@ export default function UserTable({ users }) {
       </Table.Body>
     </Table>
   );
+}
+
+function Rows({ name, email, userType }) {
+
+  return (
+    <Table.Row>
+      <Table.Cell content={<Checkbox />} />
+      <Table.Cell content={name} />
+      <Table.Cell content={email} />
+      <Table.Cell content={userType} />
+    </Table.Row>
+  )
 }
