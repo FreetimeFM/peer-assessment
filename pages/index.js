@@ -121,7 +121,7 @@ export default function Home() {
       <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
         <Grid.Column style={{ maxWidth: 450 }}>
           <Form onSubmit={onSubmitHandler} loading={formCheck} error={apiError !== ""}>
-            <Segment>
+            <Segment raised>
 
               <Header as="h2" style={{ marginBottom: 0 }} icon>
                 <Icon name="sign in" />
