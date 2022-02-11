@@ -1,3 +1,6 @@
+
+  if (error) return <Placeholder iconName="close" message="Cannot fetch details." extraContent="There has been an error fetching the list of users." />
+
   const [ fetching, setFetching ] = useState(false);
   const [ disableLoadMore, setDisableLoadMore ] = useState(true);
   const [ userList, setUserList ] = useState([
