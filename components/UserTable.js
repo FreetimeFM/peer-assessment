@@ -18,11 +18,9 @@ export default function UserTable({ users }) {
   );
 }
 
-function Rows({ name, email, userType }) {
-
+function Row({ name, email, userType, onClick }) {
   return (
-    <Table.Row>
-      <Table.Cell content={<Checkbox />} />
+    <Table.Row onClick={onClick} >
       <Table.Cell content={name} />
       <Table.Cell content={email} />
       <Table.Cell content={userType} />
