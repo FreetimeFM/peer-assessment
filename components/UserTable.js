@@ -53,6 +53,9 @@ export default function UserTable({ users }) {
         </Table.Row>
       </Table.Header>
       <Table.Body>
+          {userList.map((value, index) => {
+            return <Row key={index} name={value.name} email={value.email} userType={value.userType} onClick={(_e) => handleRowClick(index)} />
+          })}
       </Table.Body>
         <Table.Footer fullWidth>
           <Table.Row textAlign="center">
