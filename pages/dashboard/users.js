@@ -1,16 +1,18 @@
 import DashboardLayout from "layouts/DashboardLayout";
 import UserTable from "components/UserTable";
 import { withSessionSsr } from "lib/iron-session/withSession";
+import { getAllUsers } from "lib/database";
 
 export default function users({ user, result }) {
+
   return (
     <DashboardLayout user={user}>
-      <UserTable />
+      <UserTable user={user} result={result} />
     </DashboardLayout>
   )
 }
 
-export const getServerSideProps = withSessionSsr(({ req }) => {
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
   if (req.session.user.userType !== "admin") {
     res.statusCode = 403;
@@ -22,4 +24,9 @@ export const getServerSideProps = withSessionSsr(({ req }) => {
       }
     };
   }
+
+  return {
+    ...await getAllUsers()
+  }
+
 });
