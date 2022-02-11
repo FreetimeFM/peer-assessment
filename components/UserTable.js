@@ -1,3 +1,13 @@
+import { useState, useEffect } from "react";
+import useSWR from "swr";
+import { Segment, Table, Button, } from "semantic-ui-react";
+
+import Placeholder from "./Placeholder";
+import Link from "next/link";
+
+export default function UserTable({ user, result }) {
+
+  const { error, list, afterCursor } = result;
 
   if (error) return <Placeholder iconName="close" message="Cannot fetch details." extraContent="There has been an error fetching the list of users." />
 
