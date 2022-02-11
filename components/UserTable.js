@@ -1,4 +1,5 @@
-import { Checkbox, Table } from "semantic-ui-react";
+  const [ fetching, setFetching ] = useState(false);
+  const [ disableLoadMore, setDisableLoadMore ] = useState(true);
 
 export default function UserTable({ users }) {
 
@@ -14,6 +15,19 @@ export default function UserTable({ users }) {
       </Table.Header>
       <Table.Body>
       </Table.Body>
+        <Table.Footer fullWidth>
+          <Table.Row textAlign="center">
+          <Table.HeaderCell colSpan="3">
+            <Button
+              size="small"
+              content={ disableLoadMore ? "No more users" : "Load more" }
+              disabled={disableLoadMore}
+              fluid
+              loading={fetching}
+            />
+          </Table.HeaderCell>
+          </Table.Row>
+        </Table.Footer>
     </Table>
   );
 }
