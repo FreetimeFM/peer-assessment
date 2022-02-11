@@ -40,23 +40,38 @@ export default function UserTable({ user, result }) {
     }
   ]);
 
-export default function UserTable({ users }) {
+  function getUserList() {
+
+    // const { data, error } = useSWR(apiRoute, fetch(apiRoute, {
+    //   method: "POST",
+    //   body: JSON.stringify({ user: user })
+    // }).then((res) => res.json()))
+
+    // console.log(data, "data", error, "error");
+  }
+
+  function handleRowClick(index) {
+    console.log("Click on row", index);
+  }
 
   return (
+    <>
       <Segment attached="top">
         <Link href="/dashboard/create/user"><Button content="Add user" /></Link>
       </Segment>
-          <Table.HeaderCell width={1}/>
-          <Table.HeaderCell content="Name" />
-          <Table.HeaderCell content="Email" />
-          <Table.HeaderCell width={3} content="Type" />
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
+      <Table attached="bottom" celled selectable striped sortable >
+        <Table.Header>
+          <Table.Row>
+            <Table.HeaderCell content="Name" />
+            <Table.HeaderCell content="Email Address" />
+            <Table.HeaderCell width={3} content="Type" />
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {userList.map((value, index) => {
             return <Row key={index} name={value.name} email={value.email} userType={value.userType} onClick={(_e) => handleRowClick(index)} />
           })}
-      </Table.Body>
+        </Table.Body>
         <Table.Footer fullWidth>
           <Table.Row textAlign="center">
           <Table.HeaderCell colSpan="3">
@@ -70,7 +85,8 @@ export default function UserTable({ users }) {
           </Table.HeaderCell>
           </Table.Row>
         </Table.Footer>
-    </Table>
+      </Table>
+    </>
   );
 }
 
