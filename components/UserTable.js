@@ -43,9 +43,9 @@ export default function UserTable({ user, result }) {
 export default function UserTable({ users }) {
 
   return (
-    <Table celled selectable striped sortable>
-      <Table.Header>
-        <Table.Row>
+      <Segment attached="top">
+        <Link href="/dashboard/create/user"><Button content="Add user" /></Link>
+      </Segment>
           <Table.HeaderCell width={1}/>
           <Table.HeaderCell content="Name" />
           <Table.HeaderCell content="Email" />
