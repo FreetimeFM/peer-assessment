@@ -10,7 +10,7 @@ export default function users({ user, result }) {
   )
 }
 
-export const getServerSideProps = withSessionSsr((req, res) => {
+export const getServerSideProps = withSessionSsr(({ req }) => {
 
   if (req.session.user.userType !== "admin") {
     res.statusCode = 403;
@@ -22,5 +22,4 @@ export const getServerSideProps = withSessionSsr((req, res) => {
       }
     };
   }
-
 });
