@@ -26,10 +26,12 @@ async function validate(name, email, userType) {
   if (validationError.length >= 1) return validationError;
 
   const existenceCheck = await getUserByEmail(email);
-  console.log(result);
 
-  if (!result.error) {
-    if (existenceCheck.result.email === email) {
+  // Checks if there isn't an error.
+  if (!existenceCheck.error) {
+
+    // If user with the same email exists.
+    if (existenceCheck.result.data.email === email) {
       validationError.push("A user with this email address exists. Please use another address.");
       return validationError;
     }
