@@ -1,3 +1,4 @@
+import CreateUser from "components/CreateUser";
 import DashboardLayout from "layouts/DashboardLayout";
 import { withSessionSsr } from "lib/iron-session/withSession";
 
@@ -5,7 +6,7 @@ import { withSessionSsr } from "lib/iron-session/withSession";
 export default function ({ user }) {
   return (
     <DashboardLayout user={user}>
-
+      <CreateUser />
     </DashboardLayout>
   )
 }
