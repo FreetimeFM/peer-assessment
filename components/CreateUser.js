@@ -168,6 +168,7 @@ export default function CreateUser() {
         <Form.Input
           name="email"
           type="email"
+          value={formData.email}
           icon="mail"
           iconPosition="left"
           maxLength={500}
