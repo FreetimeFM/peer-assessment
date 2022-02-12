@@ -93,6 +93,50 @@ export default function CreateUser() {
       return;
     }
 
+    // Attemps to contact the server to check details.
+    try {
+      mutateUser(
+        await fetchJson("/api/create/user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ ...formData }),
+        })
+      );
+
+      setApiMessage({
+        hidden: false,
+        error: false,
+        message: "The user has been created."
+      })
+
+      setFormData({
+        name: "",
+        email: "",
+        userType: "student"
+      })
+
+    } catch (error) {
+
+      // Checks if there is custom error data and displays it.
+      if (error?.data?.hasOwnProperty("clientMessage")) setApiMessage({
+        hidden: false,
+        error: true,
+        message: error.data.clientMessage,
+        validationError: error.data.validationError
+      });
+
+      // If no custom error data is found.
+      else setApiMessage({
+        hidden: false,
+        error: true,
+        message: "An unknown error has occured.",
+      });
+      console.error("Error: ", error, error.data);
+    }
+
     setFormCheck(false);
   }
 
