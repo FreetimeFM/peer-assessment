@@ -31,6 +31,13 @@ export default function CreateUser() {
     })
   }
 
+  function handleDismiss(_e, _data) {
+    setApiMessage({
+      ...apiMessage,
+      hidden: true
+    })
+  }
+
   // Uses joi to validate the email address and password.
   async function validate() {
 
@@ -91,8 +98,8 @@ export default function CreateUser() {
 
   return (
     <Form loading={formCheck} success={!apiMessage.error} error={apiMessage.error}>
-      <Message content={apiMessage.message} hidden={apiMessage.hidden} error/>
-      <Message content={apiMessage.message} hidden={apiMessage.hidden} success/>
+      <Message content={apiMessage.message} hidden={apiMessage.hidden} onDismiss={handleDismiss} list={apiMessage.validationError} error/>
+      <Message content={apiMessage.message} hidden={apiMessage.hidden} onDismiss={handleDismiss} success/>
       <Form.Group widths="equal">
         <Form.Input
           name="name"
