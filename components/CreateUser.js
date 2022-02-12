@@ -3,9 +3,12 @@ import { Form, Message } from "semantic-ui-react";
 import Joi from "joi";
 
 import FormInputPopup from "./FormInputPopup";
+import useUser from "lib/iron-session/useUser";
+import fetchJson from "lib/iron-session/fetchJson";
 
 export default function CreateUser() {
 
+  const { mutateUser } = useUser();
   const userTypeOptions = [
     { key: 1, text: "Student", value: "student" },
     { key: 2, text: "Teacher", value: "teacher" },
