@@ -1,4 +1,8 @@
 import { withSessionApi } from "lib/iron-session/withSession";
+import { createUser, getUserByEmail } from "lib/database";
+import { createErrorPayload, getHttpStatus } from "lib/errors";
+import isEmail from "validator/lib/isEmail";
+import isEmpty from "validator/lib/isEmpty";
 import trim from "validator/lib/trim";
 
 async function validate(name, email, userType) {
