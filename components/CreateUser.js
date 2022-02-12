@@ -37,9 +37,9 @@ export default function CreateUser() {
           icon="user"
           iconPosition="left"
           placeholder="Joe Bloggs"
-          maxLength={500}
+          maxLength={50}
           onChange={handleChange}
-          label={<label>Name <FormInputPopup message="The full name of the user you want to add. Required."/></label>}
+          label={<label>Name <FormInputPopup message="The full name of the user you want to add. Maximum length is 50 characters. Required."/></label>}
           error={formError.name === "" ? false : { content: formError.name }}
           required
           fluid
@@ -52,7 +52,7 @@ export default function CreateUser() {
           placeholder="name@example.com"
           maxLength={500}
           onChange={handleChange}
-          label={<label>Email Address <FormInputPopup message="The email address is a unique identifier. No other user can have the same email address. Required."/></label>}
+          label={<label>Email Address <FormInputPopup message="The email address is a unique identifier. No other user can have the same email address. Maximum length is 500 characters. Required."/></label>}
           error={formError.email === "" ? false : { content: formError.email }}
           required
           fluid
@@ -61,7 +61,7 @@ export default function CreateUser() {
       <Form.Group widths="equal">
         <Form.Select
           name="userType"
-          label={<label>Role <FormInputPopup message="The role of the student. Required."/></label>}
+          label={<label>Role <FormInputPopup message="The role of the user. Required."/></label>}
           options={[
             { key: 1, text: "Student", value: "student" },
             { key: 2, text: "Teacher", value: "teacher" },
