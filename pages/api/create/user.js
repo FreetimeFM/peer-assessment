@@ -57,6 +57,18 @@ export default withSessionApi(async ({req, res}) => {
         validationError: validationError,
       });
 
+    // Attempts to add user to the database.
+    const dbResponse = createUser({
+      name: name,
+      email: email,
+      userType: userType,
+    });
+
+    // If adding user to database failed.
+    if (dbResponse.error) return res.status(getHttpStatus(100)).json(createErrorPayload(100));
+
+    // If all went well.
+    return res.status(200).json({ error: false });
   } catch (error) {
 
     // If something went wrong server side.
