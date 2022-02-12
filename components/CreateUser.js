@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form } from "semantic-ui-react";
+import { Form, Message } from "semantic-ui-react";
 import Joi from "joi";
 
 import FormInputPopup from "./FormInputPopup";
@@ -18,6 +18,11 @@ export default function CreateUser() {
   });
   const [ formError, setFormError ] = useState({});
   const [ formCheck, setFormCheck ] = useState(false);
+  const [ apiMessage, setApiMessage ] = useState({
+    hidden: true,
+    error: false,
+    message: ""
+  })
 
   function handleChange(e, { name, value }) {
     setFormData({
@@ -85,15 +90,23 @@ export default function CreateUser() {
   }
 
   return (
-    <Form loading={formCheck}>
+    <Form loading={formCheck} success={!apiMessage.error} error={apiMessage.error}>
+      <Message content={apiMessage.message} hidden={apiMessage.hidden} error/>
+      <Message content={apiMessage.message} hidden={apiMessage.hidden} success/>
       <Form.Group widths="equal">
         <Form.Input
           name="name"
+          value={formData.name}
           icon="user"
           iconPosition="left"
           maxLength={50}
           onChange={handleChange}
-          label={<label>Name <FormInputPopup message="The full name of the user you want to add. Maximum length is 50 characters. Required."/></label>}
+          label={
+            <label>
+              Name{" "}
+              <FormInputPopup message="The full name of the user you want to add. Maximum length is 50 characters. Required." />
+            </label>
+          }
           error={formError.name ? { content: formError.name } : false}
           required
           fluid
@@ -105,7 +118,12 @@ export default function CreateUser() {
           iconPosition="left"
           maxLength={500}
           onChange={handleChange}
-          label={<label>Email Address <FormInputPopup message="The email address is a unique identifier. No other user can have the same email address. Maximum length is 500 characters. Required."/></label>}
+          label={
+            <label>
+              Email Address{" "}
+              <FormInputPopup message="The email address is a unique identifier. No other user can have the same email address. Maximum length is 500 characters. Required." />
+            </label>
+          }
           error={formError.email ? { content: formError.email } : false}
           required
           fluid
@@ -114,7 +132,11 @@ export default function CreateUser() {
       <Form.Group widths="equal">
         <Form.Select
           name="userType"
-          label={<label>Role <FormInputPopup message="The role of the user. Required."/></label>}
+          label={
+            <label>
+              Role <FormInputPopup message="The role of the user. Required." />
+            </label>
+          }
           options={userTypeOptions}
           defaultValue="student"
           onChange={handleChange}
@@ -128,5 +150,5 @@ export default function CreateUser() {
         fluid
       />
     </Form>
-  )
+  );
 }
