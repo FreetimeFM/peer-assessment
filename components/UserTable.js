@@ -74,6 +74,7 @@ export default function UserTable({ user }) {
       <Table attached="bottom" celled selectable striped>
         <Table.Header>
           <Table.Row>
+            <Table.HeaderCell />
             <Table.HeaderCell content="Name" />
             <Table.HeaderCell content="Email Address" />
             <Table.HeaderCell width={3} content="Role" />
@@ -81,12 +82,12 @@ export default function UserTable({ user }) {
         </Table.Header>
         <Table.Body>
           {userList.map((value, index) => {
-            return <Row key={index} name={value.name} email={value.email} userType={value.userType} onClick={(_e) => handleRowClick(index)} />
+            return <Row key={index} index={index + 1} name={value.name} email={value.email} userType={value.userType} onClick={(_e) => handleRowClick(index)} />
           })}
         </Table.Body>
         <Table.Footer fullWidth>
           <Table.Row textAlign="center">
-          <Table.HeaderCell colSpan="3">
+          <Table.HeaderCell colSpan="4">
             <Button
               size="small"
               content={ afterRefID === "" ? "No more users to fetch" : "Fetch more users" }
@@ -103,9 +104,10 @@ export default function UserTable({ user }) {
   );
 }
 
-function Row({ name, email, userType, onClick }) {
+function Row({ index, name, email, userType, onClick }) {
   return (
     <Table.Row onClick={onClick} style={{ cursor: "pointer" }} >
+      <Table.Cell content={index} width="1" />
       <Table.Cell content={name} />
       <Table.Cell content={email} />
       <Table.Cell content={userType} style={{ textTransform: "capitalize" }} />
