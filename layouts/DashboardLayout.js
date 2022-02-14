@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { Sidebar } from "semantic-ui-react";
+import { Segment, Sidebar } from "semantic-ui-react";
 
 import Metadata from "../components/Metadata";
 import DashboardSidebar from "../components/DashboardSidebar";
@@ -36,9 +36,11 @@ export default function DashboardLayout({ children, user }) {
       <DashboardSidebar user={user} currentPage={currentPage.path} pages={pages} device={device} />
       <Sidebar.Pusher style={{ width: "calc(100% - 260px)", padding: "10px 20px" }}>
         <PageHeader heading={currentPage.name} subHeading={currentPage.subHeading} iconName={currentPage.iconName} />
-        <main>
-          {children}
-        </main>
+        <Segment attached="bottom">
+          <main>
+            {children}
+          </main>
+        </Segment>
       </Sidebar.Pusher>
     </>
   );
