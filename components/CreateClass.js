@@ -3,15 +3,21 @@ import { Form, Message } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
-import useStorage from "../lib/useStorage.ts";
+import useStorage from "lib/useStorage.ts";
 
 export default function CreateClass({ user }) {
 
   const storage = useStorage();
+  const [ loading, setLoading ] = useState(false);
   const [ studentsDropdown, setStudentsDropdown ] = useState(storage.getItem("studentOptions") ? JSON.parse(storage.getItem("studentOptions")) : []);
   const [ teachersDropdown, setTeachersDropdown ] = useState(storage.getItem("teacherOptions") ? JSON.parse(storage.getItem("teacherOptions")) : []);
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
-  const [ error, setError ] = useState("");
+  const [ fetchError, setFetchError ] = useState("");
+  const [ formData, setFormData ] = useState({
+    name: "",
+    teachers: [],
+    students: []
+  })
 
   useEffect(() => {
     fetchStudentsAndTeachers();
@@ -19,6 +25,7 @@ export default function CreateClass({ user }) {
 
   async function fetchStudentsAndTeachers() {
     if (fetchedUsers) return;
+    setLoading(true);
     let response;
 
     try {
@@ -34,7 +41,7 @@ export default function CreateClass({ user }) {
 
         if (response.error) {
           console.error("Error fetching teachers:", response);
-          setError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
+          setFetchError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
           return;
         }
 
@@ -53,7 +60,7 @@ export default function CreateClass({ user }) {
 
         if (response.error) {
           console.error("Error fetching students:", response);
-          setError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
+          setFetchError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
           return;
         }
 
@@ -63,9 +70,10 @@ export default function CreateClass({ user }) {
     } catch (error) {
       console.error("response", response);
       console.error("error", error);
-      setError("An unknown error has occured. Please contact your administrator and check the console/logs.");
+      setFetchError("An unknown error has occured. Please contact your administrator and check the console/logs.");
     }
 
+    setLoading(false);
     setFetchedUsers(true);
   }
 
@@ -88,15 +96,37 @@ export default function CreateClass({ user }) {
     teacher ? storage.setItem("teacherOptions", JSON.stringify(options)) : storage.setItem("studentOptions", JSON.stringify(options))
   }
 
+  function handleChange(_e, { name, value }) {
+    console.log(name, value);
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+
+
+    setFormData({
+      name: "",
+      teachers: [],
+      students: []
+    })
+  }
+
   return (
-    <Form error={error !== ""}>
-      <Message content={error} error/>
+    <Form onSubmit={handleSubmit} error={fetchError !== ""} loading={loading}>
+      <Message content={fetchError} error/>
       <Message content="test" success/>
       <Form.Group widths="equal">
         <Form.Input
           name="name"
           icon="user"
           label={<label>Class name <FormInputPopup message="The name of the class that will be shown to students and lecturers. Required." /></label>}
+          onChange={handleChange}
+          value={formData.name}
           iconPosition="left"
           placeholder="Required."
           maxLength={70}
@@ -106,8 +136,12 @@ export default function CreateClass({ user }) {
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Dropdown
+          name="teachers"
           label={<label>Teacher(s) <FormInputPopup message="Select the teachers who will have access to this class." /></label>}
           options={teachersDropdown}
+          onChange={handleChange}
+          value={formData.teachers}
+          placeholder="Required."
           fluid
           multiple
           search
@@ -118,8 +152,12 @@ export default function CreateClass({ user }) {
       <Message content="You are automatically included as a teacher. As a result, your name will not be shown in the list." hidden={user.userType === "admin"} info/>
       <Form.Group widths="equal">
         <Form.Dropdown
+          name="students"
           label={<label>Student(s) <FormInputPopup message="Select the students who will have access to this class." /></label>}
           options={studentsDropdown}
+          onChange={handleChange}
+          value={formData.students}
+          placeholder="Required."
           fluid
           multiple
           search
@@ -129,7 +167,7 @@ export default function CreateClass({ user }) {
       </Form.Group>
       <Form.Button
         content="Submit"
-        disabled={error !== ""}
+        disabled={fetchError !== ""}
         primary
       />
     </Form>
