@@ -12,7 +12,7 @@ export default function CreateClass({ user }) {
   const [ studentsDropdown, setStudentsDropdown ] = useState(storage.getItem("studentOptions") ? JSON.parse(storage.getItem("studentOptions")) : []);
   const [ teachersDropdown, setTeachersDropdown ] = useState(storage.getItem("teacherOptions") ? JSON.parse(storage.getItem("teacherOptions")) : []);
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
-  const [ fetchError, setFetchError ] = useState("");
+  const [ error, setError ] = useState("");
   const [ formData, setFormData ] = useState({
     name: "",
     teachers: [],
@@ -41,7 +41,7 @@ export default function CreateClass({ user }) {
 
         if (response.error) {
           console.error("Error fetching teachers:", response);
-          setFetchError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
+          setError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
           return;
         }
 
@@ -60,7 +60,7 @@ export default function CreateClass({ user }) {
 
         if (response.error) {
           console.error("Error fetching students:", response);
-          setFetchError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
+          setError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
           return;
         }
 
@@ -70,7 +70,7 @@ export default function CreateClass({ user }) {
     } catch (error) {
       console.error("response", response);
       console.error("error", error);
-      setFetchError("An unknown error has occured. Please contact your administrator and check the console/logs.");
+      setError("An unknown error has occured while fetching students and teachers. Please contact your administrator and check the console/logs.");
     }
 
     setLoading(false);
@@ -117,9 +117,9 @@ export default function CreateClass({ user }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit} error={fetchError !== ""} loading={loading}>
-      <Message content={fetchError} error/>
-      <Message content="test" success/>
+    <Form id="form" onSubmit={handleSubmit} error={error !== ""} loading={loading}>
+      <Message content={error} error/>
+      <Message content="Successfully submitted." success/>
       <Form.Group widths="equal">
         <Form.Input
           name="name"
@@ -167,7 +167,6 @@ export default function CreateClass({ user }) {
       </Form.Group>
       <Form.Button
         content="Submit"
-        disabled={fetchError !== ""}
         primary
       />
     </Form>
