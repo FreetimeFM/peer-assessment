@@ -1,53 +1,66 @@
 import { useState, useEffect } from "react";
-import useSWR from "swr";
-import { Segment, Table, Button, } from "semantic-ui-react";
+import { Table, Button, Message } from "semantic-ui-react";
 
-import Placeholder from "./Placeholder";
-import Link from "next/link";
+import fetchJson from "lib/iron-session/fetchJson";
 
-export default function UserTable({ user, result }) {
+export default function UserTable({ user }) {
 
-  const { error, list, afterCursor } = result;
+  const [ fetching, setFetching ] = useState(true);
+  const [ afterRefID, setAfterRefID ] = useState("");
+  const [ error, setError ] = useState("");
+  const [ userList, setUserList ] = useState([]);
 
-  if (error) return <Placeholder iconName="close" message="Cannot fetch details." extraContent="There has been an error fetching the list of users." />
+  useEffect(() => {
+    getUserList();
+  }, []);
 
-  const [ fetching, setFetching ] = useState(false);
-  const [ disableLoadMore, setDisableLoadMore ] = useState(true);
-  const [ userList, setUserList ] = useState([
-    {
-      refID: '323029331001475264',
-      name: 'Administrator',
-      email: 'admin@example.com',
-      userType: 'admin'
-    },
-    {
-      refID: '323037490948604096',
-      name: 'Brendan Cooper',
-      email: 'b.cooper@example.com',
-      userType: 'teacher'
-    },
-    {
-      refID: '323037568090243264',
-      name: 'Laura Sharp',
-      email: 'l.sharp@example.com',
-      userType: 'student'
-    },
-    {
-      refID: '323043769326764232',
-      name: 'Elijah Lynn',
-      email: 'e.lynn@example.com',
-      userType: 'student'
+  async function getUserList(loadMore = false) {
+    if (!loadMore && userList.length >= 1) return;
+
+    setFetching(true);
+    const sendAfterRefID = afterRefID === "" ? undefined : afterRefID;
+    try {
+      const response = await fetchJson("/api/get_users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ size: undefined, afterRefID: sendAfterRefID })
+      });
+
+      console.log(response);
+
+      if (response.error) {
+        console.error("Server response", response);
+        setError("There has been an error fetching the list of users. Please read the console or logs.");
+      }
+
+      if (!response.result.list) {
+        setAfterRefID("");
+        return;
+      }
+
+      let list = response.result.list;
+
+      if (response.result.afterCursor) {
+        setAfterRefID(response.result.afterCursor.refID);
+      } else {
+        setAfterRefID("");
+      }
+
+      setUserList(userList.concat(list));
+    } catch (error) {
+      console.error(error);
+      setError("There has been an error fetching the list of users. Please read the console or logs.");
     }
-  ]);
 
-  function getUserList() {
+    setFetching(false);
+  }
 
-    // const { data, error } = useSWR(apiRoute, fetch(apiRoute, {
-    //   method: "POST",
-    //   body: JSON.stringify({ user: user })
-    // }).then((res) => res.json()))
-
-    // console.log(data, "data", error, "error");
+  function handleButtonClick(_e) {
+    if (afterRefID === "" || error !== "") return;
+    getUserList(true);
   }
 
   function handleRowClick(index) {
@@ -56,15 +69,14 @@ export default function UserTable({ user, result }) {
 
   return (
     <>
-      <Segment attached="top">
-        <Link href="/dashboard/create/user"><Button content="Add user" /></Link>
-      </Segment>
-      <Table attached="bottom" celled selectable striped sortable >
+      <Message content={error} hidden={error === ""} error/>
+      <Message content="Fetching users. Please wait." hidden={!fetching} info/>
+      <Table attached="bottom" celled selectable striped>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell content="Name" />
             <Table.HeaderCell content="Email Address" />
-            <Table.HeaderCell width={3} content="Type" />
+            <Table.HeaderCell width={3} content="Role" />
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -77,8 +89,9 @@ export default function UserTable({ user, result }) {
           <Table.HeaderCell colSpan="3">
             <Button
               size="small"
-              content={ disableLoadMore ? "No more users" : "Load more" }
-              disabled={disableLoadMore}
+              content={ afterRefID === "" ? "No more users to fetch" : "Fetch more users" }
+              onClick={handleButtonClick}
+              disabled={afterRefID === ""}
               fluid
               loading={fetching}
             />
@@ -92,10 +105,10 @@ export default function UserTable({ user, result }) {
 
 function Row({ name, email, userType, onClick }) {
   return (
-    <Table.Row onClick={onClick} >
+    <Table.Row onClick={onClick} style={{ cursor: "pointer" }} >
       <Table.Cell content={name} />
       <Table.Cell content={email} />
-      <Table.Cell content={userType} />
+      <Table.Cell content={userType} style={{ textTransform: "capitalize" }} />
     </Table.Row>
   )
 }
