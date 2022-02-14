@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Form, Message } from "semantic-ui-react";
+import Joi from "joi";
 
 import fetchJson from "lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
@@ -17,7 +18,12 @@ export default function CreateClass({ user }) {
     name: "",
     teachers: [],
     students: []
-  })
+  });
+  const [ formError, setFormError ] = useState({
+    name: "",
+    teachers: "",
+    students: ""
+  });
 
   useEffect(() => {
     fetchStudentsAndTeachers();
@@ -97,16 +103,66 @@ export default function CreateClass({ user }) {
   }
 
   function handleChange(_e, { name, value }) {
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value
     });
   }
 
+  // Uses joi to validate form details.
+  async function validate() {
+
+    let errors = {
+      name: "",
+      teachers: "",
+      students: ""
+    };
+
+    const nameCheck = Joi.string()
+    .required()
+    .trim()
+    .max(70)
+    .messages({
+      "string.max": "Too long",
+      "string.empty": "Cannot be empty"
+    })
+    .validate(formData.name);
+
+    const teachersCheck = Joi.array()
+    .min(1)
+    .messages({
+      "array.min": "Cannot be empty"
+    })
+    .validate(formData.teachers);
+
+    const studentsCheck = Joi.array()
+    .min(1)
+    .messages({
+      "array.min": "Cannot be empty"
+    })
+    .validate(formData.students);
+
+    // Sets the error messages.
+    if (nameCheck.error) errors = { name: nameCheck.error.details[0].message };
+    if (teachersCheck.error) errors = { ...errors, teachers: teachersCheck.error.details[0].message };
+    if (studentsCheck.error) errors = { ...errors, students: studentsCheck.error.details[0].message };
+    console.log(errors);
+    setFormError(errors);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
+    setError("");
+
+    await validate();
+
+    for (const field in formError) {
+      if (formError[field] !== "") {
+        setLoading(false);
+        return;
+      }
+    }
 
     try {
 
@@ -148,11 +204,10 @@ export default function CreateClass({ user }) {
       <Form.Group widths="equal">
         <Form.Input
           name="name"
-          icon="user"
           label={<label>Class name <FormInputPopup message="The name of the class that will be shown to students and lecturers. Required." /></label>}
           onChange={handleChange}
           value={formData.name}
-          iconPosition="left"
+          error={formError.name === "" ? null : formError.name}
           placeholder="Required."
           maxLength={70}
           required
@@ -166,6 +221,7 @@ export default function CreateClass({ user }) {
           options={teachersDropdown}
           onChange={handleChange}
           value={formData.teachers}
+          error={formError.teachers === "" ? null : formError.teachers}
           placeholder="Required."
           fluid
           multiple
@@ -182,6 +238,7 @@ export default function CreateClass({ user }) {
           options={studentsDropdown}
           onChange={handleChange}
           value={formData.students}
+          error={formError.students === "" ? null : formError.students}
           placeholder="Required."
           fluid
           multiple
