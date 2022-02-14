@@ -106,14 +106,39 @@ export default function CreateClass({ user }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
 
+    try {
 
+      const response = await fetchJson("/api/create/class", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ ...formData }),
+      })
 
-    setFormData({
-      name: "",
-      teachers: [],
-      students: []
-    })
+      if (response.error) {
+        console.error(response);
+        setError("An unknown error has occured while submitting. Please contact your administrator and check the console/logs.");
+        return;
+      }
+
+      setFormData({
+        name: "",
+        teachers: [],
+        students: []
+      });
+      document.getElementById("form").classList.add("success");
+
+    } catch (error) {
+      console.error("response", response);
+      console.error("error", error);
+      setError("An unknown error has occured while submitting. Please contact your administrator and check the console/logs.");
+    }
+
+    setLoading(false);
   }
 
   return (
