@@ -3,7 +3,7 @@ import { Table, Button, Message } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
 
-export default function UserTable({ user }) {
+export default function UserTable() {
 
   const [ fetching, setFetching ] = useState(true);
   const [ afterRefID, setAfterRefID ] = useState("");
