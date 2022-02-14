@@ -1,13 +1,15 @@
-import { useState } from "react";
-import fetchJson from "lib/iron-session/fetchJson";
+import { useState, useEffect } from "react";
 import { Form, Message } from "semantic-ui-react";
+
+import fetchJson from "lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
-import { useEffect } from "react";
+import useStorage from "../lib/useStorage.ts";
 
 export default function CreateClass({ user }) {
 
-  const [ studentsDropdown, setStudentsDropdown ] = useState([]);
-  const [ teachersDropdown, setTeachersDropdown ] = useState([]);
+  const storage = useStorage();
+  const [ studentsDropdown, setStudentsDropdown ] = useState(storage.getItem("studentOptions") ? JSON.parse(storage.getItem("studentOptions")) : []);
+  const [ teachersDropdown, setTeachersDropdown ] = useState(storage.getItem("teacherOptions") ? JSON.parse(storage.getItem("teacherOptions")) : []);
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
   const [ error, setError ] = useState("");
 
@@ -20,39 +22,43 @@ export default function CreateClass({ user }) {
     let response;
 
     try {
-      response = await fetchJson("/api/get_users_by_usertype", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ userType: "teacher" })
-      })
+      if (teachersDropdown.length === 0) {
+        response = await fetchJson("/api/get_users_by_usertype", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ userType: "teacher" })
+        })
 
-      if (response.error) {
-        console.error("Error fetching teachers:", response);
-        setError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
-        return;
+        if (response.error) {
+          console.error("Error fetching teachers:", response);
+          setError("There has been an error fetching teachers. Please contact your administrator and check the console/logs.");
+          return;
+        }
+
+        handleResponseData(response.result, true);
       }
 
-      handleResponseData(response.result, true);
+      if (studentsDropdown.length === 0) {
+        response = await fetchJson("/api/get_users_by_usertype", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ userType: "student" })
+        })
 
-      response = await fetchJson("/api/get_users_by_usertype", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ userType: "student" })
-      })
+        if (response.error) {
+          console.error("Error fetching students:", response);
+          setError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
+          return;
+        }
 
-      if (response.error) {
-        console.error("Error fetching students:", response);
-        setError("There has been an error fetching students. Please contact your administrator and check the console/logs.");
-        return;
+        handleResponseData(response.result);
       }
-
-      handleResponseData(response.result);
 
     } catch (error) {
       console.error("response", response);
@@ -73,11 +79,19 @@ export default function CreateClass({ user }) {
       }
     });
 
-    teacher ? setTeachersDropdown(options) : setStudentsDropdown(options);
+    if (teacher) {
+      setTeachersDropdown(options)
+    } else {
+      setStudentsDropdown(options);
+    }
+
+    teacher ? storage.setItem("teacherOptions", JSON.stringify(options)) : storage.setItem("studentOptions", JSON.stringify(options))
   }
 
   return (
-    <Form>
+    <Form error={error !== ""}>
+      <Message content={error} error/>
+      <Message content="test" success/>
       <Form.Group widths="equal">
         <Form.Input
           name="name"
@@ -113,7 +127,11 @@ export default function CreateClass({ user }) {
           required
         />
       </Form.Group>
-      <Form.Button content="Submit" primary/>
+      <Form.Button
+        content="Submit"
+        disabled={error !== ""}
+        primary
+      />
     </Form>
   )
 }
