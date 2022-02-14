@@ -1,0 +1,26 @@
+import { withSessionApi } from "lib/iron-session/withSession";
+import { createErrorPayload, getHttpStatus } from "lib/errors";
+import { getUsers } from "lib/database";
+import isInt from "validator/lib/isInt";
+
+export default withSessionApi(async ({ req, res }) => {
+
+  if (req.session.user.userType !== "admin") return res.status(getHttpStatus(303)).json(createErrorPayload(303));
+
+  let { size, afterRefID } = req.body;
+
+  if (size) {
+    if (!isInt(size.toString())) size = undefined;
+  }
+
+  if (afterRefID) {
+    if (!isInt(afterRefID)) afterRefID = undefined;
+  }
+
+  const queryResult = await getUsers(size, afterRefID);
+
+  console.log(queryResult);
+
+  res.status(200).json({ error: false, result: queryResult });
+
+})
