@@ -7,7 +7,7 @@ export default withSessionApi(async ({ req, res }) => {
   try {
     if (req.session.user.userType !== "admin") return res.status(getHttpStatus(303)).json(createErrorPayload(303));
 
-    const { size, afterRefID } = req.body;
+    let { size, afterRefID } = req.body;
 
     if (size) {
       if (!isInt(size.toString())) size = undefined;
@@ -18,7 +18,6 @@ export default withSessionApi(async ({ req, res }) => {
     }
 
     res.status(200).json({ ...await getUsers(size, afterRefID) });
-
   } catch (error) {
     res.status(getHttpStatus(300)),json(createErrorPayload(300));
   }
