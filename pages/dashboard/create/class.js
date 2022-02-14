@@ -1,9 +1,13 @@
 import DashboardLayout from "layouts/DashboardLayout";
+import CreateClass from "components/CreateClass";
 import  { withSessionSsr } from "lib/iron-session/withSession";
 
 export default function ({ user }) {
 
   return (
+    <DashboardLayout user={user}>
+      <CreateClass />
+    </DashboardLayout>
   )
 }
 
