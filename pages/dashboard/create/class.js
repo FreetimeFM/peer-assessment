@@ -6,7 +6,7 @@ export default function ({ user }) {
 
   return (
     <DashboardLayout user={user}>
-      <CreateClass />
+      <CreateClass user={user} />
     </DashboardLayout>
   )
 }
