@@ -14,6 +14,7 @@ export default function CreateClass({ user }) {
   const [ teachersDropdown, setTeachersDropdown ] = useState(storage.getItem("teacherOptions") ? JSON.parse(storage.getItem("teacherOptions")) : []);
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
   const [ error, setError ] = useState("");
+  const [ success, setSuccess ] = useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
     teachers: [],
@@ -146,7 +147,6 @@ export default function CreateClass({ user }) {
     if (nameCheck.error) errors = { name: nameCheck.error.details[0].message };
     if (teachersCheck.error) errors = { ...errors, teachers: teachersCheck.error.details[0].message };
     if (studentsCheck.error) errors = { ...errors, students: studentsCheck.error.details[0].message };
-    console.log(errors);
     setFormError(errors);
   }
 
@@ -154,6 +154,7 @@ export default function CreateClass({ user }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     await validate();
 
@@ -186,7 +187,8 @@ export default function CreateClass({ user }) {
         teachers: [],
         students: []
       });
-      document.getElementById("form").classList.add("success");
+
+      setSuccess(true);
 
     } catch (error) {
       console.error("response", response);
@@ -198,7 +200,7 @@ export default function CreateClass({ user }) {
   }
 
   return (
-    <Form id="form" onSubmit={handleSubmit} error={error !== ""} loading={loading}>
+    <Form id="form" onSubmit={handleSubmit} error={error !== ""} loading={loading} success={success} >
       <Message content={error} error/>
       <Message content="Successfully submitted." success/>
       <Form.Group widths="equal">
