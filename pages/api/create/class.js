@@ -10,6 +10,8 @@ export default withSessionApi(async ({req, res}) => {
     const { name, teachers, students } = req.body;
 
     if (!name || !teachers || !students) return res.status(getHttpStatus(301)).json(createErrorPayload(301));
+    if (name.length === 0 || name.length > 70) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
+    if (typeof teachers !== "object" || typeof students !== "object") return res.status(getHttpStatus(150)).json(createErrorPayload(150));
 
     await createClass(name, teachers, students);
 
