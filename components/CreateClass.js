@@ -191,7 +191,6 @@ export default function CreateClass({ user }) {
       setSuccess(true);
 
     } catch (error) {
-      console.error("response", response);
       console.error("error", error);
       setError("An unknown error has occured while submitting. Please contact your administrator and check the console/logs.");
     }
