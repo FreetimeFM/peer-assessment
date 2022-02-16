@@ -17,7 +17,7 @@ export default function CreateClass({ user }) {
   const [ success, setSuccess ] = useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
-    teachers: [],
+    teachers: "",
     students: []
   });
   const [ formError, setFormError ] = useState({
@@ -113,6 +113,7 @@ export default function CreateClass({ user }) {
   // Uses joi to validate form details.
   async function validate() {
 
+    let validationSuccess = true;
     let errors = {
       name: "",
       teachers: "",
@@ -129,10 +130,10 @@ export default function CreateClass({ user }) {
     })
     .validate(formData.name);
 
-    const teachersCheck = Joi.array()
-    .max(1)
+    const teachersCheck = Joi.string()
+    .required()
     .messages({
-      "array.max": "Only 1 teacher allowed"
+      "string.empty": "Cannot be empty"
     })
     .validate(formData.teachers);
 
@@ -144,10 +145,28 @@ export default function CreateClass({ user }) {
     .validate(formData.students);
 
     // Sets the error messages.
-    if (nameCheck.error) errors = { name: nameCheck.error.details[0].message };
-    if (teachersCheck.error) errors = { ...errors, teachers: teachersCheck.error.details[0].message };
-    if (studentsCheck.error) errors = { ...errors, students: studentsCheck.error.details[0].message };
+    if (nameCheck.error) {
+      errors = { name: nameCheck.error.details[0].message };
+      validationSuccess = false;
+    }
+
+    if (teachersCheck.error) {
+      errors = {
+        ...errors,
+        teachers: teachersCheck.error.details[0].message
+      };
+      validationSuccess = false;
+    }
+
+    if (studentsCheck.error) {
+      errors = {
+        ...errors,
+        students: studentsCheck.error.details[0].message
+      };
+      validationSuccess = false;
+    }
     setFormError(errors);
+    return validationSuccess
   }
 
   async function handleSubmit(e) {
@@ -156,19 +175,11 @@ export default function CreateClass({ user }) {
     setError("");
     setSuccess(false);
 
-    await validate();
-
-    for (const field in formError) {
-      if (formError[field] !== "") {
-        setLoading(false);
-        return;
-      }
+    if (!await validate()) {
+      setLoading(false);
+      console.log("false")
+      return;
     }
-
-    setFormData({
-      ...formData,
-      teachers: formData.teachers[0]
-    })
 
     try {
 
