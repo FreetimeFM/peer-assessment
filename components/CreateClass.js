@@ -130,9 +130,9 @@ export default function CreateClass({ user }) {
     .validate(formData.name);
 
     const teachersCheck = Joi.array()
-    .min(1)
+    .max(1)
     .messages({
-      "array.min": "Cannot be empty"
+      "array.max": "Only 1 teacher allowed"
     })
     .validate(formData.teachers);
 
@@ -164,6 +164,11 @@ export default function CreateClass({ user }) {
         return;
       }
     }
+
+    setFormData({
+      ...formData,
+      teachers: formData.teachers[0]
+    })
 
     try {
 
@@ -225,7 +230,6 @@ export default function CreateClass({ user }) {
           error={formError.teachers === "" ? null : formError.teachers}
           placeholder="Required."
           fluid
-          multiple
           search
           selection
           required
