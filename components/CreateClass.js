@@ -10,8 +10,8 @@ export default function CreateClass({ user }) {
 
   const storage = useStorage();
   const [ loading, setLoading ] = useState(false);
-  const [ studentsDropdown, setStudentsDropdown ] = useState(storage.getItem("studentOptions") ? JSON.parse(storage.getItem("studentOptions")) : []);
-  const [ teachersDropdown, setTeachersDropdown ] = useState(storage.getItem("teacherOptions") ? JSON.parse(storage.getItem("teacherOptions")) : []);
+  const [ studentsDropdown, setStudentsDropdown ] = useState([]);
+  const [ teachersDropdown, setTeachersDropdown ] = useState("");
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
   const [ error, setError ] = useState("");
   const [ success, setSuccess ] = useState(false);
@@ -94,13 +94,7 @@ export default function CreateClass({ user }) {
       }
     });
 
-    if (teacher) {
-      setTeachersDropdown(options)
-    } else {
-      setStudentsDropdown(options);
-    }
-
-    teacher ? storage.setItem("teacherOptions", JSON.stringify(options)) : storage.setItem("studentOptions", JSON.stringify(options))
+    teacher ? setTeachersDropdown(options) : setStudentsDropdown(options);
   }
 
   function handleChange(_e, { name, value }) {
