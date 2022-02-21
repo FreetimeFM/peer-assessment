@@ -15,8 +15,31 @@ export default function CreateAssessment({ userRef }) {
       ...formData,
       [name]: value
     })
-}
+  }
 
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    console.log(formData);
+
+    try {
+      const response = await fetchJson("/api/create/assessment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ ...formData }),
+      });
+
+      if (!response || !response?.error) console.error("failed");
+      else console.info("success");
+
+    } catch (e) {
+      console.error(e);
+    }
+
+  }
 
   return (
     <Segment>
