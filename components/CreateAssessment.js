@@ -131,3 +131,18 @@ function StageOne({ updateForm, onSubmit }) {
   )
 }
 
+function StageTwo({ updateForm, onSubmit }) {
+
+  return (
+    <Form onSubmit={onSubmit} >
+
+
+
+
+      <Form.Group widths="equal">
+        <Form.Button content="Back" size="large" fluid/>
+        <Form.Button content="Next" size="large" primary fluid/>
+      </Form.Group>
+    </Form>
+  )
+}
