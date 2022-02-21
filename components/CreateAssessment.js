@@ -96,7 +96,7 @@ export default function CreateAssessment({ userRef }) {
           />
         </Form.Group>
 
-        <Form.Group widths="equal" >
+        {/* <Form.Group widths="equal" >
           <Form.Input
             name="assessmentFiles"
             label={<label>Assessment Files <FormInputPopup message="These files will be available to students in the assessment stage."/></label>}
@@ -113,7 +113,7 @@ export default function CreateAssessment({ userRef }) {
             multiple
             required
           />
-        </Form.Group>
+        </Form.Group> */}
 
         <Form.Button content="Submit" size="large" primary fluid/>
       </Form>
