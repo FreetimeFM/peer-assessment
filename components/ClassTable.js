@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { Table, Message } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
-import useStorage from "lib/useStorage.ts";
 import Placeholder from "./Placeholder";
 
 export default function ClassTable({ user }) {
 
   if (user.userType !== "admin") return <Placeholder iconName="time" message="Not available." extraContent="This feature hasn't been implemented yet." />
 
-  const storage = useStorage();
   const [ classList, setClassList ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({ fetching: false, fetched: false });
   const [ error, setError ] = useState("");
@@ -19,21 +17,10 @@ export default function ClassTable({ user }) {
   }, [])
 
   async function fetchClassList() {
-    if (fetchOptions.fetched || classList.length >= 1) return;
-    setFetchOptions({ ...fetchOptions, fetching: true });
-
-    if (storage.getItem("classes") !== undefined) {
-      const list = JSON.parse(storage.getItem("classes"));
-      if (list === undefined || list.length === 0) {
-        console.log("run")
-        setClassList(list);
-        setFetchOptions({ fetched: true, fetching: false });
-        return;
-      }
-    }
+    if (fetchOptions.fetched) return;
+    setFetchOptions({ fetched: false, fetching: true });
 
     try {
-
       const response = await fetchJson("/api/get_classes", {
         method: "POST",
         headers: {
