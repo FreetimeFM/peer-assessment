@@ -15,7 +15,7 @@ const useStorage = (): UseStorageReturnValue => {
   const isBrowser: boolean = ((): boolean => typeof window !== 'undefined')();
 
   const getItem = (key: string, type?: StorageType): string => {
-    return isBrowser ? window[storageType(type)][key] : '';
+    return isBrowser ? window[storageType(type)][key] : undefined;
   };
 
   const setItem = (key: string, value: string, type?: StorageType): boolean => {
