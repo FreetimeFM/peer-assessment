@@ -11,7 +11,7 @@ export default function CreateClass({ user }) {
   const storage = useStorage();
   const [ loading, setLoading ] = useState(false);
   const [ studentsDropdown, setStudentsDropdown ] = useState([]);
-  const [ teachersDropdown, setTeachersDropdown ] = useState("");
+  const [ teachersDropdown, setTeachersDropdown ] = useState([]);
   const [ fetchedUsers, setFetchedUsers ] = useState(false);
   const [ error, setError ] = useState("");
   const [ success, setSuccess ] = useState(false);
