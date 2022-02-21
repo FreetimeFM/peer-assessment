@@ -6,6 +6,7 @@ import FormInputPopup from "./FormInputPopup";
 
 export default function CreateAssessment({ userRef }) {
 
+  const [ stage, setStage ] = useState(1);
   const [ formData, setFormData ] = useState({
     lecturerRef: userRef
   });
@@ -17,7 +18,11 @@ export default function CreateAssessment({ userRef }) {
     })
   }
 
-  async function handleSubmit(e) {
+  function handleSubmit() {
+    setStage(stage + 1);
+  }
+
+  async function submitForm(e) {
     e.preventDefault();
 
     console.log(formData);
@@ -38,11 +43,18 @@ export default function CreateAssessment({ userRef }) {
     } catch (e) {
       console.error(e);
     }
-
   }
 
+  switch (stage) {
+
+    default:
+      return <StageOne updateForm={updateForm} onSubmit={handleSubmit} />
+  }
+}
+
+function StageOne({ updateForm, onSubmit }) {
   return (
-    <Form onSubmit={handleSubmit} >
+    <Form onSubmit={onSubmit} >
       <Form.Group widths="equal" >
         <Form.Input
           name="name"
@@ -114,7 +126,8 @@ export default function CreateAssessment({ userRef }) {
         />
       </Form.Group> */}
 
-      <Form.Button content="Submit" size="large" primary fluid/>
+      <Form.Button content="Next" size="large" primary fluid/>
     </Form>
-  );
+  )
 }
+
