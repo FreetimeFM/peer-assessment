@@ -60,8 +60,8 @@ export default function ClassTable({ user }) {
 
   return (
     <>
-      <Message error/>
-      <Message content="Fetching users. Please wait." info/>
+      <Message content={error} hidden={error === ""} error/>
+      <Message content="Fetching classes. Please wait." hidden={!fetchOptions.fetching} info/>
       <Table attached="bottom" celled selectable striped>
         <Table.Header>
           <Table.Row>
