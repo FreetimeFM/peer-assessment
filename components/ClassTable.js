@@ -47,7 +47,7 @@ export default function ClassTable({ user }) {
         console.error(error);
         setError(response?.clientMessage);
       } else {
-        storage.setItem("classes", JSON.stringify(response.result.data));
+        parseClassListData(response.result.data);
       }
 
     } catch (error) {
@@ -56,6 +56,16 @@ export default function ClassTable({ user }) {
     }
 
     setFetchOptions({ fetched: true, fetching: false });
+  }
+
+  function parseClassListData(list) {
+    setClassList(list.map(element => {
+      return {
+        classRef: element[0],
+        name: element[1],
+        teacher: element[2]
+      }
+    }))
   }
 
   return (
@@ -67,13 +77,27 @@ export default function ClassTable({ user }) {
           <Table.Row>
             <Table.HeaderCell />
             <Table.HeaderCell content="Name" />
-            <Table.HeaderCell content="Teachers" />
+            <Table.HeaderCell content="Teacher" />
           </Table.Row>
         </Table.Header>
         <Table.Body>
-
+          {
+            classList.map((element, index) => {
+              return <Row key={index} index={index + 1} name={element.name} teacher={element.teacher} />
+            })
+          }
         </Table.Body>
       </Table>
     </>
+  )
+}
+
+function Row({ index, name, teacher }) {
+  return (
+    <Table.Row>
+      <Table.Cell content={index} />
+      <Table.Cell content={name} />
+      <Table.Cell content={teacher} />
+    </Table.Row>
   )
 }
