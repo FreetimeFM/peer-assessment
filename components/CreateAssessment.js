@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Segment } from "semantic-ui-react";
+import { Form, Card, Header } from "semantic-ui-react";
 
 import fetchJson from "../lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
@@ -46,6 +46,8 @@ export default function CreateAssessment({ userRef }) {
   }
 
   switch (stage) {
+    case 2:
+      return <StageTwo onSubmit={handleSubmit} />
 
     default:
       return <StageOne updateForm={updateForm} onSubmit={handleSubmit} />
@@ -133,6 +135,47 @@ function StageOne({ updateForm, onSubmit }) {
 
 function StageTwo({ updateForm, onSubmit }) {
 
+  const questionTypes = [{
+    key: 0,
+    text: "Short Text",
+    value: "short-text",
+    content: (
+      <Header icon="font" content="Short text" subheader="Students answer using text limited to a single line. Maximum 500 characters." />
+    )
+  },
+  {
+    key: 1,
+    text: "Long Text",
+    value: "long-text",
+    content: (
+      <Header icon="list" content="Long text" subheader="Students answer using text that can span multiple lines. Maximum 5000 characters." />
+    )
+  },
+  {
+    key: 2,
+    text: "Single Selection",
+    value: "dropdown",
+    content: (
+      <Header icon="caret square down" content="Single Selection" subheader="Students choose one answer out of many options." />
+    )
+  },
+  {
+    key: 3,
+    text: "Multiple Selection",
+    value: "multi-select",
+    content: (
+      <Header icon="check square" content="Multiple Selection" subheader="Students choose one or more answers out of one or many options." />
+    )
+  },
+  {
+    key: 3,
+    text: "More Options",
+    value: "multi-select",
+    disabled: true,
+    content: (
+      <Header icon="check square" content="More Options" subheader="More question types will be implemented soon." />
+    )
+  }];
   return (
     <Form onSubmit={onSubmit} >
 
