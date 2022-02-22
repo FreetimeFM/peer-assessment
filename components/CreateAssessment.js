@@ -6,25 +6,25 @@ import FormInputPopup from "./FormInputPopup";
 
 export default function CreateAssessment({ userRef }) {
 
-  const [ stage, setStage ] = useState(1);
+  const [ stage, setStage ] = useState(2);
   const [ formData, setFormData ] = useState({
     lecturerRef: userRef
   });
 
-  function updateForm(_e, { name, value }) {
+  function stageOneSubmit(e, data) {
+    e.preventDefault();
+    setStage(2);
+  }
+
+  function stageTwoSubmit(data) {
     setFormData({
       ...formData,
-      [name]: value
+      assessmentQuestions: data
     })
   }
 
-  function handleSubmit() {
-    setStage(stage + 1);
-  }
-
-  async function submitForm(e) {
+  async function submitAssessment(e) {
     e.preventDefault();
-
     console.log(formData);
 
     try {
@@ -45,16 +45,30 @@ export default function CreateAssessment({ userRef }) {
     }
   }
 
+  function reverseStage() {
+    setStage(stage-1);
+  }
+
   switch (stage) {
     case 2:
-      return <StageTwo onSubmit={handleSubmit} />
+      return <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
 
     default:
-      return <StageOne updateForm={updateForm} onSubmit={handleSubmit} />
+      return <StageOne onSubmit={stageOneSubmit} />
   }
 }
 
-function StageOne({ updateForm, onSubmit }) {
+function StageOne({ onSubmit }) {
+
+  const [ formData, setFormData ] = useState({});
+
+  function updateForm(_e, { name, value }) {
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
   return (
     <Form onSubmit={onSubmit} >
       <Form.Group widths="equal" >
@@ -133,8 +147,9 @@ function StageOne({ updateForm, onSubmit }) {
   )
 }
 
-function StageTwo({ updateForm, onSubmit }) {
+function StageTwo({ onReverseStage, onSubmit }) {
 
+  const [ questions, setQuestions ] = useState([]);
   const questionTypes = [{
     key: 0,
     text: "Short Text",
@@ -155,6 +170,7 @@ function StageTwo({ updateForm, onSubmit }) {
     key: 2,
     text: "Single Selection",
     value: "dropdown",
+    disabled: true,
     content: (
       <Header icon="caret square down" content="Single Selection" subheader="Students choose one answer out of many options." />
     )
@@ -163,58 +179,122 @@ function StageTwo({ updateForm, onSubmit }) {
     key: 3,
     text: "Multiple Selection",
     value: "multi-select",
+    disabled: true,
     content: (
       <Header icon="check square" content="Multiple Selection" subheader="Students choose one or more answers out of one or many options." />
     )
   },
   {
-    key: 3,
+    key: 4,
     text: "More Options",
-    value: "multi-select",
+    value: "more",
     disabled: true,
     content: (
-      <Header icon="check square" content="More Options" subheader="More question types will be implemented soon." />
+      <Header icon="hourglass" content="More Options" subheader="More question types will be implemented soon." />
     )
   }];
-  function CreateQuestion() {
-    return (
-      <Card fluid raised>
-        <Card.Content>
-          <Form>
-            <Form.Group widths="equal">
-              <Form.Input
-                name="name"
-                label={<label>Question <FormInputPopup message="The name of the question. 150 characters maximum. Required."/></label>}
-                placeholder="What is the capital of France?"
-                maxLength={150}
-                required
-              />
-              <Form.Dropdown
-                name="type"
-                label={<label>Type <FormInputPopup message="The type of question. Required."/></label>}
-                options={questionTypes}
-                defaultValue={questionTypes[0].value}
-                selection
-                item
-                required
-              />
-            </Form.Group>
-            <Form.Button content="Add Question" primary fluid/>
-          </Form>
-        </Card.Content>
-      </Card>
-    );
+
+  function handleAddQuestion(newQuestion) {
+    setQuestions([ ...questions, newQuestion ]);
+  }
+
+  function handleRemoveAll(e) {
+    e.preventDefault();
+    setQuestions([]);
+  }
+
+  function onBackClick(e) {
+    e.preventDefault();
+    onReverseStage();
+  }
+
+  function onNextClick(e) {
+    e.preventDefault();
+    onSubmit(questions);
   }
 
   return (
     <Form onSubmit={onSubmit} >
 
-      <CreateQuestion />
+      <DisplayQuestions questions={questions} questionTypes={questionTypes} />
+      <CreateQuestion
+        questionTypes={questionTypes}
+        onAddQuestion={handleAddQuestion}
+        onRemoveAll={handleRemoveAll}
+      />
 
       <Form.Group widths="equal">
-        <Form.Button content="Back" size="large" fluid/>
-        <Form.Button content="Next" size="large" primary fluid/>
+        <Form.Button content="Back" size="large" onClick={onBackClick} fluid/>
+        <Form.Button content="Next" size="large" onClick={onNextClick} primary fluid/>
       </Form.Group>
     </Form>
   )
+}
+
+function DisplayQuestions({ questions }) {
+
+  return questions.map((question, index) => {
+    return (
+      <Card
+        key={index}
+        header={`${index + 1}. ${question.name}`}
+        meta={`Type: ${question.type}`}
+        fluid
+      />
+    )
+  })
+}
+
+function CreateQuestion({ questionTypes, onAddQuestion, onRemoveAll }) {
+
+  const [ qName, setQName ] = useState("");
+  const [ qType, setQType ] = useState(questionTypes[0].value);
+
+  function handleClick(_e) {
+    if (qName.length === 0) return;
+    onAddQuestion({
+      "name": qName,
+      "type": qType
+    });
+    setQName("");
+    setQType(questionTypes[0].value);
+  }
+
+  return (
+    <Card color="blue" fluid raised>
+      <Card.Content content={<Card.Header content="Create a new question" />} />
+      <Card.Content>
+        <Form.Group widths="equal">
+          <Form.Input
+            name="name"
+            label={<label>Question <FormInputPopup message="The name of the question. 150 characters maximum. Required."/></label>}
+            placeholder="Required."
+            value={qName}
+            onChange={(_e, {value}) => {
+              setQName(value);
+            }}
+            maxLength={150}
+            required
+          />
+          <Form.Dropdown
+            name="type"
+            label={<label>Type <FormInputPopup message="The type of question. Required."/></label>}
+            options={questionTypes}
+            value={qType}
+            onChange={(_e, {value}) => {
+              setQType(value);
+            }}
+            selection
+            required
+          />
+        </Form.Group>
+      </Card.Content>
+      <Card.Content extra>
+        <Form.Group widths="equal">
+          <Form.Button content="Remove all questions" onClick={onRemoveAll} negative fluid/>
+          <Form.Button content="Add Question" onClick={handleClick} primary fluid/>
+        </Form.Group>
+      </Card.Content>
+    </Card>
+  );
 }
