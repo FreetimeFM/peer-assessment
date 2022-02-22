@@ -176,11 +176,40 @@ function StageTwo({ updateForm, onSubmit }) {
       <Header icon="check square" content="More Options" subheader="More question types will be implemented soon." />
     )
   }];
+  function CreateQuestion() {
+    return (
+      <Card fluid raised>
+        <Card.Content>
+          <Form>
+            <Form.Group widths="equal">
+              <Form.Input
+                name="name"
+                label={<label>Question <FormInputPopup message="The name of the question. 150 characters maximum. Required."/></label>}
+                placeholder="What is the capital of France?"
+                maxLength={150}
+                required
+              />
+              <Form.Dropdown
+                name="type"
+                label={<label>Type <FormInputPopup message="The type of question. Required."/></label>}
+                options={questionTypes}
+                defaultValue={questionTypes[0].value}
+                selection
+                item
+                required
+              />
+            </Form.Group>
+            <Form.Button content="Add Question" primary fluid/>
+          </Form>
+        </Card.Content>
+      </Card>
+    );
+  }
+
   return (
     <Form onSubmit={onSubmit} >
 
-
-
+      <CreateQuestion />
 
       <Form.Group widths="equal">
         <Form.Button content="Back" size="large" fluid/>
