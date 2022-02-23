@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Card } from "semantic-ui-react";
+import { Form, Card, Step, Divider } from "semantic-ui-react";
 
 import fetchJson from "../lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
@@ -7,9 +7,25 @@ import { questionTypes } from "lib/questionTypes";
 
 export default function CreateAssessment({ userRef }) {
 
-  const [ stage, setStage ] = useState(1);
+  const [ stage, setStage ] = useState(2);
   const [ stageOneData, setStageOneData ] = useState({});
   const [ stageTwoData, setStageTwoData ] = useState([]);
+
+  const steps = [
+    {
+      key: 1,
+      title: 'Details',
+      description: 'Enter details about the assessment.',
+      active: stage === 1,
+      completed: stage === 2,
+    },
+    {
+      key: 2,
+      title: 'Questions',
+      description: 'Add questions for the assessment.',
+      active: stage === 2,
+    },
+  ]
 
   function stageOneSubmit(e, data) {
     e.preventDefault();
@@ -44,16 +60,19 @@ export default function CreateAssessment({ userRef }) {
   }
 
   function reverseStage() {
-    setStage(stage-1);
+    setStage(1);
   }
 
-  switch (stage) {
-    case 2:
-      return <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
-
-    default:
-      return <StageOne onSubmit={stageOneSubmit} />
-  }
+  return (
+    <>
+      <Step.Group
+        items={steps}
+        ordered
+        fluid
+      />
+      { stage === 1 ? <StageOne onSubmit={stageOneSubmit} /> : <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} /> }
+    </>
+  )
 }
 
 function StageOne({ onSubmit }) {
@@ -196,6 +215,7 @@ function StageTwo({ onReverseStage, onSubmit }) {
         onRemoveAll={handleRemoveAll}
       />
 
+      <Divider />
       <Form.Group widths="equal">
         <Form.Button content="Back" size="large" onClick={handleBackClick} fluid/>
         <Form.Button content="Next" size="large" onClick={handleNextClick} primary fluid/>
