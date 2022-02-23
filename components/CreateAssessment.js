@@ -125,6 +125,19 @@ function StageOne({ onSubmit }) {
         />
       </Form.Group>
 
+      <Form.Group widths="equal">
+        <Form.Input
+          name="peerMarkingQuantity"
+          type="number"
+          label={<label>Peer Marking Quantity <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required."/></label>}
+          placeholder="Required."
+          onChange={updateForm}
+          min={1}
+          max={10}
+          required
+        />
+      </Form.Group>
+
       {/* <Form.Group widths="equal" >
         <Form.Input
           name="assessmentFiles"
