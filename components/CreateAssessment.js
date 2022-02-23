@@ -175,12 +175,12 @@ function StageTwo({ onReverseStage, onSubmit }) {
     setQuestions([]);
   }
 
-  function onBackClick(e) {
+  function handleBackClick(e) {
     e.preventDefault();
     onReverseStage();
   }
 
-  function onNextClick(e) {
+  function handleNextClick(e) {
     e.preventDefault();
     onSubmit(questions);
   }
@@ -195,8 +195,8 @@ function StageTwo({ onReverseStage, onSubmit }) {
       />
 
       <Form.Group widths="equal">
-        <Form.Button content="Back" size="large" onClick={onBackClick} fluid/>
-        <Form.Button content="Next" size="large" onClick={onNextClick} primary fluid/>
+        <Form.Button content="Back" size="large" onClick={handleBackClick} fluid/>
+        <Form.Button content="Next" size="large" onClick={handleNextClick} primary fluid/>
       </Form.Group>
     </Form>
   )
