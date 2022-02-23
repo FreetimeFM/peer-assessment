@@ -7,7 +7,7 @@ import { questionTypes } from "lib/questionTypes";
 
 export default function CreateAssessment({ userRef }) {
 
-  const [ stage, setStage ] = useState(2);
+  const [ stage, setStage ] = useState(1);
   const [ formData, setFormData ] = useState({
     lecturerRef: userRef
   });
@@ -22,7 +22,6 @@ export default function CreateAssessment({ userRef }) {
       ...formData,
       assessmentQuestions: data
     })
-    setStage(3);
   }
 
   async function submitAssessment(e) {
@@ -54,9 +53,6 @@ export default function CreateAssessment({ userRef }) {
   switch (stage) {
     case 2:
       return <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
-
-    case 3:
-      return <StageThree onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
 
     default:
       return <StageOne onSubmit={stageOneSubmit} />
@@ -92,6 +88,7 @@ function StageOne({ onSubmit }) {
           onChange={updateForm}
         />
       </Form.Group>
+
       <Form.TextArea
         name="briefDescription"
         label={<label>Brief Description <FormInputPopup message="This description will be displayed as an overview in the dashboard. 500 characters maximum."/></label>}
@@ -258,17 +255,4 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
       </Card.Content>
     </Card>
   );
-}
-
-function StageThree() {
-
-  return (
-    <Form>
-
-      <Form.Group widths="equal">
-        <Form.Button content="Back" negative fluid/>
-        <Form.Button content="Next" primary fluid/>
-      </Form.Group>
-    </Form>
-  )
 }
