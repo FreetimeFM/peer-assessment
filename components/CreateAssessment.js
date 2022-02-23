@@ -8,20 +8,17 @@ import { questionTypes } from "lib/questionTypes";
 export default function CreateAssessment({ userRef }) {
 
   const [ stage, setStage ] = useState(1);
-  const [ formData, setFormData ] = useState({
-    lecturerRef: userRef
-  });
+  const [ stageOneData, setStageOneData ] = useState({});
+  const [ stageTwoData, setStageTwoData ] = useState([]);
 
   function stageOneSubmit(e, data) {
     e.preventDefault();
+    setStageOneData(data);
     setStage(2);
   }
 
   function stageTwoSubmit(data) {
-    setFormData({
-      ...formData,
-      assessmentQuestions: data
-    })
+    setStageTwoData(data);
   }
 
   async function submitAssessment(e) {
@@ -70,8 +67,13 @@ function StageOne({ onSubmit }) {
     })
   }
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSubmit(formData);
+  }
+
   return (
-    <Form onSubmit={onSubmit} >
+    <Form onSubmit={handleSubmit} >
       <Form.Group widths="equal" >
         <Form.Input
           name="name"
