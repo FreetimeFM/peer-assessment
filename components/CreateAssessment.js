@@ -22,6 +22,7 @@ export default function CreateAssessment({ userRef }) {
       ...formData,
       assessmentQuestions: data
     })
+    setStage(3);
   }
 
   async function submitAssessment(e) {
@@ -53,6 +54,9 @@ export default function CreateAssessment({ userRef }) {
   switch (stage) {
     case 2:
       return <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
+
+    case 3:
+      return <StageThree onReverseStage={reverseStage} onSubmit={stageTwoSubmit} />
 
     default:
       return <StageOne onSubmit={stageOneSubmit} />
@@ -254,4 +258,17 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
       </Card.Content>
     </Card>
   );
+}
+
+function StageThree() {
+
+  return (
+    <Form>
+
+      <Form.Group widths="equal">
+        <Form.Button content="Back" negative fluid/>
+        <Form.Button content="Next" primary fluid/>
+      </Form.Group>
+    </Form>
+  )
 }
