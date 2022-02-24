@@ -259,7 +259,7 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
     <Card color="blue" fluid raised>
       <Card.Content content={<Card.Header content="Create a new question" />} />
       <Card.Content>
-        <Form.Group widths="equal">
+        <Form.Group>
           <Form.Input
             name="name"
             label={<label>Question <FormInputPopup message="The name of the question. 150 characters maximum. Required."/></label>}
@@ -269,6 +269,9 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
               setQName(value);
             }}
             maxLength={150}
+            width="9"
+            required
+          />
           <Form.Input
             name="marks"
             type="number"
@@ -291,6 +294,7 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
             onChange={(_e, {value}) => {
               setQType(value);
             }}
+            width="4"
             selection
             required
           />
