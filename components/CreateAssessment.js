@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Card, Step, Divider } from "semantic-ui-react";
+import { Form, Card, Step, Divider, Message } from "semantic-ui-react";
 
 import fetchJson from "../lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
@@ -10,6 +10,11 @@ export default function CreateAssessment({ userRef }) {
   const [ stage, setStage ] = useState(1);
   const [ stageOneData, setStageOneData ] = useState();
   const [ stageTwoData, setStageTwoData ] = useState();
+  const [ apiResult, setApiResult ] = useState({
+    hidden: true,
+    error: false,
+    errorList: []
+  });
 
   const steps = [
     {
@@ -26,14 +31,6 @@ export default function CreateAssessment({ userRef }) {
       active: stage === 2,
     },
   ]
-
-  async function validateStageOne() {
-
-  }
-
-  async function validateStageTwo() {
-
-  }
 
   function stageOneSubmit(data) {
     setStageOneData(data);
@@ -66,11 +63,28 @@ export default function CreateAssessment({ userRef }) {
         }),
       });
 
-      if (!response || !response?.error) console.error("failed");
-      else console.info("success");
+      console.log(response);
+
+      if (!response || !response?.error) {
+        setApiResult({
+          hidden: false,
+          error: true,
+          errorList: response?.errorList ? response?.errorList : []
+        });
+      }
+      else setApiResult({
+        hidden: false,
+        error: false,
+        errorList: []
+      });
 
     } catch (e) {
       console.error(e);
+      setApiResult({
+        hidden: false,
+        error: true,
+        errorList: ["An unknown error has occured. Please contact your adminstrator."]
+      });
     }
   }
 
@@ -85,12 +99,28 @@ export default function CreateAssessment({ userRef }) {
         ordered
         fluid
       />
-      { stage === 1 ? <StageOne onSubmit={stageOneSubmit} data={stageOneData} /> : <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} /> }
+      { stage === 1 ?
+        <StageOne
+          onSubmit={stageOneSubmit}
+          data={stageOneData}
+        /> :
+        <StageTwo
+          onReverseStage={reverseStage}
+          onSubmit={stageTwoSubmit}
+        />
+      }
+      <Message
+        success={!apiResult.error}
+        error={apiResult.error}
+        list={apiResult.errorList ? apiResult.errorList : ["An unknown error has occured. Please contact your adminstrator."]}
+        header={apiResult.error ? "Submission failed." : "Submission successful."}
+        hidden={apiResult.hidden}
+      />
     </>
   )
 }
 
-function StageOne({ onSubmit, data }) {
+function StageOne({ onSubmit, data, resultMessage }) {
 
   const [ formData, setFormData ] = useState(data !== undefined ? data : {});
 
@@ -241,7 +271,7 @@ function StageTwo({ onReverseStage, onSubmit }) {
       <Divider />
       <Form.Group widths="equal">
         <Form.Button content="Back" size="large" onClick={handleBackClick} fluid/>
-        <Form.Button content="Next" size="large" onClick={handleNextClick} primary fluid/>
+        <Form.Button content="Submit" size="large" onClick={handleNextClick} primary fluid/>
       </Form.Group>
     </Form>
   )
