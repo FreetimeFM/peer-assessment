@@ -241,12 +241,14 @@ function DisplayQuestions({ questions }) {
 function CreateQuestion({ onAddQuestion, onRemoveAll }) {
 
   const [ qName, setQName ] = useState("");
+  const [ marks, setMarks ] = useState(1);
   const [ qType, setQType ] = useState(questionTypes[0].value);
 
   function handleClick(_e) {
     if (qName.length === 0) return;
     onAddQuestion({
       "name": qName,
+      "marks": marks,
       "type": qType
     });
     setQName("");
@@ -267,6 +269,18 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
               setQName(value);
             }}
             maxLength={150}
+          <Form.Input
+            name="marks"
+            type="number"
+            label={<label>Marks <FormInputPopup message="The number of marks this question is worth. Required."/></label>}
+            placeholder="Required."
+            value={marks}
+            onChange={(_e, {value}) => {
+              setMarks(value);
+            }}
+            defaultValue={1}
+            min={0}
+            width="3"
             required
           />
           <Form.Dropdown
