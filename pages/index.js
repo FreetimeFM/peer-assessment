@@ -164,6 +164,9 @@ export default function Home() {
                 color={emailError || passwordError || apiError ? "red" : "blue"}
                 fluid
               />
+              <noscript>
+                JavaScript is required to run this application. Please enable JavaScript or use a different browser.
+              </noscript>
             </Segment>
           </Form>
         </Grid.Column>
