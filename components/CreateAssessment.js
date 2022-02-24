@@ -63,7 +63,6 @@ export default function CreateAssessment({ userRef }) {
         body: JSON.stringify({
           ...stageOneData,
           ...stageTwoData,
-          teacherRef: userRef
         }),
       });
 
