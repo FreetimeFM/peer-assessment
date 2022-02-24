@@ -7,9 +7,9 @@ import { questionTypes } from "lib/questionTypes";
 
 export default function CreateAssessment({ userRef }) {
 
-  const [ stage, setStage ] = useState(2);
-  const [ stageOneData, setStageOneData ] = useState({});
-  const [ stageTwoData, setStageTwoData ] = useState([]);
+  const [ stage, setStage ] = useState(1);
+  const [ stageOneData, setStageOneData ] = useState();
+  const [ stageTwoData, setStageTwoData ] = useState();
 
   const steps = [
     {
@@ -27,19 +27,31 @@ export default function CreateAssessment({ userRef }) {
     },
   ]
 
-  function stageOneSubmit(e, data) {
-    e.preventDefault();
+  async function validateStageOne() {
+
+  }
+
+  async function validateStageTwo() {
+
+  }
+
+  function stageOneSubmit(data) {
     setStageOneData(data);
     setStage(2);
   }
 
-  function stageTwoSubmit(data) {
-    setStageTwoData(data);
+  async function stageTwoSubmit(data) {
+
+    if (data.length === 0) return alert("Not submitted. No questions.");
+    await setStageTwoData(data);
+    submitAssessment();
   }
 
-  async function submitAssessment(e) {
-    e.preventDefault();
-    console.log(formData);
+  async function submitAssessment() {
+    console.log({
+      ...stageOneData,
+      questions: stageTwoData
+    });
 
     try {
       const response = await fetchJson("/api/create/assessment", {
@@ -48,7 +60,11 @@ export default function CreateAssessment({ userRef }) {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ ...formData }),
+        body: JSON.stringify({
+          ...stageOneData,
+          ...stageTwoData,
+          teacherRef: userRef
+        }),
       });
 
       if (!response || !response?.error) console.error("failed");
@@ -70,14 +86,14 @@ export default function CreateAssessment({ userRef }) {
         ordered
         fluid
       />
-      { stage === 1 ? <StageOne onSubmit={stageOneSubmit} /> : <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} /> }
+      { stage === 1 ? <StageOne onSubmit={stageOneSubmit} data={stageOneData} /> : <StageTwo onReverseStage={reverseStage} onSubmit={stageTwoSubmit} /> }
     </>
   )
 }
 
-function StageOne({ onSubmit }) {
+function StageOne({ onSubmit, data }) {
 
-  const [ formData, setFormData ] = useState({});
+  const [ formData, setFormData ] = useState(data !== undefined ? data : {});
 
   function updateForm(_e, { name, value }) {
     setFormData({
@@ -107,6 +123,7 @@ function StageOne({ onSubmit }) {
           name="releaseDate"
           label={<label>Release Date <FormInputPopup message="The assessment will be accessible to students at this date. Required."/></label>}
           type="datetime-local"
+          value={formData.releaseDate}
           onChange={updateForm}
           required
         />
@@ -138,6 +155,7 @@ function StageOne({ onSubmit }) {
           name="submissionDeadline"
           label={<label>Submission Deadline <FormInputPopup message="The date students have to submit their work by. Required."/></label>}
           type="datetime-local"
+          value={formData.submissionDeadline}
           onChange={updateForm}
           required
         />
@@ -145,6 +163,7 @@ function StageOne({ onSubmit }) {
           name="markingDeadline"
           label={<label>Marking Deadline <FormInputPopup message="The date students have to mark their peers by. Required."/></label>}
           type="datetime-local"
+          value={formData.markingDeadline}
           onChange={updateForm}
           required
         />
@@ -158,7 +177,6 @@ function StageOne({ onSubmit }) {
           placeholder="Required."
           value={formData.peerMarkingQuantity}
           onChange={updateForm}
-          defaultValue={2}
           min={1}
           max={10}
           required
@@ -238,6 +256,7 @@ function DisplayQuestions({ questions }) {
         key={index}
         header={`${index + 1}. ${question.name}`}
         meta={`Type: ${question.type}`}
+        extra={`Marks: ${question.marks}`}
         fluid
       />
     )
@@ -275,7 +294,7 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
               setQName(value);
             }}
             maxLength={150}
-            width="9"
+            width="8"
             required
           />
           <Form.Input
@@ -300,7 +319,7 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
             onChange={(_e, {value}) => {
               setQType(value);
             }}
-            width="4"
+            width="5"
             selection
             required
           />
