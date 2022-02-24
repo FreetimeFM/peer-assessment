@@ -10,6 +10,7 @@ export default function CreateAssessment({ userRef }) {
   const [ stage, setStage ] = useState(1);
   const [ stageOneData, setStageOneData ] = useState();
   const [ stageTwoData, setStageTwoData ] = useState();
+  const [ submitting, setSubmitting ] = useState(false);
   const [ apiResult, setApiResult ] = useState({
     hidden: true,
     error: false,
@@ -44,15 +45,16 @@ export default function CreateAssessment({ userRef }) {
 
   async function stageTwoSubmit(data) {
 
-    if (data.length === 0) return alert("Not submitted. No questions.");
-    await setStageTwoData(data);
-    submitAssessment();
+    if (data.length === 0) return alert("Not submitted as there are no questions.");
+    setStageTwoData(data);
+    submitAssessment(data);
   }
 
-  async function submitAssessment() {
-    console.log({
+  async function submitAssessment(data) {
+    setSubmitting(true);
+    console.info({
       ...stageOneData,
-      questions: stageTwoData
+      "questions": data
     });
 
     try {
@@ -64,24 +66,29 @@ export default function CreateAssessment({ userRef }) {
         },
         body: JSON.stringify({
           ...stageOneData,
-          ...stageTwoData,
+          "questions": data
         }),
       });
 
       console.log(response);
 
-      if (!response || !response?.error) {
+      if (!response || response?.error) {
         setApiResult({
           hidden: false,
           error: true,
           errorList: response?.errorList ? response?.errorList : []
         });
       }
-      else setApiResult({
-        hidden: false,
-        error: false,
-        errorList: []
-      });
+      else {
+        setApiResult({
+          hidden: false,
+          error: false,
+          errorList: []
+        });
+        setStageOneData();
+        setStageTwoData();
+        setStage(1);
+      }
 
     } catch (e) {
       console.error(e);
@@ -91,9 +98,12 @@ export default function CreateAssessment({ userRef }) {
         errorList: ["An unknown error has occured. Please contact your adminstrator."]
       });
     }
+
+    setSubmitting(false);
   }
 
-  function reverseStage() {
+  function reverseStage(questions) {
+    setStageTwoData(questions);
     setStage(1);
   }
 
@@ -113,6 +123,8 @@ export default function CreateAssessment({ userRef }) {
         <StageTwo
           onReverseStage={reverseStage}
           onSubmit={stageTwoSubmit}
+          data={stageTwoData}
+          submitting={submitting}
         />
       }
       <Message
@@ -255,9 +267,9 @@ function StageOne({ onSubmit, data, classDropdown }) {
   )
 }
 
-function StageTwo({ onReverseStage, onSubmit }) {
+function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
 
-  const [ questions, setQuestions ] = useState([]);
+  const [ questions, setQuestions ] = useState(data === undefined ? [] : data);
 
   function handleAddQuestion(newQuestion) {
     setQuestions([ ...questions, newQuestion ]);
@@ -265,12 +277,12 @@ function StageTwo({ onReverseStage, onSubmit }) {
 
   function handleRemoveAll(e) {
     e.preventDefault();
-    setQuestions([]);
+    if (confirm("Are you sure you want to remove all questions?")) setQuestions([]);
   }
 
   function handleBackClick(e) {
     e.preventDefault();
-    onReverseStage();
+    onReverseStage(questions);
   }
 
   function handleNextClick(e) {
@@ -279,8 +291,7 @@ function StageTwo({ onReverseStage, onSubmit }) {
   }
 
   return (
-    <Form onSubmit={onSubmit} >
-
+    <Form loading={submitting} >
       <DisplayQuestions questions={questions} />
       <CreateQuestion
         onAddQuestion={handleAddQuestion}
