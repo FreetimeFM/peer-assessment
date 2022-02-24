@@ -11,3 +11,19 @@ export default function Placeholder({ message, iconName, extraContent = null }) 
     </Segment>
   )
 }
+
+export function placeholderTemplate(type) {
+
+  switch (type) {
+
+    default:
+      return (
+        <Placeholder
+          message="Not Implemented."
+          iconName="clock"
+          extraContent={<p>This feature hasn't been implemented yet.</p>}
+        />
+      )
+  }
+
+}
