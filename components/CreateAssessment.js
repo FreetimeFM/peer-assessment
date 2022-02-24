@@ -96,25 +96,28 @@ function StageOne({ onSubmit }) {
       <Form.Group widths="equal" >
         <Form.Input
           name="name"
-          label={<label>Name <FormInputPopup message="The name of the assessment. 100 characters maximum. Required."/></label>}
+          label={<label>Name <FormInputPopup message="The name of the assessment. 70 characters maximum. Required."/></label>}
           placeholder="Required."
-          maxLength={100}
+          value={formData.name}
+          maxLength={70}
           onChange={updateForm}
           required
         />
         <Form.Input
           name="releaseDate"
-          label={<label>Release Date <FormInputPopup message="The assessment will be accessible to students at this date. This is optional as you can manually release the assessment."/></label>}
+          label={<label>Release Date <FormInputPopup message="The assessment will be accessible to students at this date. Required."/></label>}
           type="datetime-local"
           onChange={updateForm}
+          required
         />
       </Form.Group>
 
       <Form.TextArea
         name="briefDescription"
-        label={<label>Brief Description <FormInputPopup message="This description will be displayed as an overview in the dashboard. 500 characters maximum."/></label>}
-        placeholder="Optional. This description will be displayed as an overview in the dashboard. 500 characters maximum."
-        maxLength={300}
+        label={<label>Brief Description <FormInputPopup message="This description will be displayed as an overview in the dashboard. 200 characters maximum."/></label>}
+        placeholder="This description will be displayed as an overview in the dashboard. 200 characters maximum. Optional."
+        value={formData.briefDescription}
+        maxLength={200}
         rows={3}
         onChange={updateForm}
       />
@@ -122,7 +125,8 @@ function StageOne({ onSubmit }) {
       <Form.TextArea
         name="description"
         label={<label>Description <FormInputPopup message="A detailed description about the assessment. 5000 characters maximum."/></label>}
-        placeholder="A detailed description about the assessment. 5000 characters maximum."
+        placeholder="A detailed description about the assessment. 5000 characters maximum. Required."
+        value={formData.description}
         maxLength={5000}
         rows={11}
         onChange={updateForm}
@@ -152,7 +156,9 @@ function StageOne({ onSubmit }) {
           type="number"
           label={<label>Peer Marking Quantity <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required."/></label>}
           placeholder="Required."
+          value={formData.peerMarkingQuantity}
           onChange={updateForm}
+          defaultValue={2}
           min={1}
           max={10}
           required
