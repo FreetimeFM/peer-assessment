@@ -38,7 +38,7 @@ export default function DashboardSidebar({ user, device, pages, currentPage, vis
           iconHidden={device === "tablet"}
           content={page.name}
           active={page.path === currentPage}
-          path={page.path}
+          path={page.path === currentPage ? null : page.path}
         />)
       }
 
