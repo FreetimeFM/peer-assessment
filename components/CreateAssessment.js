@@ -15,6 +15,11 @@ export default function CreateAssessment({ userRef }) {
     error: false,
     errorList: []
   });
+  const [ classDropdown, setClassDropdown ] = useState({
+    fetched: false,
+    fetching: false,
+    list: []
+  })
 
   const steps = [
     {
@@ -103,6 +108,7 @@ export default function CreateAssessment({ userRef }) {
         <StageOne
           onSubmit={stageOneSubmit}
           data={stageOneData}
+          classDropdown={classDropdown}
         /> :
         <StageTwo
           onReverseStage={reverseStage}
@@ -120,7 +126,7 @@ export default function CreateAssessment({ userRef }) {
   )
 }
 
-function StageOne({ onSubmit, data, resultMessage }) {
+function StageOne({ onSubmit, data, classDropdown }) {
 
   const [ formData, setFormData ] = useState(data !== undefined ? data : {});
 
@@ -154,6 +160,32 @@ function StageOne({ onSubmit, data, resultMessage }) {
           type="datetime-local"
           value={formData.releaseDate}
           onChange={updateForm}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group widths="equal">
+        <Form.Dropdown
+          name="class"
+          label={<label>Class <FormInputPopup message="Choose the class you want to assign this assessment to." /></label>}
+          options={classDropdown.list}
+          onChange={updateForm}
+          placeholder={classDropdown.fetching ? "Please wait..." : "Available to everyone"}
+          loading={classDropdown.fetching}
+          fluid
+          search
+          selection
+          // required
+        />
+        <Form.Input
+          name="peerMarkingQuantity"
+          type="number"
+          label={<label>Peer Marking Quantity <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required."/></label>}
+          placeholder="Required."
+          value={formData.peerMarkingQuantity}
+          onChange={updateForm}
+          min={1}
+          max={10}
           required
         />
       </Form.Group>
@@ -198,19 +230,6 @@ function StageOne({ onSubmit, data, resultMessage }) {
         />
       </Form.Group>
 
-      <Form.Group widths="equal">
-        <Form.Input
-          name="peerMarkingQuantity"
-          type="number"
-          label={<label>Peer Marking Quantity <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required."/></label>}
-          placeholder="Required."
-          value={formData.peerMarkingQuantity}
-          onChange={updateForm}
-          min={1}
-          max={10}
-          required
-        />
-      </Form.Group>
 
       {/* <Form.Group widths="equal" >
         <Form.Input
