@@ -10,7 +10,7 @@ export default function AssessmentCard({ details, past = false }) {
         meta={details.class === undefined ? "For everyone" : details.class}
       />
       <Card.Content
-        description={details.briefDescription}
+        description={details.briefDescription === undefined || details.briefDescription === "" ? "No brief description given." : details.briefDescription}
       />
       <Card.Content>
         <div><strong>Released on</strong> {new Date(details.releaseDate).toUTCString()}</div>
@@ -40,7 +40,7 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, past = false
       trigger={trigger}
       closeIcon
     >
-      <Modal.Header  >Assessment Details</Modal.Header>
+      <Modal.Header>Assessment Details</Modal.Header>
       <Modal.Content>
         <Table celled>
           <Table.Body>
@@ -74,7 +74,7 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, past = false
             </Table.Row>
             <Table.Row>
               <Table.Cell><strong>Brief Description</strong></Table.Cell>
-              <Table.Cell>{details.briefDescription}</Table.Cell>
+              <Table.Cell>{details.briefDescription === undefined || details.briefDescription === "" ? "No brief description given." : details.briefDescription}</Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>
