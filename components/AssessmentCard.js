@@ -45,6 +45,10 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, past = false
         <Table celled>
           <Table.Body>
             <Table.Row>
+              <Table.Cell><strong>Assessment ID</strong></Table.Cell>
+              <Table.Cell>{details.assessmentRefID}</Table.Cell>
+            </Table.Row>
+            <Table.Row>
               <Table.Cell><strong>Name</strong></Table.Cell>
               <Table.Cell>{details.name}</Table.Cell>
             </Table.Row>
