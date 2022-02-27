@@ -59,10 +59,9 @@ export default function ({ user }) {
 
   return (
     <Container>
-      <Segment.Group>
-        <Segment>
-          <Header content={assessment.name} size="huge" />
-        </Segment>
+      <Segment.Group style={{ margin: "10px 0" }}>
+        <Segment content={<Header content={assessment.name} size="huge"/>} />
+        <Segment content={assessment.description} />
         <Segment content={<AssessmentQuestions questions={assessment.questions} />} />
       </Segment.Group>
     </Container>
