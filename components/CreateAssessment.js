@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, Card, Step, Divider, Message } from "semantic-ui-react";
 
 import fetchJson from "../lib/iron-session/fetchJson";
@@ -20,7 +20,7 @@ export default function CreateAssessment({ userRef }) {
     fetched: false,
     fetching: false,
     list: []
-  })
+  });
 
   const steps = [
     {
@@ -36,14 +36,68 @@ export default function CreateAssessment({ userRef }) {
       description: 'Add questions for the assessment.',
       active: stage === 2,
     },
-  ]
+  ];
+
+  useEffect(() => {
+    fetchClasses();
+  }, [])
+
+  async function fetchClasses() {
+    if (classDropdown.fetched) return;
+    setClassDropdown({
+      ...classDropdown,
+      fetching: true,
+    });
+
+    try {
+      const response = await fetchJson("/api/get_classes_by_teacherRef", {
+        headers: {
+          Accept: "application/json",
+        }
+      });
+
+      console.log(response);
+
+      if (response.error) {
+        console.error(response);
+      }
+      else {
+        parseClassList(response.result);
+        return;
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+
+    setApiResult({
+      hidden: false,
+      error: true,
+      errorList: ["Unable to get list of classes. Please contact your adminstrator."]
+    })
+    setClassDropdown({ fetched: false, fetching: false, list: [] });
+  }
+
+  function parseClassList(data) {
+    setClassDropdown({
+      fetched: true,
+      fetching: false,
+      list: data.map((item, index) => {
+        return {
+          key: index,
+          text: item.name,
+          value: item.classRefID
+        }
+      })
+    })
+  }
 
   function stageOneSubmit(data) {
     setStageOneData(data);
     setStage(2);
   }
 
-  async function stageTwoSubmit(data) {
+  function stageTwoSubmit(data) {
 
     if (data.length === 0) return alert("Not submitted as there are no questions.");
     setStageTwoData(data);
@@ -51,6 +105,7 @@ export default function CreateAssessment({ userRef }) {
   }
 
   async function submitAssessment(data) {
+    if (!classDropdown.fetched) return alert("Unable to retrieve classes. Please contact your adminstrator.");
     setSubmitting(true);
     console.info({
       ...stageOneData,
@@ -187,7 +242,7 @@ function StageOne({ onSubmit, data, classDropdown }) {
           fluid
           search
           selection
-          // required
+          required
         />
         <Form.Input
           name="peerMarkingQuantity"
