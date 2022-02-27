@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { Table, Message } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
-import Placeholder from "./Placeholder";
 
 export default function ClassTable({ user }) {
-
-  if (user.userType !== "admin") return <Placeholder iconName="time" message="Not available." extraContent="This feature hasn't been implemented yet." />
 
   const [ classList, setClassList ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({ fetching: false, fetched: false });
@@ -22,7 +19,6 @@ export default function ClassTable({ user }) {
 
     try {
       const response = await fetchJson("/api/get_classes", {
-        method: "POST",
         headers: {
           Accept: "application/json",
         },
@@ -34,7 +30,8 @@ export default function ClassTable({ user }) {
         console.error(error);
         setError(response?.clientMessage);
       } else {
-        parseClassListData(response.result.data);
+        if (user.userType === "admin") parseClassListDataAdmin(response.result.data);
+        else parseClassListDataTeacher(response.result);
       }
 
     } catch (error) {
@@ -45,12 +42,21 @@ export default function ClassTable({ user }) {
     setFetchOptions({ fetched: true, fetching: false });
   }
 
-  function parseClassListData(list) {
+  function parseClassListDataAdmin(list) {
     setClassList(list.map(element => {
       return {
         classRef: element[0],
         name: element[1],
         teacher: element[2]
+      }
+    }))
+  }
+
+  function parseClassListDataTeacher(list) {
+    setClassList(list.map(element => {
+      return {
+        classRefID: element.classRefID,
+        name: element.name
       }
     }))
   }
@@ -64,13 +70,14 @@ export default function ClassTable({ user }) {
           <Table.Row>
             <Table.HeaderCell />
             <Table.HeaderCell content="Name" />
-            <Table.HeaderCell content="Teacher" />
+            { user.userType === "admin" ? <Table.HeaderCell content="Teacher" /> : null }
           </Table.Row>
         </Table.Header>
         <Table.Body>
           {
             classList.map((element, index) => {
-              return <Row key={index} index={index + 1} name={element.name} teacher={element.teacher} />
+              if (user.userType === "admin") return <Row key={index} index={index + 1} name={element.name} teacher={element.teacher} />
+              else return <Row key={index} index={index + 1} name={element.name} />
             })
           }
         </Table.Body>
@@ -84,7 +91,7 @@ function Row({ index, name, teacher }) {
     <Table.Row>
       <Table.Cell content={index} />
       <Table.Cell content={name} />
-      <Table.Cell content={teacher} />
+      { teacher ? <Table.Cell content={teacher} /> : null }
     </Table.Row>
   )
 }
