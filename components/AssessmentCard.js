@@ -20,7 +20,7 @@ export default function AssessmentCard({ details, past = false }) {
       <Card.Content extra>
         <Button.Group fluid widths={2} >
         <InfoModal details={details} past/>
-          <Link href="/dashboard/current">
+          <Link href={`/dashboard/assess/${details.assessmentRefID}`}>
             <Button content="View" primary/>
           </Link>
         </Button.Group>
@@ -84,7 +84,7 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, past = false
           content="Close"
           onClick={() => setOpen(false)}
         />
-        <Link href="/dashboard/current">
+        <Link href={`/dashboard/assess/${details.assessmentRefID}`}>
           <Button content="View" primary/>
         </Link>
       </Modal.Actions>
