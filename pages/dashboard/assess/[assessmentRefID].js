@@ -6,6 +6,7 @@ import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
+import textToHTML from "lib/common";
 
 export default function ({ user }) {
 
@@ -64,7 +65,7 @@ export default function ({ user }) {
       <Message content="This is what the students will see." hidden={!previewMode} info />
       <Segment.Group>
         <Segment content={<Header content={assessment.name} size="huge"/>} />
-        <Segment content={parseDescription()} />
+        <Segment content={textToHTML(assessment.description)} />
         <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={assessment.questions} preview={previewMode}/>} />
       </Segment.Group>
     </Container>
