@@ -10,8 +10,8 @@ import textToHTML from "lib/common";
 
 export default function ({ user }) {
 
-  const assessmentRefID = useRouter().query.assessmentRefID
-  const previewMode = user.userType !== "student"
+  const assessmentRefID = useRouter().query.assessmentRefID;
+  const previewMode = user.userType !== "student";
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
@@ -21,8 +21,8 @@ export default function ({ user }) {
   });
 
   useEffect(() => {
-    // getAssessmentDetails();
-  }, [])
+    getAssessmentDetails();
+  }, []);
 
   async function getAssessmentDetails() {
     if (fetchOptions.fetched) return;
@@ -55,6 +55,35 @@ export default function ({ user }) {
     }
 
     setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
+  }
+
+  async function handleSubmit(answers) {
+    if (Object.keys(answers).length !== assessment.questions.length) {
+      alert("Cannot submit. Answers cannot be empty.");
+      return;
+    }
+
+    for (const index in answers) {
+      if (answers[index] === "") {
+        alert("Cannot submit. Answers cannot be empty.");
+        return;
+      }
+    }
+
+    try {
+      const response = await fetchJson("/api/submit_assessment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ assessmentRefID: assessmentRefID, answers: answers })
+      });
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
