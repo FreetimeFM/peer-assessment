@@ -58,6 +58,7 @@ export default function ({ user }) {
   }
 
   async function handleSubmit(answers) {
+
     if (Object.keys(answers).length !== assessment.questions.length) {
       alert("Cannot submit. Answers cannot be empty.");
       return;
@@ -81,8 +82,17 @@ export default function ({ user }) {
       });
 
       console.log(response);
+
+      if (response.error) {
+        alert(response.clientMessage);
+        return;
+      }
+
+      alert("Your answers have been successfully submitted.");
+      window.location.assign("/dashboard");
     } catch (error) {
       console.log(error);
+      alert("An unknown error has occured. Please contact your adminstrator.");
     }
   }
 
