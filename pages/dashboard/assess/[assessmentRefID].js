@@ -15,11 +15,11 @@ export default function ({ user }) {
   });
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
-    fetching: false,
+    fetching: true,
   });
 
   useEffect(() => {
-    // getQuestions();
+    // getAssessmentDetails();
   }, [])
 
   async function getAssessmentDetails() {
@@ -54,8 +54,8 @@ export default function ({ user }) {
     setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
   }
 
-  if (fetchOptions.fetching) return <Placeholder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
-  if (fetchOptions.error) return <Placeholder iconName="close" message="Error." extraContent={fetchOptions.error} />
+  if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+  if (fetchOptions.error) return <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
 
   return (
     <Container>
