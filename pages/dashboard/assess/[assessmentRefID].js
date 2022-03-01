@@ -34,6 +34,7 @@ export default function ({ user }) {
       const response = await fetchJson("/api/get_assessment_details", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({ assessmentRefID: assessmentRefID })

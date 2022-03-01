@@ -5,9 +5,9 @@ import isInt from "validator/lib/isInt";
 
 export default withSessionApi(async ({req, res}) => {
   try {
-    if (!JSON.parse(req.body).assessmentRefID) return res.status(getHttpStatus(301)).json(createErrorPayload(301));
+    if (!req.body.assessmentRefID) return res.status(getHttpStatus(301)).json(createErrorPayload(301));
 
-    const id = JSON.parse(req.body).assessmentRefID;
+    const id = req.body.assessmentRefID;
 
     if (!isInt(id)) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
 
