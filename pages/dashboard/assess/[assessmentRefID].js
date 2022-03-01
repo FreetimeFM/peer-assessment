@@ -5,7 +5,7 @@ import { Container, Header, Segment } from "semantic-ui-react";
 import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
-import Placeholder from "components/Placeholder";
+import PlaceHolder from "components/PlaceHolder";
 
 export default function ({ user }) {
 

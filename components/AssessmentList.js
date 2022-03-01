@@ -3,7 +3,7 @@ import { Card, Button } from "semantic-ui-react";
 import Link from "next/link";
 
 import AssessmentCard from "./AssessmentCard";
-import Placeholder, { placeholderTemplate } from "./Placeholder";
+import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 import fetchJson from "lib/iron-session/fetchJson";
 
 export default function AssessmentList({ userType = 2, past = false }) {
@@ -49,7 +49,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
   }
 
   if (fetchOptions.fetching) return (
-    <Placeholder
+    <PlaceHolder
       message={`We're fetching your ${past ? "past" : ""} assessments.`}
       iconName="cloud download"
       extraContent={<p>Please wait.</p>}
@@ -57,7 +57,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
   )
 
   if (!assessmentList) return (
-    <Placeholder
+    <PlaceHolder
       message={`We're having trouble fetching your ${past ? "past" : ""} assessments.`}
       iconName="close"
       extraContent={<p>Please contact your administrator.</p>}
@@ -79,7 +79,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
   );
 
   else return (
-    <Placeholder
+    <PlaceHolder
       message="There are no assessments to display."
       iconName="thumbs up"
       extraContent={ userType === 1 ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null }
