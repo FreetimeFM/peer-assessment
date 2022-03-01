@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Container, Header, Segment } from "semantic-ui-react";
+import { Container, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
@@ -10,6 +10,7 @@ import PlaceHolder from "components/PlaceHolder";
 export default function ({ user }) {
 
   const assessmentRefID = useRouter().query.assessmentRefID
+  const previewMode = user.userType !== "student"
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
@@ -59,7 +60,8 @@ export default function ({ user }) {
 
   return (
     <Container>
-      <Segment.Group style={{ margin: "10px 0" }}>
+      <Message content="This is what the students will see." hidden={!previewMode} info />
+      <Segment.Group>
         <Segment content={<Header content={assessment.name} size="huge"/>} />
         <Segment content={assessment.description} />
         <Segment content={<AssessmentQuestions questions={assessment.questions} />} />
