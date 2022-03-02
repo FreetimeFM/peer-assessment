@@ -7,6 +7,7 @@ import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
 import textToHTML from "lib/common";
+import Metadata from "components/Metadata";
 
 export default function ({ user }) {
 
@@ -101,6 +102,7 @@ export default function ({ user }) {
 
   return (
     <Container>
+      <Metadata title={assessment.name} />
       <Message content="This is what the students will see." hidden={!previewMode} info />
       <Segment.Group>
         <Segment content={<Header content={assessment.name} size="huge"/>} />
