@@ -113,4 +113,16 @@ export default function ({ user }) {
   )
 }
 
-export const getServerSideProps = withSessionSsr();
+export const getServerSideProps = withSessionSsr(({ req }) => {
+  if (req.session.user.userType === "student") {
+    return {
+      props: {
+        user: req.session.user,
+      },
+      redirect: {
+        permanent: false,
+        destination: "/dashboard"
+      }
+    };
+  }
+});
