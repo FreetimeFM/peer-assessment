@@ -1,21 +1,21 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Container, Header, Message, Segment } from "semantic-ui-react";
+import { Button, Container, Header, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
-import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
 import textToHTML from "lib/common";
 import Metadata from "components/Metadata";
+import Link from "next/link";
 
 export default function ({ user }) {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
-  const previewMode = user.userType !== "student";
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
+  const [ responses, setResponses ] = useState({});
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -33,7 +33,7 @@ export default function ({ user }) {
     });
 
     try {
-      const response = await fetchJson("/api/get_assessment_details", {
+      const details = await fetchJson("/api/get_assessment_details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,13 +42,24 @@ export default function ({ user }) {
         body: JSON.stringify({ assessmentRefID: assessmentRefID })
       });
 
-      console.log(response);
+      console.log("details", details);
 
-      if (response.error) {
-        console.error(response.error);
-        setFetchOptions({ ...fetchOptions, error: response?.clientMessage });
+      const answers = await fetchJson("/api/get_assessment_answers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ assessmentRefID: assessmentRefID })
+      });
+
+      console.log("answers", answers);
+
+      if (details.error && answers.error) {
+        setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
       } else {
-        setAssessment(response.result);
+        setAssessment(details.result);
+        setResponses(answers.result);
       }
     } catch (error) {
       console.error(error);
