@@ -5,8 +5,9 @@ import Link from "next/link";
 import AssessmentCard from "./AssessmentCard";
 import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 import fetchJson from "lib/iron-session/fetchJson";
+import user from "pages/dashboard/create/user";
 
-export default function AssessmentList({ userType = 2, past = false }) {
+export default function AssessmentList({ userType, past = false }) {
 
   if (past) return placeholderTemplate();
 
@@ -71,6 +72,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
           <AssessmentCard
             key={index}
             details={assessment}
+            teacher={userType === "teacher"}
             past={past}
           />
         );

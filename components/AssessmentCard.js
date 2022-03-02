@@ -2,7 +2,9 @@ import Link from "next/link"
 import { Card, Button, Modal, Table } from "semantic-ui-react"
 import { useState } from "react"
 
-export default function AssessmentCard({ details, past = false }) {
+export default function AssessmentCard({ details, teacher, past = false }) {
+  const link = `/dashboard/${teacher ? "manage" : "assess"}/${details.assessmentRefID}`
+
   return (
     <Card style={{ width: "400px" }}>
       <Card.Content
@@ -19,9 +21,9 @@ export default function AssessmentCard({ details, past = false }) {
       </Card.Content>
       <Card.Content extra>
         <Button.Group fluid widths={2} >
-        <InfoModal details={details} past/>
-          <Link href={`/dashboard/assess/${details.assessmentRefID}`}>
-            <Button content="View" primary/>
+        <InfoModal details={details} link={link} teacher={teacher} past={past} />
+          <Link href={link}>
+            <Button content={teacher ? "Manage" : "Start"} primary/>
           </Link>
         </Button.Group>
       </Card.Content>
@@ -29,7 +31,7 @@ export default function AssessmentCard({ details, past = false }) {
   )
 }
 
-function InfoModal({trigger = <Button>Learn More</Button>, details, past = false}) {
+function InfoModal({trigger = <Button>Learn More</Button>, details, link, teacher, past = false}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -84,8 +86,8 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, past = false
           content="Close"
           onClick={() => setOpen(false)}
         />
-        <Link href={`/dashboard/assess/${details.assessmentRefID}`}>
-          <Button content="View" primary/>
+        <Link href={link}>
+          <Button content={teacher ? "Manage" : "Start"} primary/>
         </Link>
       </Modal.Actions>
     </Modal>
