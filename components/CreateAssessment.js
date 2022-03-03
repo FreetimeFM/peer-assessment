@@ -233,11 +233,11 @@ function StageOne({ onSubmit, data, classDropdown }) {
 
       <Form.Group widths="equal">
         <Form.Dropdown
-          name="class"
+          name="classRefID"
           label={<label>Class <FormInputPopup message="Choose the class you want to assign this assessment to." /></label>}
           options={classDropdown.list}
           onChange={updateForm}
-          placeholder={classDropdown.fetching ? "Please wait..." : "Available to everyone"}
+          placeholder={classDropdown.fetching ? "Please wait..." : "You don't have any classes."}
           loading={classDropdown.fetching}
           fluid
           search
