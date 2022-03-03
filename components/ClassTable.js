@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Table, Message, Modal } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
-import PlaceHolder from "./PlaceHolder";
+import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 
 export default function ClassTable({ user }) {
+
+  if (user.userType === "teacher") return placeholderTemplate();
 
   const [ classList, setClassList ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({ fetching: false, fetched: false });
