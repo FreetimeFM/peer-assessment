@@ -17,12 +17,12 @@ export default function CreateClass({ user }) {
   const [ success, setSuccess ] = useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
-    teachers: "",
+    teacherRefID: "",
     students: []
   });
   const [ formError, setFormError ] = useState({
     name: "",
-    teachers: "",
+    teacherRefID: "",
     students: ""
   });
 
@@ -110,7 +110,7 @@ export default function CreateClass({ user }) {
     let validationSuccess = true;
     let errors = {
       name: "",
-      teachers: "",
+      teacherRefID: "",
       students: ""
     };
 
@@ -129,7 +129,7 @@ export default function CreateClass({ user }) {
     .messages({
       "string.empty": "Cannot be empty"
     })
-    .validate(formData.teachers);
+    .validate(formData.teacherRefID);
 
     const studentsCheck = Joi.array()
     .min(1)
@@ -147,7 +147,7 @@ export default function CreateClass({ user }) {
     if (teachersCheck.error) {
       errors = {
         ...errors,
-        teachers: teachersCheck.error.details[0].message
+        teacherRefID: teachersCheck.error.details[0].message
       };
       validationSuccess = false;
     }
@@ -194,7 +194,7 @@ export default function CreateClass({ user }) {
 
       setFormData({
         name: "",
-        teachers: [],
+        teacherRefID: [],
         students: []
       });
 
@@ -227,12 +227,12 @@ export default function CreateClass({ user }) {
       </Form.Group>
       <Form.Group widths="equal">
         <Form.Dropdown
-          name="teachers"
+          name="teacherRefID"
           label={<label>Teacher(s) <FormInputPopup message="Select the teachers who will have access to this class." /></label>}
           options={teachersDropdown}
           onChange={handleChange}
-          value={formData.teachers}
-          error={formError.teachers === "" ? null : formError.teachers}
+          value={formData.teacherRefID}
+          error={formError.teacherRefID === "" ? null : formError.teacherRefID}
           placeholder="Required."
           fluid
           search
