@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
-import { Table, Message } from "semantic-ui-react";
+import { Table, Message, Modal } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
+import PlaceHolder from "./PlaceHolder";
 
 export default function ClassTable({ user }) {
 
   const [ classList, setClassList ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({ fetching: false, fetched: false });
   const [ error, setError ] = useState("");
+  const [ modal, setModal ] = useState({
+    open: false,
+    list: []
+  })
 
   useEffect(() => {
     fetchClassList();
@@ -30,7 +35,7 @@ export default function ClassTable({ user }) {
         console.error(error);
         setError(response?.clientMessage);
       } else {
-        if (user.userType === "admin") parseClassListDataAdmin(response.result.data);
+        if (user.userType === "admin") setClassList(response.result.data);
         else parseClassListDataTeacher(response.result);
       }
 
@@ -42,16 +47,6 @@ export default function ClassTable({ user }) {
     setFetchOptions({ fetched: true, fetching: false });
   }
 
-  function parseClassListDataAdmin(list) {
-    setClassList(list.map(element => {
-      return {
-        classRef: element[0],
-        name: element[1],
-        teacher: element[2]
-      }
-    }))
-  }
-
   function parseClassListDataTeacher(list) {
     setClassList(list.map(element => {
       return {
@@ -61,11 +56,24 @@ export default function ClassTable({ user }) {
     }))
   }
 
+  function handleModalClose() {
+    setModal({
+      ...modal,
+      open: false
+    })
+  }
+
+  function handleRowClick(index) {
+    console.log(index)
+  }
+
+  if (fetchOptions.error) return <PlaceHolder iconName="close" message="Error fetching classes." extraContent="Please contact your adminstrator." />
+  if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching the classes." />;
+
   return (
     <>
-      <Message content={error} hidden={error === ""} error/>
-      <Message content="Fetching classes. Please wait." hidden={!fetchOptions.fetching} info/>
-      <Table attached="bottom" celled selectable striped>
+      <StudentsModal open={modal.open} onClose={handleModalClose} list={modal.list} />
+      <Table attached="bottom" style={{ cursor: "pointer" }} celled selectable striped>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell />
@@ -76,8 +84,21 @@ export default function ClassTable({ user }) {
         <Table.Body>
           {
             classList.map((element, index) => {
-              if (user.userType === "admin") return <Row key={index} index={index + 1} name={element.name} teacher={element.teacher} />
-              else return <Row key={index} index={index + 1} name={element.name} />
+              if (user.userType === "admin") return (
+                <Row
+                  key={index}
+                  index={index + 1}
+                  name={element.name}
+                  teacher={`${element.teacher.name} (${element.teacher.email})`}
+                  onRowClick={_e => handleRowClick(index)}
+                />
+              )
+              else return (
+                <Row
+                  key={index}
+                  index={index + 1}
+                  name={element.name}
+                />)
             })
           }
         </Table.Body>
@@ -86,12 +107,30 @@ export default function ClassTable({ user }) {
   )
 }
 
-function Row({ index, name, teacher }) {
+function Row({ index, name, teacher, onRowClick }) {
   return (
-    <Table.Row>
+    <Table.Row onClick={onRowClick} >
       <Table.Cell content={index} />
       <Table.Cell content={name} />
       { teacher ? <Table.Cell content={teacher} /> : null }
     </Table.Row>
+  )
+}
+
+function StudentsModal({ open, onClose, rows }) {
+  return (
+    <Modal
+      header="Students"
+      open={open}
+      onClose={onClose}
+      content={
+        <Table>
+          <Table.Body>
+            {rows}
+          </Table.Body>
+        </Table>
+      }
+      closeIcon
+    />
   )
 }
