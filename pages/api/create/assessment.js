@@ -7,10 +7,7 @@ export default withSessionApi(async function ({req, res}) {
   try {
     if (!req.body) return res.status(400).json(createErrorPayload(301));
 
-    await createAssessment({
-      ...req.body,
-      teacherRef: req.session.user.refID
-    })
+    await createAssessment({ ...req.body });
 
     return res.status(200).json({
       error: false
