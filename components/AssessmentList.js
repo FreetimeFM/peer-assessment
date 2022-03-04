@@ -18,7 +18,7 @@ export default function AssessmentList({ userType, past = false }) {
   });
 
   useEffect(() => {
-    fetchAssessments()
+    fetchAssessments();
   }, [])
 
   async function fetchAssessments() {
@@ -37,16 +37,37 @@ export default function AssessmentList({ userType, past = false }) {
 
       console.log(response);
 
-      if (response.error) {
-        console.error(response);
-      }
-      else setAssessmentList(response.result);
+      if (response.error) console.error(response);
+      else setAssessmentList(parseData(response.result.data));
 
     } catch (error) {
       console.error(error);
     }
 
     setFetchOptions({ fetched: true, fetching: false });
+  }
+
+  function parseData(data) {
+    let assessments = [];
+
+    data.forEach(item => {
+      item.assessments.forEach(assessment => {
+        assessments.push(
+          {
+            "class": item.class,
+            "teacher": item.teacher,
+            "assessmentRefID": assessment[0],
+            "name": assessment[2],
+            "briefDescription": assessment[3],
+            "releaseDate": assessment[4],
+            "submissionDeadline": assessment[5],
+            "markingDeadline": assessment[6],
+          }
+        );
+      });
+    });
+
+    return assessments;
   }
 
   if (fetchOptions.fetching) return (
