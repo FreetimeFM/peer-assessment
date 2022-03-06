@@ -9,7 +9,7 @@ export default withSessionApi(async ({req, res}) => {
 
     const id = req.body.assessmentRefID;
 
-    if (!isInt(id)) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
+    if (!isInt(id.toString())) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
 
     const { error, result } = await getAssessmentDetailsByAssessmentRefID(id.toString());
     if (error) {
