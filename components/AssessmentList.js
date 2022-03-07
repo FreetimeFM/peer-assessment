@@ -5,7 +5,6 @@ import Link from "next/link";
 import AssessmentCard from "./AssessmentCard";
 import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 import fetchJson from "lib/iron-session/fetchJson";
-import user from "pages/dashboard/create/user";
 
 export default function AssessmentList({ userType, past = false }) {
 
