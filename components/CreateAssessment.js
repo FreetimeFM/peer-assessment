@@ -228,6 +228,7 @@ function StageOne({ onSubmit, data, classDropdown }) {
           value={formData.releaseDate}
           onChange={updateForm}
           required
+          disabled
         />
       </Form.Group>
 
@@ -286,6 +287,7 @@ function StageOne({ onSubmit, data, classDropdown }) {
           value={formData.submissionDeadline}
           onChange={updateForm}
           required
+          disabled
         />
         <Form.Input
           name="markingDeadline"
@@ -294,11 +296,12 @@ function StageOne({ onSubmit, data, classDropdown }) {
           value={formData.markingDeadline}
           onChange={updateForm}
           required
+          disabled
         />
       </Form.Group>
 
 
-      {/* <Form.Group widths="equal" >
+      <Form.Group widths="equal" >
         <Form.Input
           name="assessmentFiles"
           label={<label>Assessment Files <FormInputPopup message="These files will be available to students in the assessment stage."/></label>}
@@ -306,6 +309,7 @@ function StageOne({ onSubmit, data, classDropdown }) {
           onChange={updateForm}
           multiple
           required
+          disabled
         />
         <Form.Input
           name="markingFiles"
@@ -314,8 +318,9 @@ function StageOne({ onSubmit, data, classDropdown }) {
           onChange={updateForm}
           multiple
           required
+          disabled
         />
-      </Form.Group> */}
+      </Form.Group>
 
       <Form.Button content="Next" size="large" primary fluid/>
     </Form>
