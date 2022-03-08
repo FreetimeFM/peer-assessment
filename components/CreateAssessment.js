@@ -350,9 +350,16 @@ function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
     onSubmit(questions);
   }
 
+  function handleRemoveQuestion(index) {
+    setQuestions(questions.filter((item, pos) => pos !== index ? item : null))
+  }
+
   return (
     <Form loading={submitting} >
-      <DisplayQuestions questions={questions} />
+      <DisplayQuestions
+        questions={questions}
+        onRemove={handleRemoveQuestion}
+      />
       <CreateQuestion
         onAddQuestion={handleAddQuestion}
         onRemoveAll={handleRemoveAll}
@@ -367,17 +374,30 @@ function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
   )
 }
 
-function DisplayQuestions({ questions }) {
+function DisplayQuestions({ questions, onRemove }) {
 
   return questions.map((question, index) => {
     return (
       <Card
         key={index}
-        header={`${index + 1}. ${question.name}`}
-        meta={`Type: ${question.type}`}
-        extra={`Marks: ${question.marks}`}
+        color="green"
         fluid
-      />
+      >
+        <Card.Content
+          header={`${index + 1}. ${question.name}`}
+          meta={`Type: ${getQuestionTypeByValue(question.type).text}, Marks: ${question.marks}`}
+        />
+        <Card.Content description="Nothing" />
+        <Card.Content extra>
+          <Button content="Edit" size="mini" disabled/>
+          <Button content="Move up" size="mini" disabled/>
+          <Button content="Move down" size="mini" disabled/>
+          <Button content="Remove" size="mini" onClick={e => {
+            e.preventDefault();
+            onRemove(index);
+          }} negative />
+        </Card.Content>
+      </Card>
     )
   })
 }
