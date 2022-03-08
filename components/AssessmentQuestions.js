@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, Form } from "semantic-ui-react";
-import QuestionField from "./QuestionField";
+import QuestionCard from "./QuestionCard";
 
 export default function AssessmentQuestions({ questions, onSubmit, preview = false, errorList = [] }) {
   const [ answers, setAnswers ] = useState({});
@@ -17,17 +17,20 @@ export default function AssessmentQuestions({ questions, onSubmit, preview = fal
       {
         questions.map((item, index) => {
           return (
-            <Card fluid key={index}>
-              <Card.Content
-                header={`${index + 1}. ${item.name}`}
-                meta={`${item.marks} ${item.marks === 1 ? "mark" : "marks"}`}
-              />
-              <Card.Content content={<QuestionField index={index} type={item.type} onChange={handleAnswerInput} />} />
-            </Card>
+            <QuestionCard
+              index={index}
+              question={item}
+              preview={preview}
+              onAnswerInput={handleAnswerInput}
+            />
           )
         })
       }
-      <Form.Button type="submit" style={{ display: "none" }} disabled/>
+      <Form.Button
+        type="submit"
+        style={{ display: "none" }}
+        disabled
+      />
       <Form.Button
         content="Submit"
         onClick={_e => onSubmit(answers)}
