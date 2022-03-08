@@ -445,6 +445,7 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
         </Form.Group>
       </Card.Content>
       <Card.Content extra>
+        <Form.Button type="submit" style={{ display: "none" }} disabled/>
         <Form.Group widths="equal">
           <Form.Button content="Remove all questions" onClick={onRemoveAll} negative fluid/>
           <Form.Button content="Add Question" onClick={handleClick} primary fluid/>
