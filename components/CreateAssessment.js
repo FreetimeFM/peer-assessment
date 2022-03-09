@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Form, Card, Step, Divider, Message } from "semantic-ui-react";
+import { Form, Card, Step, Divider, Message, Button, Header, Modal } from "semantic-ui-react";
 
 import fetchJson from "../lib/iron-session/fetchJson";
 import FormInputPopup from "./FormInputPopup";
-import { questionTypes } from "lib/questionTypes";
+import { getMarkingQuestionsTypes, getQuestionTypeByValue, questionTypes } from "lib/questionTypes";
+import { QuestionField } from "./QuestionCard";
 
 export default function CreateAssessment({ userRef }) {
 
-  const [ stage, setStage ] = useState(1);
+  const [ stage, setStage ] = useState(2);
   const [ stageOneData, setStageOneData ] = useState();
   const [ stageTwoData, setStageTwoData ] = useState();
   const [ submitting, setSubmitting ] = useState(false);
@@ -28,13 +29,20 @@ export default function CreateAssessment({ userRef }) {
       title: 'Details',
       description: 'Enter details about the assessment.',
       active: stage === 1,
-      completed: stage === 2,
+      completed: stage > 1,
     },
     {
       key: 2,
       title: 'Questions',
       description: 'Add questions for the assessment.',
       active: stage === 2,
+      completed: stage > 2,
+    },
+    {
+      key: 3,
+      title: 'Marking',
+      description: 'Add marking criteria.',
+      active: stage === 3,
     },
   ];
 
@@ -98,10 +106,14 @@ export default function CreateAssessment({ userRef }) {
   }
 
   function stageTwoSubmit(data) {
-
-    if (data.length === 0) return alert("Not submitted as there are no questions.");
+    if (data.length === 0) return alert("Please add some questions for the assessment.");
     setStageTwoData(data);
-    submitAssessment(data);
+    setStage(3);
+    // submitAssessment(data);
+  }
+
+  function stageThreeSubmit(data) {
+    console.log("stage 3", data);
   }
 
   async function submitAssessment(data) {
@@ -157,31 +169,57 @@ export default function CreateAssessment({ userRef }) {
     setSubmitting(false);
   }
 
-  function reverseStage(questions) {
-    setStageTwoData(questions);
-    setStage(1);
+  function reverseStage(data) {
+
+    if (stage === 3) {
+      // setStageThreeData(data);
+    } else if (stage === 2) {
+      setStageTwoData(data);
+    }
+    setStage(stage - 1);
+  }
+
+  function renderStage() {
+    switch (stage) {
+      case 3:
+        return (
+          <StageThree
+            assessmentQuestions={stageTwoData}
+            onReverseStage={reverseStage}
+            onSubmit={stageThreeSubmit}
+            submitting={submitting}
+          />
+        )
+
+      case 2:
+        return (
+          <StageTwo
+            onReverseStage={reverseStage}
+            onSubmit={stageTwoSubmit}
+            data={stageTwoData}
+          />
+        )
+
+      default:
+        return (
+          <StageOne
+            onSubmit={stageOneSubmit}
+            data={stageOneData}
+            classDropdown={classDropdown}
+          />
+        )
+    }
   }
 
   return (
     <>
       <Step.Group
         items={steps}
+        widths={steps.length}
         ordered
         fluid
       />
-      { stage === 1 ?
-        <StageOne
-          onSubmit={stageOneSubmit}
-          data={stageOneData}
-          classDropdown={classDropdown}
-        /> :
-        <StageTwo
-          onReverseStage={reverseStage}
-          onSubmit={stageTwoSubmit}
-          data={stageTwoData}
-          submitting={submitting}
-        />
-      }
+      {renderStage()}
       <Message
         success={!apiResult.error}
         error={apiResult.error}
@@ -327,6 +365,7 @@ function StageOne({ onSubmit, data, classDropdown }) {
   )
 }
 
+// TODO: Create own modals as popup boxes.
 function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
 
   const [ questions, setQuestions ] = useState(data === undefined ? [] : data);
@@ -351,7 +390,8 @@ function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
   }
 
   function handleRemoveQuestion(index) {
-    setQuestions(questions.filter((item, pos) => pos !== index ? item : null))
+    if (confirm(`Are you sure you want to remove the question "${questions[index].name}"`))
+    setQuestions(questions.filter((item, pos) => pos !== index ? item : null));
   }
 
   return (
@@ -367,7 +407,66 @@ function StageTwo({ onReverseStage, onSubmit, data, submitting }) {
 
       <Divider />
       <Form.Group widths="equal">
+        <Form.Button
+          content="Back"
+          size="large"
+          onClick={handleBackClick}
+          fluid
+        />
+        <Form.Button
+          content="Clear questions"
+          size="large"
+          onClick={handleRemoveAll}
+          disabled={questions.length === 0}
+          negative
+          fluid
+        />
+        <Form.Button
+          content="Next"
+          size="large"
+          onClick={handleNextClick}
+          disabled={questions.length === 0}
+          primary
+          fluid
+        />
+      </Form.Group>
+    </Form>
+  )
+}
+
+function StageThree({ assessmentQuestions, onReverseStage, onSubmit, submitting }) {
+
+  const [ markingQuestions, setMarkingQuestions ] = useState([]);
+
+  function handleBackClick(e) {
+    e.preventDefault();
+    onReverseStage();
+  }
+
+  function handleNextClick(e) {
+
+  }
+
+  function handleCreateQuestion() {
+
+  }
+
+  return (
+    <Form loading={submitting} >
+      <DisplayMarkingQuestions
+        questions={assessmentQuestions}
+        markingQuestions={markingQuestions}
+      />
+      <Divider />
+      <button type="submit" style={{ display: "none" }} disabled/>
+      <Form.Group widths="equal">
         <Form.Button content="Back" size="large" onClick={handleBackClick} fluid/>
+        <CreateMarkingQuestion
+          onCreateQuestion={handleCreateQuestion}
+          questionNames={
+            assessmentQuestions.map(item => item.name)
+          }
+        />
         <Form.Button content="Submit" size="large" onClick={handleNextClick} primary fluid/>
       </Form.Group>
     </Form>
@@ -380,14 +479,16 @@ function DisplayQuestions({ questions, onRemove }) {
     return (
       <Card
         key={index}
-        color="green"
+        color="red"
         fluid
       >
         <Card.Content
           header={`${index + 1}. ${question.name}`}
           meta={`Type: ${getQuestionTypeByValue(question.type).text}, Marks: ${question.marks}`}
         />
-        <Card.Content description="Nothing" />
+        <Card.Content>
+          <QuestionField index={index} type={question.type} preview={true} />
+        </Card.Content>
         <Card.Content extra>
           <Button content="Edit" size="mini" disabled/>
           <Button content="Move up" size="mini" disabled/>
@@ -402,35 +503,38 @@ function DisplayQuestions({ questions, onRemove }) {
   })
 }
 
-function CreateQuestion({ onAddQuestion, onRemoveAll }) {
+function CreateQuestion({ onAddQuestion }) {
 
-  const [ qName, setQName ] = useState("");
-  const [ marks, setMarks ] = useState(1);
-  const [ qType, setQType ] = useState(questionTypes[0].value);
+  const qTypes = getDropdownOptions(questionTypes);
+
+  const [ question, setQuestion ] = useState({
+    name: "",
+    marks: 1,
+    type: qTypes[0].value
+  });
 
   function handleClick(_e) {
-    if (qName.length === 0) return;
-    onAddQuestion({
-      "name": qName,
-      "marks": marks,
-      "type": qType
+    if (question.name.length === 0) return;
+    onAddQuestion(question);
+    setQuestion({
+      name: "",
+      marks: 1,
+      type: qTypes[0].value
     });
-    setQName("");
-    setQType(questionTypes[0].value);
   }
 
   return (
     <Card color="blue" fluid raised>
-      <Card.Content content={<Card.Header content="Create a new question" />} />
+      <Card.Content content={<Card.Header content="Create an assessment question" />} />
       <Card.Content>
         <Form.Group>
           <Form.Input
             name="name"
-            label={<label>Question <FormInputPopup message="The name of the question. 150 characters maximum. Required."/></label>}
+            label={<label>Assessment Question <FormInputPopup message="The question you want to assess. 150 characters maximum. Required."/></label>}
             placeholder="Required."
-            value={qName}
+            value={question.name}
             onChange={(_e, {value}) => {
-              setQName(value);
+              setQuestion({ ...question, "name": value })
             }}
             maxLength={150}
             width="8"
@@ -441,9 +545,9 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
             type="number"
             label={<label>Marks <FormInputPopup message="The number of marks this question is worth. Required."/></label>}
             placeholder="Required."
-            value={marks}
+            value={question.marks}
             onChange={(_e, {value}) => {
-              setMarks(value);
+              setQuestion({ ...question, "marks": value })
             }}
             defaultValue={1}
             min={0}
@@ -453,10 +557,10 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
           <Form.Dropdown
             name="type"
             label={<label>Type <FormInputPopup message="The type of question. Required."/></label>}
-            options={questionTypes}
-            value={qType}
+            options={qTypes}
+            value={question.type}
             onChange={(_e, {value}) => {
-              setQType(value);
+              setQuestion({ ...question, "type": value })
             }}
             width="5"
             selection
@@ -465,12 +569,161 @@ function CreateQuestion({ onAddQuestion, onRemoveAll }) {
         </Form.Group>
       </Card.Content>
       <Card.Content extra>
-        <Form.Button type="submit" style={{ display: "none" }} disabled/>
-        <Form.Group widths="equal">
-          <Form.Button content="Remove all questions" onClick={onRemoveAll} negative fluid/>
-          <Form.Button content="Add Question" onClick={handleClick} primary fluid/>
-        </Form.Group>
+        <button type="submit" style={{ display: "none" }} disabled/>
+        <Form.Button
+          content="Add Question"
+          onClick={handleClick}
+          disabled={question.name.length === 0}
+          primary
+        />
       </Card.Content>
     </Card>
   );
+}
+
+function DisplayMarkingQuestions({ questions, markingQuestions, onRemove }) {
+  return questions.map((question, index) => {
+    return (
+      <Card
+        key={index}
+        color="green"
+        fluid
+      >
+        <Card.Content
+          header={`${index + 1}. ${question.name}`}
+          meta={`Type: ${getQuestionTypeByValue(question.type).text}, Marks: ${question.marks}`}
+        />
+        <Card.Content>
+
+        </Card.Content>
+      </Card>
+    )
+  })
+}
+
+function CreateMarkingQuestion({ questionNames, onCreateQuestion }) {
+  const markingQuestionTypes = getDropdownOptions(getMarkingQuestionsTypes());
+  const [ open, setOpen ] = useState(false);
+  const questionsDropdown = questionNames.map((name, index) => {
+    return {
+      key: index,
+      value: index,
+      text: `${index + 1}. ${name}`
+    }
+  });
+  const [ question, setQuestion ] = useState({
+    index: -1,
+    name: "",
+    type: markingQuestionTypes[0].value,
+  });
+
+  function onAdd(_e) {
+    if (question.name.length === 0) {
+      alert("The marking question cannot be empty.");
+      return;
+    }
+    console.log("question", question)
+  }
+
+  function onCancel(_e) {
+    setOpen(false);
+    setQuestion({
+      index: [],
+      name: "",
+      type: markingQuestionTypes[0].value,
+    });
+  }
+
+  return (
+    <Modal
+      open={open}
+      trigger={
+        <Form.Button
+          content="Add marking question"
+          size="large"
+          onClick={_e => setOpen(true)}
+          fluid
+        />
+      }
+    >
+      <Modal.Header content="Add a marking question" />
+      <Modal.Content>
+        <Form>
+          <Form.Dropdown
+            name="index"
+            label={
+              <label>Select Assessment Question{" "}
+                <FormInputPopup
+                  message={<>You can apply this marking question to an <strong>assessment</strong> question
+                  or leave it empty to apply it as a general marking question.</>}
+                />
+              </label>
+            }
+            options={questionsDropdown}
+            value={question.index}
+            placeholder="If empty, don't apply to any assessment questions."
+            onChange={(_e, {value}) => {
+              setQuestion({ ...question, "index": value })
+            }}
+            search
+            multiple
+            selection
+          />
+          <Form.Group>
+            <Form.Input
+              name="name"
+              label={
+                <label>
+                  Marking Question <FormInputPopup message="The question that will be shown in the marking stage. 150 characters maximum. Required."/>
+                </label>
+              }
+              placeholder="Required."
+              value={question.name}
+              onChange={(_e, {value}) => {
+                setQuestion({ ...question, "name": value })
+              }}
+              maxLength={150}
+              width="10"
+              required
+            />
+            <Form.Dropdown
+              name="type"
+              label={<label>Marking Question Type <FormInputPopup message="The type of marking question. Required."/></label>}
+              options={markingQuestionTypes}
+              value={question.type}
+              onChange={(_e, {value}) => {
+                setQuestion({ ...question, "type": value })
+              }}
+              width="6"
+              selection
+              required
+            />
+          </Form.Group>
+        </Form>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content="Cancel" onClick={onCancel} />
+        <Button
+          content="Add"
+          onClick={onAdd}
+          disabled={question.name.length === 0}
+          primary
+        />
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
+function getDropdownOptions(types) {
+  return types.map((item, index) => {
+    return {
+      key: index,
+      text: item.text,
+      value: item.value,
+      content: (
+        <Header icon={item.iconName} content={item.text} subheader={item.description} />
+      ),
+      disabled: item.disabled,
+    }
+  })
 }
