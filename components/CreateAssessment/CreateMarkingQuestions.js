@@ -6,7 +6,7 @@ import FormInputPopup from "components/FormInputPopup";
 import { getDropdownOptions } from "lib/common";
 import { getMarkingQuestionsTypes, getQuestionTypeByValue } from "lib/questionTypes";
 
-export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, generalMarkingQuestions, onAddQuestion, onRemoveQuestion }) {
+export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, generalMarkingQuestions, onAddQuestion, onRemoveQuestion, onRemoveGeneralQuestion }) {
 
   return (
     <>
@@ -15,6 +15,19 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
         questionNames={assessmentQuestions.map(item => item.name)}
       />
       <Divider content="Assessment Questions" horizontal/>
+      {
+        markingQuestions.length === 0 ? (
+          <Card fluid>
+            <Card.Content fluid>
+              <strong>No general marking criteria. </strong>
+              A general marking question doesn't apply to a specific assessment question but rather to the whole
+              assessment itself.<br />
+              To add a marking question here, click "Add marking question". Ensure that you
+              leave the "Select Assessment Questions" field empty. Then enter the question and question type and click "Add".
+            </Card.Content>
+          </Card>
+        ) : null
+      }
       <DisplayMarkingQuestions
         assessmentQuestions={assessmentQuestions}
         markingQuestions={markingQuestions}
@@ -23,6 +36,11 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
       <Divider content="General Marking Questions" horizontal/>
       <DisplayGeneralMarkingQuestions
         questions={generalMarkingQuestions}
+        onRemoveQuestion={onRemoveGeneralQuestion}
+      />
+      <CreateMarkingQuestion
+        onAddQuestion={onAddQuestion}
+        questionNames={assessmentQuestions.map(item => item.name)}
       />
     </>
   );
@@ -32,6 +50,9 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
 
   function renderQuestionsAtIndex(index) {
     if (!markingQuestions[index]) return "No marking criteria for this assessment question."
+    else {
+      if (markingQuestions[index].length === 0) return "No marking criteria for this assessment question."
+    }
 
     return markingQuestions[index].map((question, pos) => {
       return (
@@ -66,7 +87,7 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
       <Card
         key={index}
         color="red"
-        style={{ marginBottom: "3em" }}
+        style={{ marginBottom: "2em" }}
         fluid
       >
         <Card.Content
@@ -79,7 +100,19 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
   })
 }
 
-function DisplayGeneralMarkingQuestions({ questions }) {
+function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
+  if (questions.length === 0) return (
+    <Card fluid>
+      <Card.Content fluid>
+        <strong>No general marking criteria. </strong>
+        A general marking question doesn't apply to a specific assessment question but rather to the whole
+        assessment itself.<br />
+        To add a marking question here, click "Add marking question". Ensure that you
+        leave the "Select Assessment Questions" field empty. Then enter the question and question type and click "Add".
+      </Card.Content>
+    </Card>
+  )
+
   return questions.map((question, pos) => {
     return (
       <Card
@@ -88,7 +121,7 @@ function DisplayGeneralMarkingQuestions({ questions }) {
         description={
           <QuestionField
             type={question.type}
-            label={`${index + 1}.${pos + 1}. ${question.name}`}
+            label={`${pos + 1}. ${question.name}`}
             placeholder={`Type: ${getQuestionTypeByValue(question.type).text}`}
           />
         }
@@ -97,11 +130,12 @@ function DisplayGeneralMarkingQuestions({ questions }) {
             content="Remove"
             size="mini"
             onClick={_e => {
-              onRemoveQuestion(index, pos);
+              onRemoveQuestion(pos);
             }}
             negative
           />
         }
+        style={{ marginBottom: "2em" }}
         fluid
       />
     )
