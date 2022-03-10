@@ -8,25 +8,32 @@ export default withSessionApi(async function ({req, res}) {
     // if (!req.body) return res.status(400).json(createErrorPayload(301));
     // TODO: validation.
 
-    const classRefID = req.body.classRefID
-    const peerMarkingQuantity = parseInt(req.body.peerMarkingQuantity);
+    const { classRefID, peerMarkingQuantity } = req.body;
+    let peerMarkingQty = parseInt(peerMarkingQuantity);
 
     const { error: getStudentsError, result: studentRefIDs } = await getStudentsByClassRefID(classRefID);
     if (getStudentsError) return errorResponse(res, 100);
 
-    const peerMarkingQty = peerMarkingQuantity >= studentRefIDs.data.length ? studentRefIDs.data.length - 1 : peerMarkingQuantity;
-    const assignmentResult = assignPeerMarking(studentRefIDs.data, peerMarkingQty);
+    let peerMarkingQuantityChanged = false;
+    if (peerMarkingQty >= studentRefIDs.data.length) {
+      peerMarkingQty = studentRefIDs.data.length - 1;
+      peerMarkingQuantityChanged = true;
+    }
 
     const createResult = await createAssessment({
       ...req.body,
       peerMarkingQuantity: peerMarkingQty,
-      peerAssignments: assignmentResult
+      peerAssignments: assignPeerMarking(studentRefIDs.data, peerMarkingQty)
     });
     if (createResult.error) return errorResponse(res, 100);
 
     return res.status(200).json({
       error: false,
-      result: createResult.result
+      result: {
+        ...createResult.result,
+        assessmentRefID: createResult.result.ref.id,
+        peerMarkingQuantityChanged: peerMarkingQuantityChanged
+      }
     });
   } catch (error) {
     console.error(error)
