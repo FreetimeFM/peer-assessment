@@ -1,11 +1,11 @@
 import { withSessionApi } from "lib/iron-session/withSession";
-import { createErrorPayload, errorResponse, getHttpStatus } from "lib/errors";
+import { errorResponse } from "lib/errors";
 import { createAssessment, getStudentsByClassRefID } from "lib/database";
 
 export default withSessionApi(async function ({req, res}) {
 
   try {
-    // if (!req.body) return res.status(400).json(createErrorPayload(301));
+    if (!req.body) return errorResponse(res, 301);
     // TODO: validation.
 
     const { classRefID, peerMarkingQuantity } = req.body;
@@ -37,7 +37,7 @@ export default withSessionApi(async function ({req, res}) {
     });
   } catch (error) {
     console.error(error)
-    return res.status(getHttpStatus(300)).json(createErrorPayload(300));
+    return errorResponse(res, 300);
   }
 })
 
