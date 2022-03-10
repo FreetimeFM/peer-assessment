@@ -35,6 +35,7 @@ export function QuestionField({ index, type, onChange, label, placeholder, previ
           placeholder={placeholder}
           onChange={onChange}
           maxLength={questionType.maxLength}
+          readOnly={preview}
         />
       );
 
@@ -46,6 +47,7 @@ export function QuestionField({ index, type, onChange, label, placeholder, previ
           placeholder={placeholder}
           onChange={onChange}
           maxLength={questionType.maxLength}
+          readOnly={preview}
         />
       );
   }
