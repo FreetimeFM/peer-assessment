@@ -104,59 +104,6 @@ export default function CreateAssessment() {
     setFetchOptions({ fetched: true, fetching: false });
   }
 
-  async function submitAssessment(data) {
-    if (!classList.fetched) return alert("Unable to retrieve classes. Please contact your adminstrator.");
-    setSubmitting(true);
-    console.info({
-      ...formData,
-      "questions": data
-    });
-
-    try {
-      const response = await fetchJson("/api/create/assessment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          "questions": data
-        }),
-      });
-
-      console.log(response);
-
-      if (!response || response?.error) {
-        setApiResult({
-          hidden: false,
-          error: true,
-          errorList: response?.errorList ? response?.errorList : []
-        });
-      }
-      else {
-        setApiResult({
-          hidden: false,
-          error: false,
-          errorList: []
-        });
-        setFormData();
-        setAssessmentQuestions();
-        setStage(1);
-      }
-
-    } catch (e) {
-      console.error(e);
-      setApiResult({
-        hidden: false,
-        error: true,
-        errorList: ["An unknown error has occured. Please contact your adminstrator."]
-      });
-    }
-
-    setSubmitting(false);
-  }
-
   // ## Stage 1 methods.
 
   function handleFormChange(_e, {name, value}) {
@@ -251,13 +198,90 @@ export default function CreateAssessment() {
     } else {
 
       //TODO: marking questions validation.
-      console.log(markingQuestions);
+      submitAssessment();
     }
   }
 
   function handleBack() {
     if (stage === 1) return;
     setStage(stage - 1);
+  }
+
+  async function submitAssessment() {
+    if (classList.length === 0) return alert("Unable to retrieve classes. Please contact your adminstrator.");
+    setSubmitting(true);
+
+    let empty = true;
+
+    markingQuestions.forEach(element => {
+      if (element.length > 0) empty = false;
+    });
+    if (generalMarkingQuestions.length > 0) empty = false;
+
+    if (empty) {
+      if (!confirm("You have not added any marking criteria, do you still want to submit?")) {
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    const submit = {
+      ...formData,
+      questions: assessmentQuestions,
+      markingCriteria: empty ? false : {
+        questions: markingQuestions,
+        general: generalMarkingQuestions
+      }
+    }
+
+    // TODO: Apply validation.
+
+    console.log("payload", submit);
+
+    try {
+      const { error, result } = await fetchJson("/api/create/assessment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(submit),
+      });
+
+      console.log("result", result);
+
+      if (error) {
+        setApiResult({
+          hidden: false,
+          error: true,
+          errorList: result.errorList ? result.errorList : []
+        });
+      }
+      else {
+        setApiResult({
+          hidden: false,
+          error: false,
+          errorList: []
+        });
+
+        if (result.peerMarkingQuantityChanged) {
+          alert(`The "Peer Marking Quantity" has been changed from ${formData.peerMarkingQuantity} to ${result.data.peerMarkingQuantity}. This is due to the class size being less than the value.`);
+        }
+
+        window.location.href = `/dashboard/manage/${result.assessmentRefID}`;
+        return;
+      }
+
+    } catch (e) {
+      console.error(e);
+      setApiResult({
+        hidden: false,
+        error: true,
+        errorList: ["An unknown error has occured. Please contact your adminstrator."]
+      });
+    }
+
+    setSubmitting(false);
   }
 
   function renderStage() {
