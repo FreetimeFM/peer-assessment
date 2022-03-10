@@ -18,12 +18,11 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
       {
         markingQuestions.length === 0 ? (
           <Card fluid>
-            <Card.Content fluid>
-              <strong>No general marking criteria. </strong>
-              A general marking question doesn't apply to a specific assessment question but rather to the whole
-              assessment itself.<br />
-              To add a marking question here, click "Add marking question". Ensure that you
-              leave the "Select Assessment Questions" field empty. Then enter the question and question type and click "Add".
+            <Card.Content>
+              <strong>No marking criteria. </strong><br />
+              To add a marking question specific to <strong>assessment</strong> questions, click <i>"Add marking question"</i>. Ensure that you{" "}
+              select the assessment questions you want from the <i>"Select Assessment Questions"</i> field. Then enter the question and question{" "}
+              type and click <i>"Add"</i>.
             </Card.Content>
           </Card>
         ) : null
@@ -64,6 +63,7 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
               type={question.type}
               label={`${index + 1}.${pos + 1}. ${question.name}`}
               placeholder={`Type: ${getQuestionTypeByValue(question.type).text}`}
+              preview={true}
             />
           }
           extra={
@@ -103,12 +103,11 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
 function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
   if (questions.length === 0) return (
     <Card fluid>
-      <Card.Content fluid>
-        <strong>No general marking criteria. </strong>
-        A general marking question doesn't apply to a specific assessment question but rather to the whole
-        assessment itself.<br />
-        To add a marking question here, click "Add marking question". Ensure that you
-        leave the "Select Assessment Questions" field empty. Then enter the question and question type and click "Add".
+      <Card.Content>
+        <strong>No general marking criteria. </strong><br />
+        A general marking question doesn't apply to a specific assessment question but rather to the whole assessment itself.<br />
+        To add a marking question here, click <i>"Add marking question"</i>. Ensure that you leave the <i>"Select Assessment Questions"</i>{" "}
+        field empty. Then enter the question and question type and click <i>"Add"</i>.
       </Card.Content>
     </Card>
   )
@@ -123,6 +122,7 @@ function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
             type={question.type}
             label={`${pos + 1}. ${question.name}`}
             placeholder={`Type: ${getQuestionTypeByValue(question.type).text}`}
+            preview={true}
           />
         }
         extra={
