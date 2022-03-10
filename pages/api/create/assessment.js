@@ -6,6 +6,7 @@ export default withSessionApi(async function ({req, res}) {
 
   try {
     // if (!req.body) return res.status(400).json(createErrorPayload(301));
+    // TODO: validation.
 
     const classRefID = req.body.classRefID
     const peerMarkingQuantity = parseInt(req.body.peerMarkingQuantity);

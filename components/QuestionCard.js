@@ -22,7 +22,7 @@ export default function QuestionCard({ index, question, onAnswerInput, preview =
   )
 }
 
-export function QuestionField({ index, type, onChange, preview = false }) {
+export function QuestionField({ index, type, onChange, label, placeholder, preview = false }) {
 
   const questionType = getQuestionTypeByValue(type)
 
@@ -31,6 +31,8 @@ export function QuestionField({ index, type, onChange, preview = false }) {
       return (
         <Form.Input
           name={index}
+          label={label}
+          placeholder={placeholder}
           onChange={onChange}
           maxLength={questionType.maxLength}
         />
@@ -40,6 +42,8 @@ export function QuestionField({ index, type, onChange, preview = false }) {
       return (
         <Form.TextArea
           name={index}
+          label={label}
+          placeholder={placeholder}
           onChange={onChange}
           maxLength={questionType.maxLength}
         />
