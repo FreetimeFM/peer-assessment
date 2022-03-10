@@ -43,10 +43,16 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         <Form.Input
           name="peerMarkingQuantity"
           type="number"
-          label={<label>Peer Marking Quantity <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required." /></label>}
+          label={
+            <label>Peer Marking Quantity{" "}
+              <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required." />
+            </label>
+          }
           placeholder="Required."
           value={formData.peerMarkingQuantity}
-          onChange={onFormChange}
+          onChange={e => {
+            onFormChange(e, {name: "peerMarkingQuantity", value: parseInt(e.target.value)})
+          }}
           min={1}
           max={10}
           required
@@ -58,7 +64,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         label={
           <label>
             Brief Description{" "}
-            <FormInputPopup message="This description will be displayed as an overview in the dashboard. 200 characters maximum." />
+            <FormInputPopup message="This description will be displayed as an overview in the dashboard. 200 characters maximum. Optional" />
           </label>
         }
         placeholder="This description will be displayed as an overview in the dashboard. 200 characters maximum. Optional."
@@ -72,13 +78,29 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         name="description"
         label={
           <label>
-            Content Description{" "}<FormInputPopup message="This description will be displayed during the assessment. 5000 characters maximum." />
+            Assessment Description{" "}
+            <FormInputPopup message="A detailed description which will be displayed during the assessment. 5000 characters maximum. Optional." />
           </label>
         }
-        placeholder="A detailed description about the assessment. 5000 characters maximum."
+        placeholder="A detailed description which will be displayed during the assessment. 5000 characters maximum. Optional."
         value={formData.description}
         maxLength={5000}
-        rows={11}
+        rows={6}
+        onChange={onFormChange}
+      />
+
+      <Form.TextArea
+        name="markingDescription"
+        label={
+          <label>
+            Marking Description{" "}
+            <FormInputPopup message="A detailed description which will be displayed during marking. 5000 characters maximum. Optional." />
+          </label>
+        }
+        placeholder="A detailed description which will be displayed during marking. 5000 characters maximum. Optional."
+        value={formData.markingDescription}
+        maxLength={5000}
+        rows={6}
         onChange={onFormChange}
       />
 

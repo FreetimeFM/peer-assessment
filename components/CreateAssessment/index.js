@@ -12,9 +12,10 @@ export default function CreateAssessment() {
   const [ formData, setFormData ] = useState({
     name: "",
     classRefID: "",
-    peerMarkingQuantity: 2,
+    peerMarkingQuantity: "2",
     briefDescription: "",
     description: "",
+    markingDescription: "",
   });
   const [ assessmentQuestions, setAssessmentQuestions ] = useState([]);
   const [ markingQuestions, setMarkingQuestions ] = useState([]);
@@ -55,8 +56,7 @@ export default function CreateAssessment() {
   ];
 
   useEffect(() => {
-    // fetchClasses();
-    setClassList([{ key: 0, text: "Test", value: "test" }])
+    fetchClasses();
   }, [])
 
   async function fetchClasses() {
