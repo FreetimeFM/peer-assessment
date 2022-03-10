@@ -8,7 +8,7 @@ import { CreateMarkingQuestions } from "./CreateMarkingQuestions";
 
 export default function CreateAssessment() {
 
-  const [ stage, setStage ] = useState(3);
+  const [ stage, setStage ] = useState(1);
   const [ formData, setFormData ] = useState({
     name: "",
     classRefID: "",
