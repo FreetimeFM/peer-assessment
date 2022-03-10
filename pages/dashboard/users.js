@@ -11,7 +11,7 @@ export default function users({ user, result }) {
   )
 }
 
-export const getServerSideProps = withSessionSsr(async ({ req }) => {
+export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
 
   if (req.session.user.userType !== "admin") {
     res.statusCode = 403;
