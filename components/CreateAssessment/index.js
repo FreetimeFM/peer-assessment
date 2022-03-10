@@ -225,6 +225,12 @@ export default function CreateAssessment() {
     }
   }
 
+  function handleRemoveGeneralMarkingQuestion(index) {
+    if (confirm("Are you sure you want to remove the marking question?")) {
+      setGeneralMarkingQuestions(generalMarkingQuestions.filter((question, pos) => pos !== index ? question : null));
+    }
+  }
+
   // ## Shared methods.
 
   function handleNext(_e) {
@@ -264,6 +270,7 @@ export default function CreateAssessment() {
             generalMarkingQuestions={generalMarkingQuestions}
             onAddQuestion={handleAddMarkingQuestion}
             onRemoveQuestion={handleRemoveMarkingQuestion}
+            onRemoveGeneralQuestion={handleRemoveGeneralMarkingQuestion}
           />
         )
 
