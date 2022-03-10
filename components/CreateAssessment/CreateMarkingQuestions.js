@@ -20,7 +20,7 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
           <Card fluid>
             <Card.Content>
               <strong>No marking criteria. </strong><br />
-              To add a marking question specific to <strong>assessment</strong> questions, click <i>"Add marking question"</i>. Ensure that you{" "}
+              To add a marking question specific to an <strong>assessment</strong> question, click <i>"Add marking question"</i>. Ensure that you{" "}
               select the assessment questions you want from the <i>"Select Assessment Questions"</i> field. Then enter the question and question{" "}
               type and click <i>"Add"</i>.
             </Card.Content>
@@ -105,7 +105,7 @@ function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
     <Card fluid>
       <Card.Content>
         <strong>No general marking criteria. </strong><br />
-        A general marking question doesn't apply to a specific assessment question but rather to the whole assessment itself.<br />
+        A general marking question doesn't apply to a specific <strong>assessment</strong> question but rather to the whole assessment itself.<br />
         To add a marking question here, click <i>"Add marking question"</i>. Ensure that you leave the <i>"Select Assessment Questions"</i>{" "}
         field empty. Then enter the question and question type and click <i>"Add"</i>.
       </Card.Content>
