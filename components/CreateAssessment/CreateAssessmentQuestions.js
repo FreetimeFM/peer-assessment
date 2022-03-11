@@ -109,7 +109,7 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
               placeholder="Required."
               value={question.marks}
               onChange={(_e, {value}) => {
-                setQuestion({ ...question, "marks": value })
+                setQuestion({ ...question, "marks": parseInt(value) })
               }}
               min={0}
               max={1000}
