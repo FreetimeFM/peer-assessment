@@ -45,7 +45,8 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           type="number"
           label={
             <label>Peer Marking Quantity{" "}
-              <FormInputPopup message="The number of peers each student has to mark. Minimum: 1. Maximum: 10. Required." />
+              <FormInputPopup message="The number of peers each student has to mark. If the class size is less than the value chosen,
+              the system will lower the value to match the class size. Minimum: 1. Maximum: 10. Required." />
             </label>
           }
           placeholder="Required."
