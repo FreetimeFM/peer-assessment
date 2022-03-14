@@ -20,18 +20,19 @@ export default withSessionApi(async function ({req, res}) {
       peerMarkingQuantityChanged = true;
     }
 
-    const createResult = await createAssessment({
-      ...req.body,
-      peerMarkingQuantity: peerMarkingQty,
-      peerAssignments: assignPeerMarking(studentRefIDs.data, peerMarkingQty)
-    });
-    if (createResult.error) return errorResponse(res, 100);
+    const { error, result } = await createAssessment({
+        ...req.body,
+        peerMarkingQuantity: peerMarkingQty,
+      },
+      assignPeerMarking(studentRefIDs.data, peerMarkingQty)
+    );
+    if (error) return errorResponse(res, 100);
 
     return res.status(200).json({
-      error: false,
+      error: error,
       result: {
-        ...createResult.result,
-        assessmentRefID: createResult.result.ref.id,
+        ...result,
+        assessmentRefID: result.assessment.ref.id,
         peerMarkingQuantityChanged: peerMarkingQuantityChanged
       }
     });
@@ -56,7 +57,12 @@ function assignPeerMarking(studentRefIDs, peerMarkingQuantity) {
     });
   }
 
-  return assignments;
+  return assignments.map(assignment => {
+    return {
+      userRefID: assignment[0],
+      peers: assignment.slice(1)
+    }
+  });
 }
 
 // Adapted from https://stackoverflow.com/a/2450976
