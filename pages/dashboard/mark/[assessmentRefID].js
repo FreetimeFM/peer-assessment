@@ -17,7 +17,7 @@ export default function ({ user }) {
   const [ markingDetails, setMarkingDetails ] = useState({});
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
-    fetching: true
+    fetching: false
   });
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function ({ user }) {
     setFetchOptions({ ...fetchOptions, fetching: true });
 
     try {
-      const { error, errorMessage, result } = await fetchJson("/api/get_assessment_details", {
+      const data = await fetchJson("/api/get_marking_details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,14 +38,13 @@ export default function ({ user }) {
         body: JSON.stringify({ assessmentRefID: assessmentRefID })
       });
 
-      console.log(result);
+      console.log(data);
 
-      if (error) {
-        console.error(error);
+      if (data.error) {
         setFetchOptions({ ...fetchOptions, error: errorMessage });
 
       } else {
-        setMarkingDetails(result.data);
+        setMarkingDetails(data.result);
       }
     } catch (error) {
       console.error(error);
@@ -126,11 +125,38 @@ export default function ({ user }) {
   return (
     <Container>
       <Metadata title={markingDetails.name} />
-      <Message content="This is what the students will see." hidden={!previewMode} info />
       <Segment.Group>
-        <Segment content={<Header content={markingDetails.name} size="huge"/>} />
-        <Segment content={textToHTML(markingDetails.description)} />
-        <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={markingDetails.questions} preview={previewMode}/>} />
+        <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
+        <Segment>
+          <Accordion
+            panels={[
+              {
+                key: "briefDescription",
+                title: "Brief Description",
+                content: markingDetails.assessment.briefDescription === "" ?
+                  "No brief description provided." :
+                  textToHTML(markingDetails.assessment.briefDescription),
+              },
+              {
+                key: "description",
+                title: "Assessment Description",
+                content: markingDetails.assessment.description === "" ?
+                "No assessment description provided." :
+                  textToHTML(markingDetails.assessment.description)
+              },
+              {
+                key: "markingDescription",
+                title: "Marking Description",
+                content: markingDetails.assessment.markingDescription ?
+                "No marking description provided." :
+                  textToHTML(markingDetails.assessment.markingDescription),
+              },
+            ]}
+            defaultActiveIndex={[2]}
+            exclusive={false}
+          />
+        </Segment>
+        {/* <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={markingDetails.questions} preview={previewMode}/>} /> */}
       </Segment.Group>
     </Container>
   )
