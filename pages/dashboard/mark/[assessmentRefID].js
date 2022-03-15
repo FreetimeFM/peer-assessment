@@ -1,16 +1,15 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Button, Container, Header, Message, Segment } from "semantic-ui-react";
+import { Accordion, Container, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
-import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
 import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
-import Link from "next/link";
+import MarkingQuestions from "components/MarkingQuestions";
 
-export default function ({ user }) {
+export default function () {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
   const previewMode = user.userType !== "student";
@@ -124,7 +123,7 @@ export default function ({ user }) {
 
   return (
     <Container>
-      <Metadata title={markingDetails.name} />
+      <Metadata title={markingDetails.assessment.name} />
       <Segment.Group>
         <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
         <Segment>
@@ -156,7 +155,18 @@ export default function ({ user }) {
             exclusive={false}
           />
         </Segment>
-        {/* <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={markingDetails.questions} preview={previewMode}/>} /> */}
+        <Segment
+          content={
+            <MarkingQuestions
+              data={{
+                questions: markingDetails.assessment.questions,
+                markingCriteria: markingDetails.assessment.markingCriteria
+              }}
+              onSubmit={handleSubmit}
+              // preview={previewMode}
+            />
+          }
+        />
       </Segment.Group>
     </Container>
   )
