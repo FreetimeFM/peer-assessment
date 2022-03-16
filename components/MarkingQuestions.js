@@ -39,6 +39,7 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
                   min={0}
                   max={item.marks}
                   readOnly={preview}
+                  onWheel={e => e.target.blur()}
                   required
                 />
               </Card.Content>
