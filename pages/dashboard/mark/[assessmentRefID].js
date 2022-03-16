@@ -18,19 +18,14 @@ export default function () {
     fetching: true,
     error: "",
   });
-  const [ fetchAnswersOptions, setFetchAnswersOptions ] = useState({
-    fetched: false,
-    fetching: false,
-    error: "",
-  });
 
   useEffect(() => {
     // getMarkingDetails();
   }, []);
 
   async function getMarkingDetails() {
-    if (fetchDetailsOptions.fetched) return;
-    setFetchDetailsOptions({ ...fetchDetailsOptions, fetching: true });
+    if (fetchOptions.fetched) return;
+    setFetchOptions({ ...fetchOptions, fetching: true });
 
     try {
       const data = await fetchJson("/api/get_marking_details", {
@@ -45,51 +40,16 @@ export default function () {
       console.log("marking details", data);
 
       if (data.error) {
-        setFetchDetailsOptions({ ...fetchDetailsOptions, error: errorMessage });
+        setFetchOptions({ ...fetchOptions, error: errorMessage });
 
       } else {
         setMarkingDetails(data.result);
-        for (const peer of data.result.peers) {
-          if (peer.assessmentCompleted) {
-            await fetchAnswers(peer.userRefID);
-            break;
-          }
-        }
+
       }
     } catch (error) {
-      setFetchDetailsOptions({ ...fetchDetailsOptions, error: "An unknown error has occured. Please contact your administrator." });
+      setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." });
     }
-    setFetchDetailsOptions({ ...fetchDetailsOptions, fetching: false, fetched: true });
-  }
-
-  async function fetchAnswers(peerRefID) {
-    if (fetchAnswersOptions.fetched) return;
-    setFetchAnswersOptions({ ...fetchAnswersOptions, fetching: true });
-    try {
-      const data = await fetchJson("/api/get_marking_details", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          assessmentRefID: assessmentRefID,
-          peerRefID: peerRefID
-        })
-      });
-
-      console.log("answers data for", peerRefID, data);
-
-      if (data.error) {
-        setFetchAnswersOptions({ ...fetchAnswersOptions, error: errorMessage });
-
-      } else {
-        setAnswers(data.result.answers);
-      }
-    } catch (error) {
-      setFetchAnswersOptions({ ...fetchAnswersOptions, error: "An unknown error has occured. Please contact your administrator." });
-    }
-    setFetchAnswersOptions({ ...fetchAnswersOptions, fetching: false, fetched: true });
+    setFetchOptions({ ...fetchOptions, fetching: false, fetched: true });
   }
 
   function handleMarkingQuestionsInput(_e, {qIndex, mIndex, value, marks}) {
@@ -143,23 +103,16 @@ export default function () {
     }
   }
 
-  if (fetchAnswersOptions.fetching || fetchDetailsOptions.fetching) return (
+  if (fetchOptions.fetching) return (
     <Container content={
         <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
       }
     />
   )
 
-  if (fetchDetailsOptions.error !== "") return (
+  if (fetchOptions.error !== "") return (
     <Container content={
-        <PlaceHolder iconName="close" message="Error." extraContent={fetchDetailsOptions.error} />
-      }
-    />
-  )
-
-  if (fetchAnswersOptions.error !== "") return (
-    <Container content={
-        <PlaceHolder iconName="close" message="Error." extraContent={fetchAnswersOptions.error} />
+        <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
       }
     />
   )
