@@ -125,7 +125,14 @@ export default function () {
       <Metadata title={markingDetails.assessment.name} />
       <Form onSubmit={handleSubmit} >
         <Segment.Group>
-          <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
+          <Segment content={
+              <Header
+                content={markingDetails.assessment.name}
+                subheader="Marking Stage"
+                size="huge"
+              />
+            }
+          />
           <Segment>
             <Accordion
               panels={[
@@ -156,7 +163,10 @@ export default function () {
             />
           </Segment>
           <Segment>
-            <Divider content="Assessment Questions" horizontal/>
+            <Header
+              content="Assessment Questions"
+              subheader="Marking criteria for specific assessment questions."
+            />
             <MarkingQuestions
               data={{
                 questions: markingDetails.assessment.questions,
@@ -169,7 +179,10 @@ export default function () {
             />
           </Segment>
           <Segment>
-            <Divider content="General Marking Questions" horizontal/>
+            <Header
+              content="General Marking Questions"
+              subheader="Marking criteria for the assessment as a whole."
+            />
             <GeneralMarkingQuestions
               questions={markingDetails.assessment.markingCriteria.general}
               onInput={handleGeneralMarkingQuestionsInput}
@@ -180,7 +193,7 @@ export default function () {
             content={
               <Form.Button
                 type="submit"
-                content="Submit"
+                content="Submit and Continue"
                 primary
                 fluid
               />

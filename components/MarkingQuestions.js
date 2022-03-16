@@ -10,7 +10,7 @@ export default function ({ data, onInput, preview = false }) {
       <Card
         key={index}
         color="red"
-        style={{ margin: "3em 0" }}
+        style={{ marginBottom: "3em" }}
         fluid
       >
         <Card.Content
@@ -82,7 +82,7 @@ export function GeneralMarkingQuestions({ questions, onInput, preview = false })
             onChange={onInput}
           />
         }
-        style={{ margin: "2em 0" }}
+        style={{ marginBottom: "2em" }}
         fluid
       />
     )
