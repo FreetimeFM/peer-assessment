@@ -207,7 +207,8 @@ export default function () {
             <MarkingQuestions
               data={{
                 questions: markingDetails.assessment.questions,
-                markingCriteria: markingDetails.assessment.markingCriteria
+                markingCriteria: markingDetails.assessment.markingCriteria,
+                answers: answers
               }}
               onSubmit={handleSubmit}
               // preview={previewMode}
