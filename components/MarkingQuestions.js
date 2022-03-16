@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { Card, Form } from "semantic-ui-react";
+import { Card, Divider, Form } from "semantic-ui-react";
 
 import FormInputPopup from "./FormInputPopup";
 import { QuestionField } from "./QuestionCard";
 import { textToHTML } from "lib/common";
 
 export default function ({ data, onSubmit, preview = false, errorList = [] }) {
-  const [ answers, setAnswers ] = useState({});
-
   function handleAnswerInput(_e, {name, value}) {
     setAnswers({
       ...answers,
@@ -17,11 +15,14 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
 
   return (
     <Form>
+      <Divider content="Assessment Questions" horizontal/>
       {
         data.questions.map((item, index) => {
           return (
             <Card
               key={index}
+              color="red"
+              style={{ margin: "3em 0" }}
               fluid
             >
               <Card.Content
@@ -33,7 +34,20 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
                 description={renderAnswer(data.answers[`${index}`], item.type)}
               />
               <Card.Content>
-                {renderMarkingQuestions(data.markingCriteria.questions[index])}
+                {
+                  data.markingCriteria.questions[index] ?
+                  data.markingCriteria.questions[index].map((item, pos) => {
+                    return (
+                      <QuestionField
+                        key={`${index + 1}.${pos + 1}`}
+                        label={`${index + 1}.${pos + 1}. ${item.name}`}
+                        type={item.type}
+                        preview={preview}
+
+                      />
+                    )
+                  }) : null
+                }
                 <Form.Input
                   name="marks"
                   type="number"
@@ -50,13 +64,34 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
           )
         })
       }
+      <Divider content="General Marking Questions" horizontal/>
+      {
+        data.markingCriteria.general.map((item, index) => {
+          return (
+            <Card
+              key={index}
+              color="olive"
+              description={
+                <QuestionField
+                  key={index}
+                  label={`${index + 1}. ${item.name}`}
+                  type={item.type}
+                  preview={preview}
+                />
+              }
+              style={{ margin: "2em 0" }}
+              fluid
+            />
+          )
+        })
+      }
     </Form>
   )
 }
 
 function renderAnswer(answer, questionType) {
-  if (!answer) return <i>No response from student.</i>;
-  if (answer === "") return <i>No response from student.</i>;
+  if (!answer) return <i> No response from student.</i>;
+  if (answer === "") return <i> No response from student.</i>;
 
   switch (questionType) {
     case "long-text":
@@ -65,18 +100,4 @@ function renderAnswer(answer, questionType) {
     default:
       return answer;
   }
-}
-
-function renderMarkingQuestions(questions, preview = false) {
-
-  if (questions) return questions.map((item, index) => {
-    return (
-      <QuestionField
-        label={`${index + 1}. ${item.name}`}
-        type={item.type}
-        preview={preview}
-        marking
-      />
-    )
-  })
 }
