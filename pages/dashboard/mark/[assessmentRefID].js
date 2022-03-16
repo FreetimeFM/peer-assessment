@@ -187,14 +187,14 @@ export default function () {
                 key: "description",
                 title: "Assessment Description",
                 content: markingDetails.assessment.description === "" ?
-                "No assessment description provided." :
+                  "No assessment description provided." :
                   textToHTML(markingDetails.assessment.description)
               },
               {
                 key: "markingDescription",
                 title: "Marking Description",
-                content: markingDetails.assessment.markingDescription ?
-                "No marking description provided." :
+                content: markingDetails.assessment.markingDescription == "" ?
+                  "No marking description provided." :
                   textToHTML(markingDetails.assessment.markingDescription),
               },
             ]}
