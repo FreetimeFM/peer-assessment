@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Accordion, Container, Header, Message, Segment } from "semantic-ui-react";
+import { Accordion, Container, Divider, Form, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
 import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
-import MarkingQuestions from "components/MarkingQuestions";
+import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
 
 export default function () {
 
@@ -171,39 +171,40 @@ export default function () {
   return (
     <Container>
       <Metadata title={markingDetails.assessment.name} />
-      <Segment.Group>
-        <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
-        <Segment>
-          <Accordion
-            panels={[
-              {
-                key: "briefDescription",
-                title: "Brief Description",
-                content: markingDetails.assessment.briefDescription === "" ?
-                  "No brief description provided." :
-                  textToHTML(markingDetails.assessment.briefDescription),
-              },
-              {
-                key: "description",
-                title: "Assessment Description",
-                content: markingDetails.assessment.description === "" ?
-                  "No assessment description provided." :
-                  textToHTML(markingDetails.assessment.description)
-              },
-              {
-                key: "markingDescription",
-                title: "Marking Description",
-                content: markingDetails.assessment.markingDescription == "" ?
-                  "No marking description provided." :
-                  textToHTML(markingDetails.assessment.markingDescription),
-              },
-            ]}
-            defaultActiveIndex={[2]}
-            exclusive={false}
-          />
-        </Segment>
-        <Segment
-          content={
+      <Form>
+        <Segment.Group>
+          <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
+          <Segment>
+            <Accordion
+              panels={[
+                {
+                  key: "briefDescription",
+                  title: "Brief Description",
+                  content: markingDetails.assessment.briefDescription === "" ?
+                    "No brief description provided." :
+                    textToHTML(markingDetails.assessment.briefDescription),
+                },
+                {
+                  key: "description",
+                  title: "Assessment Description",
+                  content: markingDetails.assessment.description === "" ?
+                    "No assessment description provided." :
+                    textToHTML(markingDetails.assessment.description)
+                },
+                {
+                  key: "markingDescription",
+                  title: "Marking Description",
+                  content: markingDetails.assessment.markingDescription == "" ?
+                    "No marking description provided." :
+                    textToHTML(markingDetails.assessment.markingDescription),
+                },
+              ]}
+              defaultActiveIndex={[2]}
+              exclusive={false}
+            />
+          </Segment>
+          <Segment>
+            <Divider content="Assessment Questions" horizontal/>
             <MarkingQuestions
               data={{
                 questions: markingDetails.assessment.questions,
@@ -213,9 +214,15 @@ export default function () {
               onSubmit={handleSubmit}
               // preview={previewMode}
             />
-          }
-        />
-      </Segment.Group>
+          </Segment>
+          <Segment>
+            <Divider content="General Marking Questions" horizontal/>
+            <GeneralMarkingQuestions
+              questions={markingDetails.assessment.markingCriteria.general}
+            />
+          </Segment>
+        </Segment.Group>
+      </Form>
     </Container>
   )
 }
