@@ -76,16 +76,19 @@ export default function () {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    return;
 
     try {
-      const response = await fetchJson("/api/submit_assessment", {
+      const response = await fetchJson("/api/submit_marking", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ assessmentRefID: assessmentRefID, answers: answers })
+        body: JSON.stringify({
+          assessmentRefID: assessmentRefID,
+          targetUserRefID: markingDetails.peers[peerIndex].userRefID,
+          responses: payload,
+        })
       });
 
       console.log(response);
@@ -95,8 +98,8 @@ export default function () {
         return;
       }
 
-      alert("Your answers have been successfully submitted.");
-      window.location.assign("/dashboard");
+      alert("Your responses have been successfully submitted.");
+      // window.location.assign("/dashboard");
     } catch (error) {
       console.log(error);
       alert("An unknown error has occured. Please contact your adminstrator.");
@@ -116,22 +119,6 @@ export default function () {
       }
     />
   )
-
-  // if (markingDetails.completed) return (
-  //   <Container
-  //     content={
-  //       <PlaceHolder
-  //         iconName="check"
-  //         message="You have completed answering this assessment."
-  //         extraContent={
-  //           <Link href={`/dashboard/mark/${assessmentRefID}`} >
-  //             <Button content="Start peer marking" primary />
-  //           </Link>
-  //         }
-  //       />
-  //     }
-  //   />
-  // )
 
   return (
     <Container>
