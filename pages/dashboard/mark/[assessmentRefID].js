@@ -12,11 +12,16 @@ import MarkingQuestions from "components/MarkingQuestions";
 export default function () {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
-  const previewMode = user.userType !== "student";
-  const [ markingDetails, setMarkingDetails ] = useState({});
-  const [ fetchOptions, setFetchOptions ] = useState({
+  const [ answers, setAnswers ] = useState();
+  const [ fetchDetailsOptions, setFetchDetailsOptions ] = useState({
     fetched: false,
-    fetching: false
+    fetching: true,
+    error: "",
+  });
+  const [ fetchAnswersOptions, setFetchAnswersOptions ] = useState({
+    fetched: false,
+    fetching: false,
+    error: "",
   });
 
   useEffect(() => {
@@ -24,8 +29,8 @@ export default function () {
   }, []);
 
   async function getMarkingDetails() {
-    if (fetchOptions.fetched) return;
-    setFetchOptions({ ...fetchOptions, fetching: true });
+    if (fetchDetailsOptions.fetched) return;
+    setFetchDetailsOptions({ ...fetchDetailsOptions, fetching: true });
 
     try {
       const data = await fetchJson("/api/get_marking_details", {
@@ -37,20 +42,54 @@ export default function () {
         body: JSON.stringify({ assessmentRefID: assessmentRefID })
       });
 
-      console.log(data);
+      console.log("marking details", data);
 
       if (data.error) {
-        setFetchOptions({ ...fetchOptions, error: errorMessage });
+        setFetchDetailsOptions({ ...fetchDetailsOptions, error: errorMessage });
 
       } else {
         setMarkingDetails(data.result);
+        for (const peer of data.result.peers) {
+          if (peer.assessmentCompleted) {
+            await fetchAnswers(peer.userRefID);
+            break;
+          }
+        }
       }
     } catch (error) {
-      console.error(error);
-      setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
+      setFetchDetailsOptions({ ...fetchDetailsOptions, error: "An unknown error has occured. Please contact your administrator." });
     }
+    setFetchDetailsOptions({ ...fetchDetailsOptions, fetching: false, fetched: true });
+  }
 
-    setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
+  async function fetchAnswers(peerRefID) {
+    if (fetchAnswersOptions.fetched) return;
+    setFetchAnswersOptions({ ...fetchAnswersOptions, fetching: true });
+    try {
+      const data = await fetchJson("/api/get_marking_details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          assessmentRefID: assessmentRefID,
+          peerRefID: peerRefID
+        })
+      });
+
+      console.log("answers data for", peerRefID, data);
+
+      if (data.error) {
+        setFetchAnswersOptions({ ...fetchAnswersOptions, error: errorMessage });
+
+      } else {
+        setAnswers(data.result.answers);
+      }
+    } catch (error) {
+      setFetchAnswersOptions({ ...fetchAnswersOptions, error: "An unknown error has occured. Please contact your administrator." });
+    }
+    setFetchAnswersOptions({ ...fetchAnswersOptions, fetching: false, fetched: true });
   }
 
   async function handleSubmit(answers) {
@@ -92,15 +131,23 @@ export default function () {
     }
   }
 
-  if (fetchOptions.fetching) return (
+  if (fetchAnswersOptions.fetching || fetchDetailsOptions.fetching) return (
     <Container content={
-      <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
-    } />
+        <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+      }
+    />
   )
 
-  if (fetchOptions.error) return (
+  if (fetchDetailsOptions.error !== "") return (
     <Container content={
-        <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
+        <PlaceHolder iconName="close" message="Error." extraContent={fetchDetailsOptions.error} />
+      }
+    />
+  )
+
+  if (fetchAnswersOptions.error !== "") return (
+    <Container content={
+        <PlaceHolder iconName="close" message="Error." extraContent={fetchAnswersOptions.error} />
       }
     />
   )

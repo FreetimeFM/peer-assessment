@@ -1,16 +1,16 @@
-import { getMarkingDetailsForStudent, ifStudentCompletedAssessment } from "lib/database";
+import { getAssessmentAnswers, getMarkingDetailsForStudent } from "lib/database";
 import { errorResponse } from "lib/errors";
 import { withSessionApi } from "lib/iron-session/withSession";
 import isInt from "validator/lib/isInt";
 
 export default withSessionApi(async ({req, res}) => {
   try {
-    if (!req.body.assessmentRefID) return errorResponse(res, 301);
+    const { assessmentRefID, peerRefID } = req.body;
 
-    const assessmentRefID = req.body.assessmentRefID.toString();
-    if (!isInt(assessmentRefID)) return errorResponse(res, 150);
+    if (!assessmentRefID) return errorResponse(res, 301);
+    if (!isInt(assessmentRefID.toString())) return errorResponse(res, 150);
 
-    let markingDetails;
+    let details;
 
     if (req.session.user.userType === "student") {
       // TODO: If the student hasn't completed their assessment.
@@ -23,11 +23,19 @@ export default withSessionApi(async ({req, res}) => {
       //   }
       // })
 
-      markingDetails = await getMarkingDetailsForStudent(assessmentRefID, req.session.user.refID);
-      if (markingDetails.error) return errorResponse(res, 100);
+      if (peerRefID) {
+        if (isInt(peerRefID.toString())) {
+          details = await getAssessmentAnswers(assessmentRefID.toString(), peerRefID);
+          if (details.error) errorResponse(res, 100);
+        }
+
+      } else {
+        details = await getMarkingDetailsForStudent(assessmentRefID, req.session.user.refID);
+        if (details.error) return errorResponse(res, 100);
+      }
     }
 
-    return res.status(200).json(markingDetails)
+    return res.status(200).json(details);
   } catch (error) {
     console.error(error);
     return errorResponse(res, 300);
