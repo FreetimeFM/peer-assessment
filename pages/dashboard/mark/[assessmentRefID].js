@@ -92,19 +92,31 @@ export default function () {
     setFetchAnswersOptions({ ...fetchAnswersOptions, fetching: false, fetched: true });
   }
 
-  async function handleSubmit(answers) {
+  function handleMarkingQuestionsInput(_e, {qIndex, mIndex, value, marks}) {
+    // console.log(qIndex, mIndex, value, marks);
 
-    if (Object.keys(answers).length !== markingDetails.questions.length) {
-      alert("Cannot submit. Answers cannot be empty.");
-      return;
-    }
+    if (marks) setMarkingQuestionsFeedback({
+      ...markingQuestionsFeedback,
+      [qIndex.toString()]: value,
+    })
 
-    for (const index in answers) {
-      if (answers[index] === "") {
-        alert("Cannot submit. Answers cannot be empty.");
-        return;
-      }
-    }
+    else setMarkingQuestionsFeedback({
+      ...markingQuestionsFeedback,
+      [`${qIndex.toString()}.${mIndex.toString()}`]: value,
+    });
+  }
+
+  function handleGeneralMarkingQuestionsInput(_e, {name, value}) {
+    // console.log(name, value);
+    setGeneralMarkingQuestionsFeedback({
+      ...generalMarkingQuestionsFeedback,
+      [name.toString()]: value
+    })
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    return;
 
     try {
       const response = await fetchJson("/api/submit_assessment", {
@@ -171,7 +183,7 @@ export default function () {
   return (
     <Container>
       <Metadata title={markingDetails.assessment.name} />
-      <Form>
+      <Form onSubmit={handleSubmit} >
         <Segment.Group>
           <Segment content={<Header content={markingDetails.assessment.name} size="huge"/>} />
           <Segment>
@@ -212,15 +224,28 @@ export default function () {
                 answers: answers
               }}
               onSubmit={handleSubmit}
-              // preview={previewMode}
+              onInput={handleMarkingQuestionsInput}
+              preview={false}
             />
           </Segment>
           <Segment>
             <Divider content="General Marking Questions" horizontal/>
             <GeneralMarkingQuestions
               questions={markingDetails.assessment.markingCriteria.general}
+              onInput={handleGeneralMarkingQuestionsInput}
+              preview={false}
             />
           </Segment>
+          <Segment
+            content={
+              <Form.Button
+                type="submit"
+                content="Submit"
+                primary
+                fluid
+              />
+            }
+          />
         </Segment.Group>
       </Form>
     </Container>

@@ -4,7 +4,7 @@ import FormInputPopup from "./FormInputPopup";
 import { QuestionField } from "./QuestionCard";
 import { textToHTML } from "lib/common";
 
-export default function ({ data, onSubmit, preview = false, errorList = [] }) {
+export default function ({ data, onInput, preview = false }) {
   function handleAnswerInput(_e, {name, value}) {
     setAnswers({
       ...answers,
@@ -38,7 +38,13 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
                   label={`${index + 1}.${pos + 1}. ${item.name}`}
                   type={item.type}
                   preview={preview}
-
+                  onChange={(e, {value}) => {
+                    onInput(e, {
+                      qIndex: index,
+                      mIndex: pos,
+                      value: value
+                    })
+                  }}
                 />
               )
             }) : null
@@ -46,12 +52,19 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
           <Form.Input
             name="marks"
             type="number"
-            label={<label>Allocate Marks <FormInputPopup message="How many marks is this answer worth? Required."/></label>}
+            label={<label>Allocate Marks <FormInputPopup message="How many marks is the student's response worth? Required."/></label>}
             placeholder="Required."
             min={0}
             max={item.marks}
             readOnly={preview}
             onWheel={e => e.target.blur()}
+            onChange={(e, {value}) => {
+              onInput(e, {
+                qIndex: index,
+                value: value,
+                marks: true
+              })
+            }}
             required
           />
         </Card.Content>
@@ -60,7 +73,7 @@ export default function ({ data, onSubmit, preview = false, errorList = [] }) {
   })
 }
 
-export function GeneralMarkingQuestions({ questions, preview = false }) {
+export function GeneralMarkingQuestions({ questions, onInput, preview = false }) {
   return questions.map((item, index) => {
     return (
       <Card
@@ -69,9 +82,11 @@ export function GeneralMarkingQuestions({ questions, preview = false }) {
         description={
           <QuestionField
             key={index}
+            index={index}
             label={`${index + 1}. ${item.name}`}
             type={item.type}
             preview={preview}
+            onChange={onInput}
           />
         }
         style={{ margin: "2em 0" }}
