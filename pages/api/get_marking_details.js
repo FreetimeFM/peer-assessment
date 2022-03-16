@@ -9,7 +9,6 @@ export default withSessionApi(async ({req, res}) => {
     if (!isInt(req.body.assessmentRefID)) return errorResponse(res, 150);
 
     let details;
-    let answers;
 
     if (req.session.user.userType === "student") {
       // TODO: If the student hasn't completed their assessment.

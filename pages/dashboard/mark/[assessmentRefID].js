@@ -161,7 +161,7 @@ export default function () {
               data={{
                 questions: markingDetails.assessment.questions,
                 markingCriteria: markingDetails.assessment.markingCriteria,
-                answers: answers
+                answers: markingDetails.peers[peerIndex].answers,
               }}
               onSubmit={handleSubmit}
               onInput={handleMarkingQuestionsInput}

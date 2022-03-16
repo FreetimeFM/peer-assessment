@@ -5,13 +5,6 @@ import { QuestionField } from "./QuestionCard";
 import { textToHTML } from "lib/common";
 
 export default function ({ data, onInput, preview = false }) {
-  function handleAnswerInput(_e, {name, value}) {
-    setAnswers({
-      ...answers,
-      [name]: value
-    });
-  }
-
   return data.questions.map((item, index) => {
     return (
       <Card
@@ -26,7 +19,7 @@ export default function ({ data, onInput, preview = false }) {
         />
         <Card.Content
           meta={<strong>Student's Response:</strong>}
-          description={renderAnswer(data.answers[`${index}`], item.type)}
+          description={renderAnswer(data.answers, index, item.type)}
         />
         <Card.Content>
           {
@@ -96,15 +89,16 @@ export function GeneralMarkingQuestions({ questions, onInput, preview = false })
   });
 }
 
-function renderAnswer(answer, questionType) {
-  if (!answer) return <i> No response from student.</i>;
-  if (answer === "") return <i> No response from student.</i>;
+function renderAnswer(answers, index, questionType) {
+  if (!answers) return <i> No response from student.</i>;
+  if (!answers[index.toString()]) return <i> No response from student.</i>;
+  if (answers[index.toString()] === "") return <i> No response from student.</i>;
 
   switch (questionType) {
     case "long-text":
-      return textToHTML(answer);
+      return textToHTML(answers[index.toString()]);
 
     default:
-      return answer;
+      return answers[index.toString()];
   }
 }
