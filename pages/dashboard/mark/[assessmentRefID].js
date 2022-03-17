@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Accordion, Container, Divider, Form, Header, Message, Segment } from "semantic-ui-react";
+import { Accordion, Button, Container, Divider, Form, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -8,6 +8,7 @@ import PlaceHolder from "components/PlaceHolder";
 import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
 import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
+import Link from "next/link";
 
 export default function () {
 
@@ -189,16 +190,26 @@ export default function () {
               preview={false}
             />
           </Segment>
-          <Segment
-            content={
+          <Segment>
+            <input type="submit" style={{ display: "none" }} disabled/>
+            <Form.Group widths="equal" >
+              <Form.Button
+                content="Exit"
+                onClick={e => {
+                  e.preventDefault();
+                  if (confirm("Are you sure you want to exit? Un-submitted content will be discarded.")) window.location.href = "/dashboard";
+                }}
+                negative
+                fluid
+              />
               <Form.Button
                 type="submit"
                 content="Submit and Continue"
                 primary
                 fluid
               />
-            }
-          />
+            </Form.Group>
+          </Segment>
         </Segment.Group>
       </Form>
     </Container>
