@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Accordion, Button, Container, Divider, Form, Header, Message, Segment } from "semantic-ui-react";
+import { Accordion, Button, Container, Form, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -13,8 +13,12 @@ import Link from "next/link";
 export default function () {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
-  const [ answers, setAnswers ] = useState();
-  const [ fetchDetailsOptions, setFetchDetailsOptions ] = useState({
+  const [ peerIndex, setPeerIndex ] = useState(0);
+  const [ totalPeers, setTotalPeers ] = useState(2);
+  const [ markingQuestionsFeedback, setMarkingQuestionsFeedback ] = useState({});
+  const [ generalMarkingQuestionsFeedback, setGeneralMarkingQuestionsFeedback ] = useState({});
+  const [ submitting, setSubmitting ] = useState(false);
+  const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
     error: "",
@@ -46,6 +50,11 @@ export default function () {
       } else {
         setMarkingDetails(data.result);
 
+        let total = 0;
+        data.result.peers.forEach(peer => {
+          if (peer.assessmentCompleted) total += 1;
+        });
+        setTotalPeers(total);
       }
     } catch (error) {
       setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." });
@@ -96,15 +105,20 @@ export default function () {
 
       if (response.error) {
         alert(response.clientMessage);
-        return;
+        setFetchOptions({ ...fetchOptions, error: response.clientMessage });
+        setSubmitting(false);
+
+      } else {
+        alert("Your responses have been successfully submitted.");
+        setPeerIndex(peerIndex += 1);
       }
 
-      alert("Your responses have been successfully submitted.");
-      // window.location.assign("/dashboard");
     } catch (error) {
       console.log(error);
       alert("An unknown error has occured. Please contact your adminstrator.");
+      setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your adminstrator." });
     }
+    setSubmitting(false);
   }
 
   if (fetchOptions.fetching) return (
@@ -121,15 +135,46 @@ export default function () {
     />
   )
 
+  if (totalPeers === 0) return (
+    <Container content={
+        <PlaceHolder
+          iconName="thumbs up"
+          message="Error."
+          extraContent=""
+        />
+      }
+    />
+  )
+
+  if (peerIndex >= totalPeers) return (
+    <Container content={
+        <PlaceHolder
+          iconName="thumbs up"
+          message="Marking Completed."
+          extraContent={
+            <Link
+              href="/dashboard"
+            >
+              <Button
+                content="Back to Dashboard"
+                primary
+              />
+            </Link>
+          }
+        />
+      }
+    />
+  )
+
   return (
     <Container>
       <Metadata title={markingDetails.assessment.name} />
-      <Form onSubmit={handleSubmit} >
+      <Form onSubmit={handleSubmit} loading={submitting} >
         <Segment.Group>
           <Segment content={
               <Header
                 content={markingDetails.assessment.name}
-                subheader="Marking Stage"
+                subheader={`Marking student ${peerIndex + 1} out of ${markingDetails.peers.length}`}
                 size="huge"
               />
             }
