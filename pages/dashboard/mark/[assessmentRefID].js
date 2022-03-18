@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Accordion, Button, Container, Form, Header, Message, Segment } from "semantic-ui-react";
+import { Accordion, Button, Container, Form, Header, List, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -14,7 +14,9 @@ export default function () {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
   const [ peerIndex, setPeerIndex ] = useState(0);
-  const [ totalPeers, setTotalPeers ] = useState(2);
+  const [ peersToMark, setPeersToMark ] = useState([]);
+  const [ completed, setCompleted ] = useState(false);
+  const [ markingDetails, setMarkingDetails ] = useState({});
   const [ markingQuestionsFeedback, setMarkingQuestionsFeedback ] = useState({});
   const [ generalMarkingQuestionsFeedback, setGeneralMarkingQuestionsFeedback ] = useState({});
   const [ submitting, setSubmitting ] = useState(false);
@@ -25,7 +27,7 @@ export default function () {
   });
 
   useEffect(() => {
-    // getMarkingDetails();
+    getMarkingDetails();
   }, []);
 
   async function getMarkingDetails() {
@@ -49,17 +51,16 @@ export default function () {
 
       } else {
         setMarkingDetails(data.result);
-
-        let total = 0;
-        data.result.peers.forEach(peer => {
-          if (peer.assessmentCompleted) total += 1;
-        });
-        setTotalPeers(total);
+        setPeersToMark(data.result.peers.filter(peer => peer.assessmentCompleted && !peer.markingCompleted));
       }
     } catch (error) {
       setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." });
     }
     setFetchOptions({ ...fetchOptions, fetching: false, fetched: true });
+  }
+
+  function changePeer(back = false) {
+    if (peerIndex > 0 || peerIndex < peersToMark.length - 1) back ? setPeerIndex(peerIndex - 1) : setPeerIndex(peerIndex + 1);
   }
 
   function handleMarkingQuestionsInput(_e, {qIndex, mIndex, value, marks}) {
@@ -86,6 +87,7 @@ export default function () {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitting(true);
 
     try {
       const response = await fetchJson("/api/submit_marking", {
@@ -96,8 +98,11 @@ export default function () {
         },
         body: JSON.stringify({
           assessmentRefID: assessmentRefID,
-          targetUserRefID: markingDetails.peers[peerIndex].userRefID,
-          responses: payload,
+          targetUserRefID: peersToMark[peerIndex].peer,
+          responses: {
+            questions: markingQuestionsFeedback,
+            general: generalMarkingQuestionsFeedback
+          },
         })
       });
 
@@ -109,8 +114,18 @@ export default function () {
         setSubmitting(false);
 
       } else {
-        alert("Your responses have been successfully submitted.");
-        setPeerIndex(peerIndex += 1);
+
+
+        if (peerIndex === peersToMark.length - 1) {
+          setCompleted(true);
+          alert("Your feedback has been successfully submitted.")
+        } else {
+          alert(`Your feedback has been successfully submitted. You have ${peersToMark.length - peerIndex - 1} student(s) left to mark.`);
+          scroll(0, 0);
+          changePeer();
+          setMarkingQuestionsFeedback({});
+          setGeneralMarkingQuestionsFeedback({});
+        }
       }
 
     } catch (error) {
@@ -119,6 +134,22 @@ export default function () {
       setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your adminstrator." });
     }
     setSubmitting(false);
+  }
+
+  function getMarks(total = false) {
+    let marks = 0;
+    if (total) markingDetails.assessment.questions.map(question => {
+      marks += parseInt(question.marks);
+    })
+
+    else {
+      for (let i = 0; i < markingDetails.assessment.questions.length; i++) {
+        if (!markingQuestionsFeedback[i.toString()]) continue;
+        if (markingQuestionsFeedback[i.toString()] === "") continue;
+        marks += parseInt(markingQuestionsFeedback[i.toString()]);
+      }
+    }
+    return marks;
   }
 
   if (fetchOptions.fetching) return (
@@ -135,46 +166,57 @@ export default function () {
     />
   )
 
-  if (totalPeers === 0) return (
-    <Container content={
-        <PlaceHolder
-          iconName="thumbs up"
-          message="Error."
-          extraContent=""
-        />
-      }
-    />
-  )
+  if (peersToMark.length === 0) {
+    return (
+      <Container
+        content={
+          <PlaceHolder
+            iconName="checkmark"
+            message="Nobody to mark"
+            extraContent={
+              <>
+                <p>You have either completed marking or the student(s) you are marking have not completed the assessment.</p>
+                <Link href="/dashboard" >
+                  <Button content="Back to Dashboard" primary />
+                </Link>
+              </>
+            }
+          />
+        }
+      />
+    )
+  }
 
-  if (peerIndex >= totalPeers) return (
-    <Container content={
-        <PlaceHolder
-          iconName="thumbs up"
-          message="Marking Completed."
-          extraContent={
-            <Link
-              href="/dashboard"
-            >
-              <Button
-                content="Back to Dashboard"
-                primary
-              />
-            </Link>
-          }
-        />
-      }
-    />
-  )
+  if (completed) {
+    return (
+      <Container
+        content={
+          <PlaceHolder
+            iconName="checkmark"
+            message="Completed"
+            extraContent={
+              <>
+                <p>You have completed marking your peers.</p>
+                <Link href="/dashboard" >
+                  <Button content="Back to Dashboard" primary />
+                </Link>
+              </>
+            }
+          />
+        }
+      />
+    )
+  }
 
   return (
     <Container>
       <Metadata title={markingDetails.assessment.name} />
       <Form onSubmit={handleSubmit} loading={submitting} >
-        <Segment.Group>
+        <Segment.Group raised>
           <Segment content={
               <Header
                 content={markingDetails.assessment.name}
-                subheader={`Marking student ${peerIndex + 1} out of ${markingDetails.peers.length}`}
+                subheader={`Marking student ${peerIndex + 1} out of ${peersToMark.length}`}
                 size="huge"
               />
             }
@@ -217,13 +259,14 @@ export default function () {
               data={{
                 questions: markingDetails.assessment.questions,
                 markingCriteria: markingDetails.assessment.markingCriteria,
-                answers: markingDetails.peers[peerIndex].answers,
+                answers: peersToMark[peerIndex].answers,
               }}
               onSubmit={handleSubmit}
               onInput={handleMarkingQuestionsInput}
               preview={false}
             />
           </Segment>
+          <Segment content={`${getMarks()}/${getMarks(true)} marks allocated`}/>
           <Segment>
             <Header
               content="General Marking Questions"
@@ -236,8 +279,8 @@ export default function () {
             />
           </Segment>
           <Segment>
-            <input type="submit" style={{ display: "none" }} disabled/>
             <Form.Group widths="equal" >
+              <input type="submit" style={{ display: "none" }} disabled/>
               <Form.Button
                 content="Exit"
                 onClick={e => {
