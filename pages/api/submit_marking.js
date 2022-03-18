@@ -11,7 +11,7 @@ export default withSessionApi(async ({req, res}) => {
 
     if (!assessmentRefID || !targetUserRefID || !responses) return errorResponse(res, 301);
 
-    const result = await submitMarkingResponses(assessmentRefID, targetUserRefID, responses);
+    const result = await submitMarkingResponses(assessmentRefID, req.session.user.refID, targetUserRefID, responses);
     if (result.error) errorResponse(res, 100);
 
     return res.status(200).json({
