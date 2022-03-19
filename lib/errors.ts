@@ -1,5 +1,20 @@
-// Returns json containing description of specified error.
-export function createErrorPayload(errorCode) {
+import { NextApiResponse } from "next";
+
+type ErrorPayload = {
+  error: boolean,
+  result: {
+    errorCode: number,
+    message: string,
+    clientMessage: string,
+  }
+}
+
+/**
+ * Returns a JSON object containing error details of a specified error code.
+ * @param errorCode The specific code of the error.
+ * @returns The error payload containing data about the error.
+ */
+export function createErrorPayload(errorCode: number): ErrorPayload {
   return {
     error: true,
     result: {
@@ -9,19 +24,33 @@ export function createErrorPayload(errorCode) {
   };
 }
 
-export function getHttpStatus(errorCode) {
+/**
+ * Gets the HTTP status code of the error.
+ * @param errorCode The specific code of the error.
+ * @returns The HTTP status code of the error.
+ */
+export function getHttpStatus(errorCode: number): number {
   return ErrorMessages[errorCode].httpStatusCode;
 }
 
-export function errorResponse(res, errorCode) {
-  res.status(getHttpStatus(errorCode)).json(createErrorPayload(errorCode))
+/**
+ * Returns a response with the details of the error in the body.
+ * @param res The NextApiResponse object.
+ * @param errorCode The specific code of the error.
+ * @returns A response with the error payload in the body.
+ */
+export function errorResponse(res: NextApiResponse, errorCode: number) {
+  return res.status(getHttpStatus(errorCode)).json(createErrorPayload(errorCode))
 }
 
-// Contains list of error codes and their respective messages.
+/**
+ * A list of error messages.
+ */
 export const ErrorMessages = {
   99: {
     message: "No data returned from the database.",
     clientMessage: "An error has occured. Please contact your adminstrator.",
+    httpStatusCode: 200,
   },
   100: {
     message: "Unknown database error.",
