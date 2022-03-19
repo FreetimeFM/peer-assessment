@@ -6,7 +6,7 @@ import AssessmentCard from "./AssessmentCard";
 import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 import fetchJson from "lib/iron-session/fetchJson";
 
-export default function AssessmentList({ userType = 2, past = false }) {
+export default function AssessmentList({ userType, past = false }) {
 
   if (past) return placeholderTemplate();
 
@@ -17,7 +17,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
   });
 
   useEffect(() => {
-    fetchAssessments()
+    fetchAssessments();
   }, [])
 
   async function fetchAssessments() {
@@ -36,16 +36,37 @@ export default function AssessmentList({ userType = 2, past = false }) {
 
       console.log(response);
 
-      if (response.error) {
-        console.error(response);
-      }
-      else setAssessmentList(response.result);
+      if (response.error) console.error(response);
+      else setAssessmentList(parseData(response.result.data));
 
     } catch (error) {
       console.error(error);
     }
 
     setFetchOptions({ fetched: true, fetching: false });
+  }
+
+  function parseData(data) {
+    let assessments = [];
+
+    data.forEach(item => {
+      item.assessments.forEach(assessment => {
+        assessments.push(
+          {
+            "class": item.class,
+            "teacher": item.teacher,
+            "assessmentRefID": assessment[0],
+            "name": assessment[2],
+            "briefDescription": assessment[3],
+            "releaseDate": assessment[4],
+            "submissionDeadline": assessment[5],
+            "markingDeadline": assessment[6],
+          }
+        );
+      });
+    });
+
+    return assessments;
   }
 
   if (fetchOptions.fetching) return (
@@ -71,6 +92,7 @@ export default function AssessmentList({ userType = 2, past = false }) {
           <AssessmentCard
             key={index}
             details={assessment}
+            teacher={userType === "teacher"}
             past={past}
           />
         );

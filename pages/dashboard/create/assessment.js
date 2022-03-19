@@ -1,12 +1,12 @@
 import DashboardLayout from "layouts/DashboardLayout";
-import CreateAssessment from "components/CreateAssessment";
 import  { withSessionSsr } from "lib/iron-session/withSession";
+import CreateAssessment from "components/CreateAssessment";
 
 export default function ({ user }) {
 
   return (
     <DashboardLayout user={user}>
-      <CreateAssessment userRef={user.ref}  />
+      <CreateAssessment/>
     </DashboardLayout>
   )
 }

@@ -8,14 +8,14 @@ export default withSessionApi(async ({req, res}) => {
   try {
     if (req.session.user.userType !== "admin") return res.status(getHttpStatus(303)).json(createErrorPayload(303));
 
-    const { name, teachers, students } = req.body;
+    const { name, teacherRefID, students } = req.body;
 
-    if (!name || !teachers || !students) return res.status(getHttpStatus(301)).json(createErrorPayload(301));
+    if (!name || !teacherRefID || !students) return res.status(getHttpStatus(301)).json(createErrorPayload(301));
     if (name.length === 0 || name.length > 70) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
-    if (!isInt(teachers)) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
+    if (!isInt(teacherRefID)) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
     if (typeof students !== "object") return res.status(getHttpStatus(150)).json(createErrorPayload(150));
 
-    await createClass(name, teachers, students);
+    await createClass(name, teacherRefID, students);
     res.status(200).json({error: false});
   } catch (error) {
     console.log(error);
