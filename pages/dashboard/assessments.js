@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-
 import { withSessionSsr } from "../../lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentList from "../../components/AssessmentList";
+import { placeholderTemplate } from "components/PlaceHolder";
 
 export default function CurrentAssessments({ user }) {
-
-  const [ assessmentList, setAssessmentList] = useState();
+  const [ assessments, setAssessments ] = useState();
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
-    fetching: true
+    fetching: true,
+    error: ""
   });
 
   useEffect(() => {
@@ -25,18 +25,20 @@ export default function CurrentAssessments({ user }) {
     });
 
     try {
-      const response = await fetchJson("/api/get_assessments_overview", {
+      const { error, result } = await fetchJson("/api/get_assessments_overview", {
         headers: {
+          "Content-Type": "application/json",
           Accept: "application/json",
         },
       });
 
-      console.log(response);
+      console.log(result);
 
-      if (response.error) {
-        console.error(response);
-      }
-      else setAssessmentList(response.result);
+      if (error) setFetchOptions({
+        ...fetchOptions,
+        error: result.clientMessage
+      });
+      else setAssessments(parseData(result));
 
     } catch (error) {
       console.error(error);
@@ -45,25 +47,31 @@ export default function CurrentAssessments({ user }) {
     setFetchOptions({ fetched: true, fetching: false });
   }
 
-  if (fetchOptions.fetching) return (
-    <PlaceHolder
-      message={`We're fetching your ${past ? "past" : ""} assessments.`}
-      iconName="cloud download"
-      extraContent={<p>Please wait.</p>}
-    />
-  )
+  function parseData(data) {
+    let assessments = [];
 
-  if (!assessmentList) return (
-    <PlaceHolder
-      message={`We're having trouble fetching your ${past ? "past" : ""} assessments.`}
-      iconName="close"
-      extraContent={<p>Please contact your administrator.</p>}
-    />
-  )
+    data.forEach(item => {
+      item.assessments.forEach(assessment => {
+        assessments.push({
+          ...assessment,
+          "class": item.class,
+          "teacher": item.teacher,
+        });
+      });
+    });
+
+    return assessments;
+  }
+
+  function renderContent() {
+    if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching assessments.", "We're fetching your assessments. Please wait.");
+    if (!assessments || fetchOptions.error !== "")
+    return <AssessmentList userType={user.userType} assessments={assessments} />
+  }
 
   return (
     <DashboardLayout user={user}>
-      <AssessmentList userType={user.userType} assessments={assessmentList} />
+      {renderContent()}
     </DashboardLayout>
   )
 }

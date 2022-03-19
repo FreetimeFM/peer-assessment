@@ -1,10 +1,9 @@
 import { Card, Button } from "semantic-ui-react";
 import Link from "next/link";
-
 import AssessmentCard from "./AssessmentCard";
 import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
 
-export default function AssessmentList({ assessments, userType = 2, past = false }) {
+export default function AssessmentList({ assessments, userType, past = false }) {
 
   if (past) return placeholderTemplate();
 
@@ -27,7 +26,7 @@ export default function AssessmentList({ assessments, userType = 2, past = false
     <PlaceHolder
       message="There are no assessments to display."
       iconName="thumbs up"
-      extraContent={ userType === 1 ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null }
+      extraContent={ userType === "teacher" ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null }
     />
   );
 }

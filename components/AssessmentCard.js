@@ -16,11 +16,14 @@ export default function AssessmentCard({ details, teacher, past = false }) {
       <Card.Content
         description={details.briefDescription === undefined || details.briefDescription === "" ? "No brief description given." : details.briefDescription}
       />
-      <Card.Content>
-        <div><strong>Released on</strong> {getLocalDate(details.releaseDate)}</div>
-        <div><strong>Submit by</strong> {getLocalDate(details.submissionDeadline)}</div>
-        <div><strong>Mark by</strong> {getLocalDate(details.markingDeadline)}</div>
-      </Card.Content>
+      <Card.Content
+        description={
+          <>
+            Assessment Due: {getLocalDate(details.submissionDeadline)} <br />
+            Marking Due: {getLocalDate(details.submissionDeadline)}
+          </>
+        }
+      />
       <Card.Content extra>
         <Button.Group fluid widths={2} >
         <InfoModal details={details} link={link} teacher={teacher} past={past} />
