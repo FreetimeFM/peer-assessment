@@ -1,12 +1,12 @@
 import DashboardLayout from "layouts/DashboardLayout";
-import CreateAssessment from "components/CreateAssessment";
+import CreateClass from "components/CreateClass";
 import  { withSessionSsr } from "lib/iron-session/withSession";
 
 export default function ({ user }) {
 
   return (
     <DashboardLayout user={user}>
-      <CreateAssessment userRef={user.ref}  />
+      <CreateClass user={user} />
     </DashboardLayout>
   )
 }
@@ -20,4 +20,5 @@ export const getServerSideProps = withSessionSsr(({ req, res }) => {
       permanent: false,
     },
   }
+
 });

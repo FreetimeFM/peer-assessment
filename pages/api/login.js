@@ -12,7 +12,7 @@ export default withIronSessionApiRoute(async (req, res) => {
   let { email, password } = await req.body;
 
   // If 'email' or 'password' is not seen in POST request body, then return error.
-  if (!email || !password) return res.status(400).createErrorPayload(104);
+  if (!email || !password) return res.status(400).json(createErrorPayload(104));
 
   // Trims the email and password.
   email = trim(email);
