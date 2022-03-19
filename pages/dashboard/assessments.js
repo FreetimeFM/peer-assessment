@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
+import { Card } from "semantic-ui-react";
 import { withSessionSsr } from "../../lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
 import DashboardLayout from "../../layouts/DashboardLayout";
-import AssessmentList from "../../components/AssessmentList";
+import AssessmentCard from "components/AssessmentCard";
 import { placeholderTemplate } from "components/PlaceHolder";
 
+
 export default function CurrentAssessments({ user }) {
-  const [ assessments, setAssessments ] = useState();
+  const [ assessments, setAssessments ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -20,6 +22,7 @@ export default function CurrentAssessments({ user }) {
   async function fetchAssessments() {
     if (fetchOptions.fetched) return;
     setFetchOptions({
+      ...fetchOptions,
       fetched: false,
       fetching: true
     });
@@ -42,31 +45,59 @@ export default function CurrentAssessments({ user }) {
 
     } catch (error) {
       console.error(error);
+      setFetchOptions({
+        ...fetchOptions,
+        error: "An unknown error occured. Please contact your administrator."
+      });
     }
 
-    setFetchOptions({ fetched: true, fetching: false });
+    setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
   }
 
   function parseData(data) {
     let assessments = [];
-
     data.forEach(item => {
       item.assessments.forEach(assessment => {
         assessments.push({
           ...assessment,
           "class": item.class,
-          "teacher": item.teacher,
+          "teacher": user.userType === "teacher" ? null : item.teacher
         });
       });
     });
-
     return assessments;
   }
 
   function renderContent() {
-    if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching assessments.", "We're fetching your assessments. Please wait.");
-    if (!assessments || fetchOptions.error !== "")
-    return <AssessmentList userType={user.userType} assessments={assessments} />
+    if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching assessments", "We're fetching your assessments. Please wait.");
+    if (fetchOptions.error !== "") {
+      return placeholderTemplate("error", "Error", "We're having trouble fetching your assessments. Please contact your adminstrator.");
+    }
+    if (assessments.length === 0) return (
+      <PlaceHolder
+        message="No assessments"
+        iconName="thumbs up"
+        extraContent={
+          <>
+            <p>There are no assessments to display.</p>
+            {user.userType === "teacher" ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null}
+          </>
+        }
+      />
+    )
+    return (
+      <Card.Group>
+        {assessments.map((assessment, index) => {
+          return (
+            <AssessmentCard
+              key={index}
+              details={assessment}
+              teacher={user.userType === "teacher"}
+            />
+          );
+        })}
+      </Card.Group>
+    )
   }
 
   return (
