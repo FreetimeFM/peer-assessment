@@ -1,18 +1,21 @@
 import { getAssessmentsOverview } from "lib/database";
-import { createErrorPayload, getHttpStatus } from "lib/errors";
+import { errorResponse } from "lib/errors";
 import { withSessionApi } from "lib/iron-session/withSession";
 
 export default withSessionApi(async ({req, res}) => {
   try {
     const { refID, userType } = req.session.user;
-    if (userType === "admin") return res.status(200).json({error: false, result: []});
+    if (userType === "admin") return errorResponse(res, 303);
 
-    const result = await getAssessmentsOverview(refID, userType);
-    if (result.error) return res.status(getHttpStatus(100)).json(createErrorPayload(100));
+    const { error, result } = await getAssessmentsOverview(refID, userType);
+    if (error) return errorResponse(res, 100);
 
-    return res.status(200).json(result);
+    return res.status(200).json({
+      error: false,
+      result: result.data
+    });
   } catch (error) {
     console.error(error);
-    return res.status(getHttpStatus(300)).json(createErrorPayload(300));
+    return errorResponse(res, 300);
   }
 })
