@@ -15,6 +15,7 @@ export default function AssessmentList({ assessments, userType = 2, past = false
           <AssessmentCard
             key={index}
             details={assessment}
+            teacher={userType === "teacher"}
             past={past}
           />
         );

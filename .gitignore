@@ -36,5 +36,5 @@ yarn-error.log*
 # testing results
 /testing/results/
 
-# faunarc
+# fauna secret
 .faunarc

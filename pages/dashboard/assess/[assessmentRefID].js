@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Container, Header, Message, Segment } from "semantic-ui-react";
+import { Button, Container, Header, Message, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
 import PlaceHolder from "components/PlaceHolder";
-import textToHTML from "lib/common";
+import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
+import Link from "next/link";
 
 export default function ({ user }) {
 
@@ -18,7 +19,7 @@ export default function ({ user }) {
   });
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
-    fetching: true,
+    fetching: true
   });
 
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function ({ user }) {
       if (response.error) {
         console.error(response.error);
         setFetchOptions({ ...fetchOptions, error: response?.clientMessage });
+
       } else {
         setAssessment(response.result);
       }
@@ -97,8 +99,33 @@ export default function ({ user }) {
     }
   }
 
-  if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
-  if (fetchOptions.error) return <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
+  if (fetchOptions.fetching) return (
+    <Container content={
+      <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+    } />
+  )
+
+  if (fetchOptions.error) return (
+    <Container content={
+      <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
+    } />
+  )
+
+  if (assessment.completed) return (
+    <Container
+      content={
+        <PlaceHolder
+          iconName="check"
+          message="You have completed answering this assessment."
+          extraContent={
+            <Link href={`/dashboard/mark/${assessmentRefID}`} >
+              <Button content="Start peer marking" primary />
+            </Link>
+          }
+        />
+      }
+    />
+  )
 
   return (
     <Container>
