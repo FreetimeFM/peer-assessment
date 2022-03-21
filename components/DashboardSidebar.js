@@ -1,16 +1,12 @@
 import { Sidebar, Menu, Icon } from "semantic-ui-react";
-
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
+import { pages } from "../lib/pages";
 
-/*
-Sidebar which is displayed on the left of the dashboard.
-pages - an array of page information for the usertype.
-currentPage - integer which is the index for pages array.
-username - the name of the logged in user as string.
-onPageClick - a method to tell parent to change the page. Method takes in parameter "index" as integer.
-*/
-export default function DashboardSidebar({ user, device, pages, currentPage, visible = true }) {
+/**
+ * A component displayed on the left of the dashboard.
+ */
+export default function DashboardSidebar({ user, device, currentPage, visible = true }) {
   const { mutateUser } = useUser();
   let isMobile = (device === "mobile");
 
@@ -23,7 +19,6 @@ export default function DashboardSidebar({ user, device, pages, currentPage, vis
       visible={visible}
       vertical
     >
-
       <SidebarHeader
         username={user.name}
         visible={!isMobile}
@@ -49,7 +44,8 @@ export default function DashboardSidebar({ user, device, pages, currentPage, vis
           false,
         );
         sessionStorage.clear();
-        location.href = "/";
+        localStorage.clear();
+        window.location.href = "/";
       }}>
         { device === "tablet" ? null : <Icon name="log out" /> }
         Sign Out

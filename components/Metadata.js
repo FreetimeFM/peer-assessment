@@ -1,12 +1,15 @@
 import Head from "next/head";
 
-// Used to add and spedify html metadata.
-const Metadata = ({ children, title, iconLink }) => {
+/**
+ * Metadata tags for the current page.
+ * @param {*} props Takes in the page title and children for the meta tag.
+ */
+const Metadata = ({ children, title }) => {
   return (
     <Head>
       <title>{title}</title>
       <meta name="description" content="A peer review assessment system." />
-      <link rel="icon" href={iconLink} />
+      <link rel="icon" href="/favicon.ico" />
       {children}
     </Head>
   );
@@ -15,7 +18,6 @@ const Metadata = ({ children, title, iconLink }) => {
 // The default values for the parameters.
 Metadata.defaultProps = {
   title: "Peer assessment system",
-  iconLink: "/favicon.ico",
 };
 
 export default Metadata;
