@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card } from "semantic-ui-react";
+import Link from "next/link";
 import { withSessionSsr } from "../../lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentCard from "components/AssessmentCard";
-import { placeholderTemplate } from "components/PlaceHolder";
+import PlaceHolder, { placeholderTemplate } from "components/PlaceHolder";
 
 
 export default function CurrentAssessments({ user }) {

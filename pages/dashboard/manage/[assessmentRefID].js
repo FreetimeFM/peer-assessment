@@ -1,17 +1,16 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button, Container, Header, Segment, Modal, Table } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
-import PlaceHolder from "components/PlaceHolder";
 import textToHTML from "lib/common";
 import Metadata from "components/Metadata";
-import Link from "next/link";
 import ResponseTable from "components/ResponseTable";
+import { placeholderTemplate } from "components/Placeholder";
 
 export default function ({ user }) {
-
   const assessmentRefID = useRouter().query.assessmentRefID;
   const [ assessment, setAssessment ] = useState({
     questions: []
@@ -113,22 +112,30 @@ export default function ({ user }) {
     console.log("click", index)
   }
 
-  if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
-  if (fetchOptions.error) return <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
+  function renderOutput() {
+    if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching details", "We're fetching the assessment details.");
+    if (fetchOptions.error) return placeholderTemplate("error", "Error", fetchOptions.error);
+
+    return (
+      <>
+        <Metadata title={assessment.name} />
+        <Segment.Group>
+          <Segment content={<Header content={assessment.name} size="huge"/>} />
+          <Segment>
+            <Link href={`/dashboard/assess/${assessmentRefID}`}>
+              <Button content="View Assessment" />
+            </Link>
+            <InfoModal details={assessment} id={assessmentRefID} />
+          </Segment>
+          <Segment content={<ResponseTable responses={responses} onClick={handleRowClick} />} />
+        </Segment.Group>
+      </>
+    )
+  }
 
   return (
     <Container>
-      <Metadata title={assessment.name} />
-      <Segment.Group>
-        <Segment content={<Header content={assessment.name} size="huge"/>} />
-        <Segment>
-          <Link href={`/dashboard/assess/${assessmentRefID}`}>
-            <Button content="View Assessment" />
-          </Link>
-          <InfoModal details={assessment} id={assessmentRefID} />
-        </Segment>
-        <Segment content={<ResponseTable responses={responses} onClick={handleRowClick} />} />
-      </Segment.Group>
+      {renderOutput()}
     </Container>
   )
 }
