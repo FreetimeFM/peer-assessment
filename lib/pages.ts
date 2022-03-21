@@ -1,3 +1,22 @@
+import { useRouter } from "next/router";
+
+type Page = {
+  name?: string,
+  path: string,
+  iconName?: string,
+  subHeading?: string,
+}
+
+/**
+ * Gets the information about the current page by usertype.
+ * @param userType The type of user.
+ * @returns The information about the current page.
+ */
+export function getCurrentPage(userType: "student" | "teacher" | "admin"): Page {
+  return pages[userType].find(page => page.path === useRouter().pathname);
+}
+
+// Information about the pages for each userType
 export const pages = {
   "admin" : [
     {
