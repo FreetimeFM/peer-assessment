@@ -1,6 +1,6 @@
 import { Segment, Header, Icon } from "semantic-ui-react"
 
-export default function PlaceHolder({ message, iconName, extraContent = null }) {
+export default function PlaceholderSegment({ message, iconName, extraContent = null }) {
   return (
     <Segment placeholder textAlign="center">
       <Header icon>
@@ -16,7 +16,7 @@ export function placeholderTemplate(type, message, extraContent) {
   switch (type) {
     case "fetch":
       return (
-        <PlaceHolder
+        <PlaceholderSegment
           iconName="cloud download"
           message={message ? message : "Fetching details"}
           extraContent={extraContent ? extraContent : "Please wait while we fetch your details."}
@@ -25,7 +25,7 @@ export function placeholderTemplate(type, message, extraContent) {
 
     case "error":
       return (
-        <PlaceHolder
+        <PlaceholderSegment
           iconName="exclamation"
           message={message ? message : "Error"}
           extraContent={extraContent ? extraContent : "Something went wrong. Please contact your adminstrator."}
@@ -34,7 +34,7 @@ export function placeholderTemplate(type, message, extraContent) {
 
     default:
       return (
-        <PlaceHolder
+        <PlaceholderSegment
           iconName="clock"
           message="Not Implemented."
           extraContent={<p>This feature hasn't been implemented yet.</p>}
