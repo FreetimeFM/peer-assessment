@@ -81,7 +81,7 @@ export default function CurrentAssessments({ user }) {
         extraContent={
           <>
             <p>There are no assessments to display.</p>
-            {user.userType === "teacher" ? <Link href="/dashboard/create-assessment"><Button primary>Create Assessment</Button></Link> : null}
+            {user.userType === "teacher" ? <Link href="/dashboard/create/assessment"><Button primary>Create Assessment</Button></Link> : null}
           </>
         }
       />
