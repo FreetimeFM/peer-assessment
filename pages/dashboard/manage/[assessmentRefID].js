@@ -8,7 +8,7 @@ import fetchJson from "lib/iron-session/fetchJson";
 import textToHTML from "lib/common";
 import Metadata from "components/Metadata";
 import ResponseTable from "components/ResponseTable";
-import { placeholderTemplate } from "components/Placeholder";
+import { placeholderTemplate } from "components/PlaceholderSegment"
 
 export default function ({ user }) {
   const assessmentRefID = useRouter().query.assessmentRefID;
