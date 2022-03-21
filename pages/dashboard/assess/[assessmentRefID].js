@@ -5,7 +5,7 @@ import { Button, Container, Header, Message, Segment } from "semantic-ui-react";
 import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import fetchJson from "lib/iron-session/fetchJson";
-import PlaceHolder from "components/PlaceHolder";
+import PlaceholderSegment from "components/PlaceholderSegment";
 import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
 import Link from "next/link";
@@ -101,20 +101,20 @@ export default function ({ user }) {
 
   if (fetchOptions.fetching) return (
     <Container content={
-      <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+      <PlaceholderSegment iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
     } />
   )
 
   if (fetchOptions.error) return (
     <Container content={
-      <PlaceHolder iconName="close" message="Error." extraContent={fetchOptions.error} />
+      <PlaceholderSegment iconName="close" message="Error." extraContent={fetchOptions.error} />
     } />
   )
 
   if (assessment.completed) return (
     <Container
       content={
-        <PlaceHolder
+        <PlaceholderSegment
           iconName="check"
           message="You have completed answering this assessment."
           extraContent={

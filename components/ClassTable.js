@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Table, Message, Modal } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
-import PlaceHolder, { placeholderTemplate } from "./PlaceHolder";
+import PlaceholderSegment, { placeholderTemplate } from "./PlaceholderSegment";
 
 export default function ClassTable({ user }) {
 
@@ -69,8 +69,8 @@ export default function ClassTable({ user }) {
     console.log(index)
   }
 
-  if (fetchOptions.error) return <PlaceHolder iconName="close" message="Error fetching classes." extraContent="Please contact your adminstrator." />
-  if (fetchOptions.fetching) return <PlaceHolder iconName="hourglass half" message="Please wait." extraContent="We're fetching the classes." />;
+  if (fetchOptions.error) return <PlaceholderSegment iconName="close" message="Error fetching classes." extraContent="Please contact your adminstrator." />
+  if (fetchOptions.fetching) return <PlaceholderSegment iconName="hourglass half" message="Please wait." extraContent="We're fetching the classes." />;
 
   return (
     <>

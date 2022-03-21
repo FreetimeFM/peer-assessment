@@ -5,7 +5,7 @@ import { withSessionSsr } from "../../lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import AssessmentCard from "components/AssessmentCard";
-import PlaceHolder, { placeholderTemplate } from "components/PlaceHolder";
+import PlaceholderSegment, { placeholderTemplate } from "components/PlaceholderSegment";
 
 
 export default function CurrentAssessments({ user }) {
@@ -75,7 +75,7 @@ export default function CurrentAssessments({ user }) {
       return placeholderTemplate("error", "Error", "We're having trouble fetching your assessments. Please contact your adminstrator.");
     }
     if (assessments.length === 0) return (
-      <PlaceHolder
+      <PlaceholderSegment
         message="No assessments"
         iconName="thumbs up"
         extraContent={
