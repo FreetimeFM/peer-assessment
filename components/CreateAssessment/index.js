@@ -147,17 +147,13 @@ export default function CreateAssessment() {
       let tempQuestions;
 
       if (markingQuestions.length === 0) {
-        tempQuestions = new Array(assessmentQuestions.length);
+        tempQuestions = new Array(assessmentQuestions.length).fill([]);
       } else {
         tempQuestions = markingQuestions.slice();
       }
 
       question.index.forEach(i => {
-
-        if (!tempQuestions[i]) tempQuestions[i] = [qAdd];
-        else {
-          tempQuestions[i].push(qAdd);
-        }
+        tempQuestions[i] = [ ...tempQuestions[i], qAdd];
       });
 
       setMarkingQuestions(tempQuestions);
@@ -209,7 +205,7 @@ export default function CreateAssessment() {
 
   async function submitAssessment() {
     if (classList.length === 0) return alert("Unable to retrieve classes. Please contact your adminstrator.");
-    setSubmitting(true);
+    // setSubmitting(true);
 
     let empty = true;
 

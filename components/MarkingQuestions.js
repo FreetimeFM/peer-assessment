@@ -23,7 +23,6 @@ export default function ({ data, onInput, preview = false }) {
         />
         <Card.Content>
           {
-            data.markingCriteria.questions[index] ?
             data.markingCriteria.questions[index].map((item, pos) => {
               return (
                 <QuestionField
@@ -40,7 +39,7 @@ export default function ({ data, onInput, preview = false }) {
                   }}
                 />
               )
-            }) : null
+            })
           }
           <Form.Input
             name="marks"
