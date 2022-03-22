@@ -1,4 +1,5 @@
 import { Sidebar, Menu, Icon } from "semantic-ui-react";
+import Link from "next/link";
 import useUser from "../lib/iron-session/useUser";
 import fetchJson from "../lib/iron-session/fetchJson";
 import { pages } from "../lib/pages";
@@ -27,14 +28,15 @@ export default function DashboardSidebar({ user, device, currentPage, visible = 
 
       {
         pages[user.userType].map((page) =>
-        <SidebarButton
-          key={page.path}
-          iconName={page.iconName}
-          iconHidden={device === "tablet"}
-          content={page.name}
-          active={page.path === currentPage}
-          path={page.path === currentPage ? null : page.path}
-        />)
+          <SidebarButton
+            key={page.path}
+            iconName={page.iconName}
+            iconHidden={device === "tablet"}
+            content={page.name}
+            active={page.path === currentPage}
+            path={page.path === currentPage ? null : page.path}
+          />
+        )
       }
 
       <Menu.Item as="a" onClick={async (e) => {
@@ -66,14 +68,18 @@ function SidebarHeader({ visible, username, isTablet }) {
 }
 
 function SidebarButton({ iconName, iconHidden, content, active, path }) {
-  return (
-    <Menu.Item
-      as="a"
-      active={active}
-      href={path}
-    >
+
+  const button = (
+    <Menu.Item active={active} >
       {iconHidden ? null : <Icon name={iconName} />}
       {content}
     </Menu.Item>
+  )
+
+  if (path === null) return button
+  else return (
+    <Link href={path}>
+      {button}
+    </Link>
   )
 }
