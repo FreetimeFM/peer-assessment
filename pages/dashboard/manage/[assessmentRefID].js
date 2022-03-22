@@ -5,7 +5,7 @@ import { Button, Container, Header, Segment, Modal, Table } from "semantic-ui-re
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
-import textToHTML from "lib/common";
+import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
 import ResponseTable from "components/ResponseTable";
 import { placeholderTemplate } from "components/PlaceholderSegment"
