@@ -133,7 +133,7 @@ export default function ({ user }) {
       <Message content="This is what the students will see." hidden={!previewMode} info />
       <Segment.Group>
         <Segment content={<Header content={assessment.name} size="huge"/>} />
-        <Segment content={textToHTML(assessment.description)} />
+        <Segment content={assessment.description || assessment.description.length !== 0 ? assessment.description : "No description provided."} />
         <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={assessment.questions} preview={previewMode}/>} />
       </Segment.Group>
     </Container>
