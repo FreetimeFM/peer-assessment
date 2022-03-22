@@ -122,6 +122,9 @@ export default function ({ user }) {
         <Segment.Group>
           <Segment content={<Header content={assessment.name} size="huge"/>} />
           <Segment>
+            <Link href={`/dashboard`}>
+              <Button content="Back to Dashboard" />
+            </Link>
             <Link href={`/dashboard/assess/${assessmentRefID}`}>
               <Button content="View Assessment" />
             </Link>
