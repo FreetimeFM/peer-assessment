@@ -33,7 +33,7 @@ export default function ({ user }) {
     });
 
     try {
-      const details = await fetchJson("/api/get_assessment_details", {
+      const { error, result } = await fetchJson("/api/get_assessment_details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,24 +42,12 @@ export default function ({ user }) {
         body: JSON.stringify({ assessmentRefID: assessmentRefID })
       });
 
-      console.log("details", details);
+      console.log("result", result);
 
-      const answers = await fetchJson("/api/get_assessment_answers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ assessmentRefID: assessmentRefID })
-      });
-
-      console.log("answers", answers);
-
-      if (details.error && answers.error) {
+      if (error) {
         setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
       } else {
-        setAssessment(details.result);
-        setResponses(answers.result.data);
+        setAssessment(result);
       }
     } catch (error) {
       console.error(error);
