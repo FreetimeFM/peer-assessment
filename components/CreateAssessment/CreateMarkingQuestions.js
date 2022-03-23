@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Modal, Button, Card, Divider } from "semantic-ui-react";
+import { Form, Modal, Button, Card, Divider, Message } from "semantic-ui-react";
 
 import { QuestionField } from "components/QuestionCard";
 import FormInputPopup from "components/FormInputPopup";
@@ -12,21 +12,26 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
     <>
       <CreateMarkingQuestion
         onAddQuestion={onAddQuestion}
-        questionNames={assessmentQuestions.map(item => item.name)}
+        questionNames={questions.map(item => item.name)}
       />
       <Divider content="Assessment Questions" horizontal/>
-      {
-        markingQuestions.length === 0 ? (
-          <Card fluid>
-            <Card.Content>
-              <strong>No marking criteria. </strong><br />
-              To add a marking question specific to an <strong>assessment</strong> question, click <i>"Add marking question"</i>. Ensure that you{" "}
-              select the assessment questions you want from the <i>"Select Assessment Questions"</i> field. Then enter the question and question{" "}
-              type and click <i>"Add"</i>.
-            </Card.Content>
-          </Card>
-        ) : null
-      }
+      <Message
+        header="No marking criteria."
+        content={
+          <>
+            To add a marking criteria specific to an <strong>assessment</strong> question, click <i>"Add marking question"</i>. Ensure that you{" "}
+            select the assessment questions you want from the <i>"Select Assessment Questions"</i> field. Then enter the details and click{" "}
+            <i>"Add"</i>.
+          </>
+        }
+        hidden={questions.some((question, index) => {
+          if (question.marking) {
+            if (questions[index].marking.length > 0) return true;
+          }
+          return false;
+        })}
+        info
+      />
       <DisplayMarkingQuestions
         questions={questions}
         onRemoveQuestion={onRemoveQuestion}
@@ -44,8 +49,7 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
   );
 }
 
-function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemoveQuestion }) {
-
+function DisplayMarkingQuestions({ questions, onRemoveQuestion }) {
   function renderQuestionsAtIndex(index) {
     if (!questions[index].marking) return "No marking criteria for this assessment question."
     else {
@@ -101,14 +105,17 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
 
 function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
   if (questions.length === 0) return (
-    <Card fluid>
-      <Card.Content>
-        <strong>No general marking criteria. </strong><br />
-        A general marking question doesn't apply to a specific <strong>assessment</strong> question but rather to the whole assessment itself.<br />
-        To add a marking question here, click <i>"Add marking question"</i>. Ensure that you leave the <i>"Select Assessment Questions"</i>{" "}
-        field empty. Then enter the question and question type and click <i>"Add"</i>.
-      </Card.Content>
-    </Card>
+    <Message
+      header="No general marking criteria."
+      content={
+        <>
+          A general marking criteria don't apply to specific <strong>assessment</strong> questions but rather to the whole assessment itself.<br />
+          To add a marking question here, click <i>"Add marking question"</i>. Ensure that you leave the <i>"Select Assessment Questions"</i>{" "}
+          field empty. Then enter the details and click <i>"Add"</i>.
+        </>
+      }
+      info
+    />
   )
 
   return questions.map((question, pos) => {
