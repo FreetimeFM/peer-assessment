@@ -51,6 +51,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           }
           placeholder="Required."
           value={formData.peerMarkingQuantity}
+          onWheel={e => e.target.blur()}
           onChange={e => {
             onFormChange(e, {name: "peerMarkingQuantity", value: parseInt(e.target.value)})
           }}
