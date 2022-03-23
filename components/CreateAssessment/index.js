@@ -17,8 +17,7 @@ export default function CreateAssessment() {
     description: "",
     markingDescription: "",
   });
-  const [ assessmentQuestions, setAssessmentQuestions ] = useState([]);
-  const [ markingQuestions, setMarkingQuestions ] = useState([]);
+  const [ questions, setQuestions ] = useState([]);
   const [ generalMarkingQuestions, setGeneralMarkingQuestions ] = useState([]);
   const [ submitting, setSubmitting ] = useState(false);
   const [ classList, setClassList ] = useState([]);
@@ -118,24 +117,18 @@ export default function CreateAssessment() {
   function handleAddAssessmentQuestion(question) {
     // TODO: question validation.
     if (document.getElementById("form").checkValidity())
-    setAssessmentQuestions(assessmentQuestions.concat(question));
+    setQuestions(questions.concat(question));
   }
 
   function handleRemoveQuestion(index) {
     if (confirm("Are you sure you want to remove the question? If you have applied marking criteria to this question, it will be removed.")) {
-      setAssessmentQuestions(assessmentQuestions.filter((item, pos) => pos !== index ? item : null));
-      if (markingQuestions.length === 0) return;
-      else {
-        if(!markingQuestions[index]) return;
-        setMarkingQuestions(markingQuestions.slice().filter((questions, pos) => pos !== index ? questions : null));
-      }
+      setQuestions(questions.filter((item, pos) => pos !== index ? item : null));
     }
   }
 
   // ## Stage 3 methods.
 
   function handleAddMarkingQuestion(question) {
-
     const qAdd = {
       name: question.name,
       type: question.type
@@ -144,34 +137,27 @@ export default function CreateAssessment() {
     if (question.index.length === 0) {
       setGeneralMarkingQuestions([ ...generalMarkingQuestions, qAdd ]);
     } else {
-      let tempQuestions;
-
-      if (markingQuestions.length === 0) {
-        tempQuestions = new Array(assessmentQuestions.length).fill([]);
-      } else {
-        tempQuestions = markingQuestions.slice();
-      }
+      let tempQuestions = questions.slice();
 
       question.index.forEach(i => {
-        tempQuestions[i] = [ ...tempQuestions[i], qAdd];
+        if (!tempQuestions[i].marking) tempQuestions[i].marking = [qAdd];
+        else tempQuestions[i].marking = [ ...tempQuestions[i].marking, qAdd];
       });
 
-      setMarkingQuestions(tempQuestions);
+      setQuestions(tempQuestions);
     }
   }
 
   function handleRemoveMarkingQuestion(aIndex, mIndex) {
-    if (confirm("Are you sure you want to remove the marking question?")) {
-      let tempQuestions = markingQuestions.slice();
-      tempQuestions[aIndex] = tempQuestions[aIndex].filter((question, pos) => pos !== mIndex ? question : null);
-      setMarkingQuestions(tempQuestions);
-    }
+    if (!confirm("Are you sure you want to remove the marking question?")) return;
+    let tempQuestions = questions.slice();
+    tempQuestions[aIndex].marking = tempQuestions[aIndex].marking.filter((_question, pos) => pos !== mIndex);
+    setQuestions(tempQuestions);
   }
 
   function handleRemoveGeneralMarkingQuestion(index) {
-    if (confirm("Are you sure you want to remove the marking question?")) {
-      setGeneralMarkingQuestions(generalMarkingQuestions.filter((question, pos) => pos !== index ? question : null));
-    }
+    if (!confirm("Are you sure you want to remove the marking question?")) return;
+    setGeneralMarkingQuestions(generalMarkingQuestions.filter((_question, pos) => pos !== index));
   }
 
   // ## Shared methods.
@@ -187,8 +173,8 @@ export default function CreateAssessment() {
     } else if (stage === 2) {
 
       // TODO: questions validation.
-      if (assessmentQuestions.length === 0) return alert("Please add some questions for the assessment.");
-      console.log(assessmentQuestions);
+      if (questions.length === 0) return alert("Please add some questions for the assessment.");
+      console.log(questions);
       setStage(stage + 1);
 
     } else {
@@ -199,18 +185,20 @@ export default function CreateAssessment() {
   }
 
   function handleBack() {
-    if (stage === 1) return;
+    if (stage <= 1) return;
     setStage(stage - 1);
   }
 
   async function submitAssessment() {
     if (classList.length === 0) return alert("Unable to retrieve classes. Please contact your adminstrator.");
-    // setSubmitting(true);
+    setSubmitting(true);
 
     let empty = true;
 
-    markingQuestions.forEach(element => {
-      if (element.length > 0) empty = false;
+    questions.forEach(element => {
+      if (element.marking) {
+        if (element.marking.length > 0) empty = false;
+      }
     });
     if (generalMarkingQuestions.length > 0) empty = false;
 
@@ -223,11 +211,8 @@ export default function CreateAssessment() {
 
     const submit = {
       ...formData,
-      questions: assessmentQuestions,
-      markingCriteria: empty ? false : {
-        questions: markingQuestions,
-        general: generalMarkingQuestions
-      }
+      questions: questions,
+      generalMarkingQuestions: generalMarkingQuestions
     }
 
     // TODO: Apply validation.
@@ -285,8 +270,7 @@ export default function CreateAssessment() {
       case 3:
         return (
           <CreateMarkingQuestions
-            assessmentQuestions={assessmentQuestions}
-            markingQuestions={markingQuestions}
+            questions={questions}
             generalMarkingQuestions={generalMarkingQuestions}
             onAddQuestion={handleAddMarkingQuestion}
             onRemoveQuestion={handleRemoveMarkingQuestion}
@@ -297,7 +281,7 @@ export default function CreateAssessment() {
       case 2:
         return (
           <CreateAssessmentQuestions
-            questions={assessmentQuestions}
+            questions={questions}
             onAddQuestion={handleAddAssessmentQuestion}
             onRemoveQuestion={handleRemoveQuestion}
           />
@@ -344,7 +328,7 @@ export default function CreateAssessment() {
             <Form.Button
               content="Next"
               onClick={handleNext}
-              disabled={assessmentQuestions.length === 0}
+              disabled={questions.length <= 0}
               primary
               fluid
             />
@@ -356,7 +340,7 @@ export default function CreateAssessment() {
           <Form.Button
             content="Next"
             onClick={handleNext}
-            disabled={classList.length === 0}
+            disabled={classList.length <= 0}
             primary
             fluid
           />

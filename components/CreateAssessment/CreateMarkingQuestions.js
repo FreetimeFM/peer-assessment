@@ -6,7 +6,7 @@ import FormInputPopup from "components/FormInputPopup";
 import { getDropdownOptions } from "lib/common";
 import { getMarkingQuestionsTypes, getQuestionTypeByValue } from "lib/questionTypes";
 
-export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, generalMarkingQuestions, onAddQuestion, onRemoveQuestion, onRemoveGeneralQuestion }) {
+export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onAddQuestion, onRemoveQuestion, onRemoveGeneralQuestion }) {
 
   return (
     <>
@@ -28,8 +28,7 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
         ) : null
       }
       <DisplayMarkingQuestions
-        assessmentQuestions={assessmentQuestions}
-        markingQuestions={markingQuestions}
+        questions={questions}
         onRemoveQuestion={onRemoveQuestion}
       />
       <Divider content="General Marking Questions" horizontal/>
@@ -39,7 +38,7 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
       />
       <CreateMarkingQuestion
         onAddQuestion={onAddQuestion}
-        questionNames={assessmentQuestions.map(item => item.name)}
+        questionNames={questions.map(item => item.name)}
       />
     </>
   );
@@ -48,12 +47,12 @@ export function CreateMarkingQuestions({ assessmentQuestions, markingQuestions, 
 function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemoveQuestion }) {
 
   function renderQuestionsAtIndex(index) {
-    if (!markingQuestions[index]) return "No marking criteria for this assessment question."
+    if (!questions[index].marking) return "No marking criteria for this assessment question."
     else {
-      if (markingQuestions[index].length === 0) return "No marking criteria for this assessment question."
+      if (questions[index].marking.length === 0) return "No marking criteria for this assessment question."
     }
 
-    return markingQuestions[index].map((question, pos) => {
+    return questions[index].marking.map((question, pos) => {
       return (
         <Card
           key={`${index + 1}.${pos + 1}`}
@@ -63,7 +62,7 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
               type={question.type}
               label={`${index + 1}.${pos + 1}. ${question.name}`}
               placeholder={`Type: ${getQuestionTypeByValue(question.type).text}`}
-              preview={true}
+              preview
             />
           }
           extra={
@@ -82,7 +81,7 @@ function DisplayMarkingQuestions({ assessmentQuestions, markingQuestions, onRemo
     })
   }
 
-  return assessmentQuestions.map((question, index) => {
+  return questions.map((question, index) => {
     return (
       <Card
         key={index}
