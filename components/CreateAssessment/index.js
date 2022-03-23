@@ -212,7 +212,13 @@ export default function CreateAssessment() {
     const submit = {
       ...formData,
       questions: questions,
-      generalMarkingQuestions: generalMarkingQuestions
+      markingCriteria: {
+        general: generalMarkingQuestions,
+        questions: questions.map(question => {
+          if (question.marking) return question.marking;
+          else return [];
+        }),
+      }
     }
 
     // TODO: Apply validation.
