@@ -23,7 +23,7 @@ export default withSessionApi(async ({req, res}) => {
       })
     }
 
-    const { error, result } = await getAssessmentDetailsByAssessmentRefID(id)
+    const { error, result } = await getAssessmentDetailsByAssessmentRefID(id, req.session.user.refID)
 
     if (error) {
       if (!result) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
