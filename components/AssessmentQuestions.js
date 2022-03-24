@@ -20,7 +20,6 @@ export default function AssessmentQuestions({ questions, onSubmit, preview = fal
             <QuestionCard
               index={index}
               question={item}
-              preview={preview}
               onAnswerInput={handleAnswerInput}
             />
           )
@@ -34,6 +33,7 @@ export default function AssessmentQuestions({ questions, onSubmit, preview = fal
       <Form.Button
         content="Submit"
         onClick={_e => onSubmit(answers)}
+        style={{ display: preview ? "none" : "block" }}
         disabled={preview}
         primary
         fluid
