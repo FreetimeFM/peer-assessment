@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Container, Header, Segment, Modal, Table, Accordion, Tab } from "semantic-ui-react";
+import { Button, Container, Header, Segment, Modal, Table, Accordion, Tab, Form } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -10,6 +10,7 @@ import Metadata from "components/Metadata";
 import ResponseTable from "components/ResponseTable";
 import { placeholderTemplate } from "components/PlaceholderSegment";
 import AssessmentQuestions from "components/AssessmentQuestions";
+import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
 
 export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
@@ -27,7 +28,7 @@ export default function () {
     { menuItem: 'Information', render: () => <Pane>{renderInformationTable()}</Pane> },
     { menuItem: 'Results', render: () => <Pane></Pane> },
     { menuItem: 'Assessment Preview', render: () => <Pane><AssessmentQuestions questions={data.assessment.questions} preview={true} /></Pane>},
-    { menuItem: 'Marking Preview', render: () => <Pane></Pane>},
+    { menuItem: 'Marking Preview', render: () => <Pane>{renderMarkingQuestions()}</Pane>},
   ]
 
   useEffect(() => {
@@ -160,8 +161,64 @@ export default function () {
           ]}
           defaultActiveIndex={[0,1,2]}
           exclusive={false}
+          fluid
         />
       </>
+    )
+  }
+
+  function renderMarkingCriteria() {
+    return (
+      <Form>
+        <Segment.Group>
+          <Segment>
+            <Accordion
+              panels={[
+                {
+                  key: "briefDescription",
+                  title: "Brief Description",
+                  content: getDescription("brief", data.assessment.briefDescription)
+                },
+                {
+                  key: "description",
+                  title: "Assessment Description",
+                  content: getDescription("assessment", data.assessment.description)
+                },
+                {
+                  key: "markingDescription",
+                  title: "Marking Description",
+                  content: getDescription("marking", data.assessment.markingDescription)
+                },
+              ]}
+              defaultActiveIndex={[2]}
+              exclusive={false}
+            />
+          </Segment>
+          <Segment>
+            <Header
+              content="Assessment Questions"
+              subheader="Marking criteria for specific assessment questions."
+            />
+            <MarkingQuestions
+              data={{
+                questions: data.assessment.questions,
+                markingCriteria: data.assessment.markingCriteria,
+              }}
+              onInput={(_e, _data) => {}}
+            />
+          </Segment>
+          <Segment>
+            <Header
+              content="General Marking Questions"
+              subheader="Marking criteria for the assessment as a whole."
+            />
+            <GeneralMarkingQuestions
+              questions={data.assessment.markingCriteria.general}
+              onInput={(_e, _data) => {}}
+            />
+          </Segment>
+        </Segment.Group>
+      </Form>
     )
   }
 
@@ -187,7 +244,7 @@ export default function () {
           content={
             <Tab
               panes={panes}
-              menu={{ secondary: true }}
+              menu={{ pointing: true }}
             />
           }
         />
