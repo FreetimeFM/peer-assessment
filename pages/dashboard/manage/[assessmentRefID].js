@@ -1,17 +1,17 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Container, Header, Segment, Modal, Table } from "semantic-ui-react";
+import { Button, Container, Header, Segment, Modal, Table, Accordion, Tab } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
-import { textToHTML } from "lib/common";
+import { getLocalDate, getDescription } from "lib/common";
 import Metadata from "components/Metadata";
 import ResponseTable from "components/ResponseTable";
 import { placeholderTemplate } from "components/PlaceholderSegment";
 import AssessmentQuestions from "components/AssessmentQuestions";
 
-export default function ({ user }) {
+export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
 
   const [ data, setData ] = useState({
@@ -24,7 +24,7 @@ export default function ({ user }) {
   });
 
   const panes = [
-    { menuItem: 'Information', render: () => <Pane></Pane> },
+    { menuItem: 'Information', render: () => <Pane>{renderInformationTable()}</Pane> },
     { menuItem: 'Results', render: () => <Pane></Pane> },
     { menuItem: 'Assessment Preview', render: () => <Pane><AssessmentQuestions questions={data.assessment.questions} preview={true} /></Pane>},
     { menuItem: 'Marking Preview', render: () => <Pane></Pane>},
@@ -107,6 +107,62 @@ export default function ({ user }) {
 
   function handleRowClick(index) {
     console.log("click", index)
+  }
+
+  function renderInformationTable() {
+    return (
+      <>
+        <Table celled>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell content={<strong>Assessment ID</strong>} />
+              <Table.Cell content={assessmentRefID} />
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell content={<strong>Class</strong>} />
+              <Table.Cell content={data.assessment.class.name} />
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell content={<strong>Name</strong>} />
+              <Table.Cell content={data.assessment.name} />
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell content={<strong>Release Date</strong>} />
+              <Table.Cell content={getLocalDate(data.assessment.releaseDate)} />
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell content={<strong>Assessment Submission Date</strong>} />
+              <Table.Cell content={getLocalDate(data.assessment.submissionDeadline)} />
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell content={<strong>Marking Submission Date</strong>} />
+              <Table.Cell content={getLocalDate(data.assessment.markingDeadline)} />
+            </Table.Row>
+          </Table.Body>
+        </Table>
+        <Accordion
+          panels={[
+            {
+              key: "briefDescription",
+              title: "Brief Description",
+              content: getDescription("brief", data.assessment.briefDescription)
+            },
+            {
+              key: "description",
+              title: "Assessment Description",
+              content: getDescription("assessment", data.assessment.description)
+            },
+            {
+              key: "markingDescription",
+              title: "Marking Description",
+              content: getDescription("marking", data.assessment.markingDescription)
+            },
+          ]}
+          defaultActiveIndex={[0,1,2]}
+          exclusive={false}
+        />
+      </>
+    )
   }
 
   function renderOutput() {
