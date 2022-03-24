@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form } from "semantic-ui-react";
 import QuestionCard from "./QuestionCard";
 
-export default function AssessmentQuestions({ questions, onSubmit, preview = false, errorList = [] }) {
+export default function AssessmentQuestions({ questions, onSubmit, preview = false, submitting = false }) {
   const [ answers, setAnswers ] = useState({});
 
   function handleAnswerInput(_e, {name, value}) {
@@ -13,7 +13,7 @@ export default function AssessmentQuestions({ questions, onSubmit, preview = fal
   }
 
   return (
-    <Form>
+    <Form loading={submitting} >
       {
         questions.map((item, index) => {
           return (

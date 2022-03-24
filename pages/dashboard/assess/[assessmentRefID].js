@@ -14,6 +14,7 @@ export default function ({ user }) {
 
   const assessmentRefID = useRouter().query.assessmentRefID;
   const previewMode = user.userType !== "student";
+  const [ submitting, setSubmitting ] = useState(false);
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
@@ -61,16 +62,21 @@ export default function ({ user }) {
   }
 
   async function handleSubmit(answers) {
+    setSubmitting(true);
 
     if (Object.keys(answers).length !== assessment.questions.length) {
       alert("Cannot submit. Answers cannot be empty.");
+      setSubmitting(false);
       return;
     }
 
     for (const index in answers) {
       if (answers[index] === "") {
-        alert("Cannot submit. Answers cannot be empty.");
-        return;
+        if (!confirm("You haven't answered at least one question. Are you sure you want to submit?")) {
+          setSubmitting(false);
+          return;
+        }
+        break;
       }
     }
 
@@ -93,10 +99,12 @@ export default function ({ user }) {
 
       alert("Your answers have been successfully submitted.");
       window.location.assign("/dashboard");
+      return;
     } catch (error) {
       console.log(error);
       alert("An unknown error has occured. Please contact your adminstrator.");
     }
+    setSubmitting(false);
   }
 
   if (fetchOptions.fetching) return (
@@ -134,7 +142,15 @@ export default function ({ user }) {
       <Segment.Group>
         <Segment content={<Header content={assessment.name} size="huge"/>} />
         <Segment content={assessment.description || assessment.description !== "" ? assessment.description : "No description provided."} />
-        <Segment content={<AssessmentQuestions onSubmit={handleSubmit} questions={assessment.questions} preview={previewMode}/>} />
+        <Segment content={
+            <AssessmentQuestions
+              questions={assessment.questions}
+              onSubmit={handleSubmit}
+              submitting={submitting}
+              preview={previewMode}
+            />
+          }
+        />
       </Segment.Group>
     </Container>
   )
