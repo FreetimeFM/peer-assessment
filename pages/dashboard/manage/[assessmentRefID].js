@@ -26,7 +26,7 @@ export default function ({ user }) {
   const panes = [
     { menuItem: 'Information', render: () => <Pane></Pane> },
     { menuItem: 'Results', render: () => <Pane></Pane> },
-    { menuItem: 'Assessment Preview', render: () => <Pane></Pane>},
+    { menuItem: 'Assessment Preview', render: () => <Pane><AssessmentQuestions questions={data.assessment.questions} preview={true} /></Pane>},
     { menuItem: 'Marking Preview', render: () => <Pane></Pane>},
   ]
 
