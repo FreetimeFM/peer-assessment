@@ -8,18 +8,27 @@ import fetchJson from "lib/iron-session/fetchJson";
 import { textToHTML } from "lib/common";
 import Metadata from "components/Metadata";
 import ResponseTable from "components/ResponseTable";
-import { placeholderTemplate } from "components/PlaceholderSegment"
+import { placeholderTemplate } from "components/PlaceholderSegment";
+import AssessmentQuestions from "components/AssessmentQuestions";
 
 export default function ({ user }) {
   const assessmentRefID = useRouter().query.assessmentRefID;
+
+  const [ data, setData ] = useState({
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
-  const [ responses, setResponses ] = useState([]);
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
   });
+
+  const panes = [
+    { menuItem: 'Information', render: () => <Pane></Pane> },
+    { menuItem: 'Results', render: () => <Pane></Pane> },
+    { menuItem: 'Assessment Preview', render: () => <Pane></Pane>},
+    { menuItem: 'Marking Preview', render: () => <Pane></Pane>},
+  ]
 
   useEffect(() => {
     getAssessmentDetails();
@@ -47,7 +56,7 @@ export default function ({ user }) {
       if (error) {
         setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
       } else {
-        setAssessment(result);
+        setData(result);
       }
     } catch (error) {
       console.error(error);
@@ -106,95 +115,43 @@ export default function ({ user }) {
 
     return (
       <>
-        <Metadata title={assessment.name} />
-        <Segment.Group>
-          <Segment content={<Header content={assessment.name} size="huge"/>} />
-          <Segment>
-            <Link href={`/dashboard`}>
-              <Button content="Back to Dashboard" />
-            </Link>
-            <Link href={`/dashboard/assess/${assessmentRefID}`}>
-              <Button content="View Assessment" />
-            </Link>
-            <InfoModal details={assessment} id={assessmentRefID} />
-          </Segment>
-          <Segment content={<ResponseTable responses={responses} onClick={handleRowClick} />} />
-        </Segment.Group>
+        <Metadata title={data.name} />
+        <Segment attached="top" >
+          <Header
+            content={data.assessment.name}
+            subheader={data.assessment.class.name}
+            size="huge"
+          />
+          <Link href={`/dashboard`}>
+            <Button content="Back to Dashboard" size="small" primary />
+          </Link>
+        </Segment>
+        <Segment
+          attached="bottom"
+          content={
+            <Tab
+              panes={panes}
+              menu={{ secondary: true }}
+            />
+          }
+        />
       </>
     )
   }
 
   return (
-    <Container>
+    <Container style={{ padding: "2em 0" }}>
       {renderOutput()}
     </Container>
   )
 }
 
-function InfoModal({ details, id }) {
-  const [open, setOpen] = useState(false);
-
+function Pane({ children }) {
   return (
-    <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={<Button content="View Details" />}
-      size="large"
-      closeIcon
-    >
-      <Modal.Header>Assessment Details</Modal.Header>
-      <Modal.Content>
-        <Table celled>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell><strong>Assessment ID</strong></Table.Cell>
-              <Table.Cell>{id}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Name</strong></Table.Cell>
-              <Table.Cell>{details.name}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Class</strong></Table.Cell>
-              <Table.Cell>{details.class === undefined ? "No class specified." : details.class}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Teacher</strong></Table.Cell>
-              <Table.Cell>{details.teacher.name} ({details.teacher.email})</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Release Date</strong></Table.Cell>
-              <Table.Cell>{new Date(details.releaseDate).toString()}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Submission Date</strong></Table.Cell>
-              <Table.Cell>{new Date(details.submissionDeadline).toString()}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Marking Completion Date</strong></Table.Cell>
-              <Table.Cell>{new Date(details.markingDeadline).toString()}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Brief Description</strong></Table.Cell>
-              <Table.Cell>{details.briefDescription === undefined || details.briefDescription === "" ? "No brief description given." : details.briefDescription}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Description</strong></Table.Cell>
-              <Table.Cell>{textToHTML(details.description)}</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button
-          content="Close"
-          onClick={() => setOpen(false)}
-        />
-      </Modal.Actions>
-    </Modal>
+    <Tab.Pane content={children} style={{ borderWidth: "0", padding: "0" }} />
   )
 }
+
 export const getServerSideProps = withSessionSsr(({ req }) => {
   if (req.session.user.userType === "student") {
     return {
