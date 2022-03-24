@@ -27,8 +27,8 @@ export default function () {
   const panes = [
     { menuItem: 'Information', render: () => <Pane>{renderInformationTable()}</Pane> },
     { menuItem: 'Results', render: () => <Pane></Pane> },
-    { menuItem: 'Assessment Preview', render: () => <Pane><AssessmentQuestions questions={data.assessment.questions} preview={true} /></Pane>},
-    { menuItem: 'Marking Preview', render: () => <Pane>{renderMarkingQuestions()}</Pane>},
+    { menuItem: 'Assessment Preview', render: () => <Pane>{renderAssessmentQuestions()}</Pane>},
+    { menuItem: 'Marking Preview', render: () => <Pane>{renderMarkingCriteria()}</Pane>},
   ]
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function () {
   function renderInformationTable() {
     return (
       <>
-        <Table celled>
+        <Table celled striped fixed>
           <Table.Body>
             <Table.Row>
               <Table.Cell content={<strong>Assessment ID</strong>} />
@@ -164,6 +164,15 @@ export default function () {
           fluid
         />
       </>
+    )
+  }
+
+  function renderAssessmentQuestions() {
+    return (
+      <Segment.Group>
+        <Segment content={getDescription("assessment", data.assessment.description)} />
+        <Segment content={<AssessmentQuestions questions={data.assessment.questions} preview={true} />} />
+      </Segment.Group>
     )
   }
 
