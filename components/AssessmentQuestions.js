@@ -18,6 +18,7 @@ export default function AssessmentQuestions({ questions, onSubmit, preview = fal
         questions.map((item, index) => {
           return (
             <QuestionCard
+              key={index}
               index={index}
               question={item}
               onAnswerInput={handleAnswerInput}
