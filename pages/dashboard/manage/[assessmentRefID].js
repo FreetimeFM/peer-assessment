@@ -12,7 +12,7 @@ import { placeholderTemplate } from "components/PlaceholderSegment";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
 
-export default function () {
+export default function ({ user }) {
   const assessmentRefID = useRouter().query.assessmentRefID;
 
   const [ data, setData ] = useState({
@@ -23,13 +23,6 @@ export default function () {
     fetched: false,
     fetching: true,
   });
-
-  const panes = [
-    { menuItem: 'Information', render: () => <Pane>{renderInformationTable()}</Pane> },
-    { menuItem: 'Results', render: () => <Pane></Pane> },
-    { menuItem: 'Assessment Preview', render: () => <Pane>{renderAssessmentQuestions()}</Pane>},
-    { menuItem: 'Marking Preview', render: () => <Pane>{renderMarkingCriteria()}</Pane>},
-  ]
 
   useEffect(() => {
     getAssessmentDetails();
@@ -58,6 +51,7 @@ export default function () {
         setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
       } else {
         setData(result);
+        parseData(result.answers, result.students);
       }
     } catch (error) {
       console.error(error);
@@ -65,6 +59,21 @@ export default function () {
     }
 
     setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
+  }
+
+  function parseData(answers, students) {
+    let stats = {};
+    students.forEach(student => {
+      stats[student.userRefID] = { markingStatus: 0 };
+    });
+
+    answers.map(answer => {
+      answer.responses.map(response => {
+        if (response.markingCompleted) stats[response.userRefID].markingStatus += 1;
+      })
+    });
+    setStats(stats);
+    console.log("stats", stats);
   }
 
   async function handleSubmit(answers) {
@@ -167,6 +176,20 @@ export default function () {
     )
   }
 
+  function renderResults() {
+    return (
+      <>
+        <ResponseTable
+          answers={data.answers}
+          students={data.students}
+          stats={stats}
+          peerMarkingQuantity={data.assessment.peerMarkingQuantity}
+          onRowClick={handleRowClick}
+        />
+      </>
+    )
+  }
+
   function renderAssessmentQuestions() {
     return (
       <Segment.Group>
@@ -244,16 +267,24 @@ export default function () {
             subheader={data.assessment.class.name}
             size="huge"
           />
-          <Link href={`/dashboard`}>
-            <Button content="Back to Dashboard" size="small" primary />
-          </Link>
+          <Button.Group fluid>
+            <Link href={`/dashboard`}>
+              <Button content="Back to Dashboard" size="small" primary />
+            </Link>
+            <Button content="Delete Assessment" size="small" negative disabled />
+          </Button.Group>
         </Segment>
         <Segment
           attached="bottom"
           content={
             <Tab
-              panes={panes}
-              menu={{ pointing: true }}
+              panes={[
+                { menuItem: 'Information', render: () => <Pane>{renderInformationTable()}</Pane> },
+                { menuItem: 'Results', render: () => <Pane>{renderResults()}</Pane> },
+                { menuItem: 'Assessment Preview', render: () => <Pane>{renderAssessmentQuestions()}</Pane>},
+                { menuItem: 'Marking Preview', render: () => <Pane>{renderMarkingCriteria()}</Pane>},
+              ]}
+              menu={{ pointing: true, stackable: true }}
             />
           }
         />

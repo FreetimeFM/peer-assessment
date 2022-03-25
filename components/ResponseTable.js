@@ -1,6 +1,6 @@
 import { Table } from "semantic-ui-react";
 
-export default function ResponseTable({ responses, onClick }) {
+export default function ResponseTable({ answers, students, stats, peerMarkingQuantity, onRowClick }) {
 
   return (
     <Table celled selectable striped>
@@ -12,20 +12,40 @@ export default function ResponseTable({ responses, onClick }) {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {responses.map((value, index) => {
-          return <Row key={index} name={`${value.user.name} (${value.user.email})`} onRowClick={(_e) => onClick(index)} />
+        {answers.map((value, index) => {
+
+          const student = students.find(student => student.userRefID === value.userRefID)
+
+          return (
+            <Row
+              key={index}
+              name={`${student.name} (${student.email})`}
+              assessmentStatus={value.answers.assessmentCompleted}
+              markingStatus={[ stats[value.userRefID].markingStatus, peerMarkingQuantity]}
+              onRowClick={(_e) => onRowClick(value.userRefID)}
+            />
+          )
         })}
       </Table.Body>
     </Table>
   );
 }
 
-function Row({ name, status = ["Unknown", "Unknown"], onRowClick }) {
+function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
   return (
     <Table.Row onClick={onRowClick} style={{ cursor: "pointer" }} >
       <Table.Cell content={name} />
-      <Table.Cell content={status[0]} />
-      <Table.Cell content={status[1]} />
+      <Table.Cell
+        content={assessmentStatus ? "Completed" : "Not Completed"}
+        positive={assessmentStatus}
+        error={!assessmentStatus}
+      />
+      <Table.Cell
+        content={`${markingStatus[0]}/${markingStatus[1]}`}
+        positive={markingStatus[0] === markingStatus[1]}
+        warning={markingStatus[0] > 0 && markingStatus[0] < markingStatus[1]}
+        error={markingStatus[0] === 0}
+      />
     </Table.Row>
   )
 }
