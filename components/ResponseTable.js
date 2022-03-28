@@ -1,7 +1,6 @@
 import { Table } from "semantic-ui-react";
 
 export default function ResponseTable({ answers, students, stats, peerMarkingQuantity, onRowClick }) {
-
   return (
     <Table celled selectable striped>
       <Table.Header>
@@ -13,14 +12,12 @@ export default function ResponseTable({ answers, students, stats, peerMarkingQua
       </Table.Header>
       <Table.Body>
         {answers.map((value, index) => {
-
           const student = students.find(student => student.userRefID === value.userRefID)
-
           return (
             <Row
               key={index}
               name={`${student.name} (${student.email})`}
-              assessmentStatus={value.answers.assessmentCompleted}
+              assessmentStatus={value.assessmentCompleted}
               markingStatus={[ stats[value.userRefID].markingStatus, peerMarkingQuantity]}
               onRowClick={(_e) => onRowClick(value.userRefID)}
             />
