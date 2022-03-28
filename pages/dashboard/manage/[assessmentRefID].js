@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Container, Header, Segment, Modal, Table, Accordion, Tab, Form } from "semantic-ui-react";
+import { Button, Container, Header, Segment, Table, Accordion, Tab, Form } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -19,6 +19,7 @@ export default function ({ user }) {
   const [ assessment, setAssessment ] = useState({
     questions: []
   });
+  const [ stats, setStats ] = useState();
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -51,7 +52,7 @@ export default function ({ user }) {
         setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
       } else {
         setData(result);
-        parseData(result.answers, result.students);
+        parseData(result.results, result.students);
       }
     } catch (error) {
       console.error(error);
@@ -61,19 +62,18 @@ export default function ({ user }) {
     setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
   }
 
-  function parseData(answers, students) {
+  function parseData(results, students) {
     let stats = {};
     students.forEach(student => {
       stats[student.userRefID] = { markingStatus: 0 };
     });
 
-    answers.map(answer => {
-      answer.responses.map(response => {
-        if (response.markingCompleted) stats[response.userRefID].markingStatus += 1;
+    results.map(result => {
+      result.peerMarking.map(peer => {
+        if (peer.markingCompleted) stats[peer.userRefID].markingStatus += 1;
       })
     });
     setStats(stats);
-    console.log("stats", stats);
   }
 
   async function handleSubmit(answers) {
@@ -110,13 +110,8 @@ export default function ({ user }) {
       alert("Your answers have been successfully submitted.");
       window.location.assign("/dashboard");
     } catch (error) {
-      console.log(error);
       alert("An unknown error has occured. Please contact your adminstrator.");
     }
-  }
-
-  function handleRowClick(index) {
-    console.log("click", index)
   }
 
   function renderInformationTable() {
@@ -180,11 +175,9 @@ export default function ({ user }) {
     return (
       <>
         <ResponseTable
-          answers={data.answers}
-          students={data.students}
+          data={data}
           stats={stats}
           peerMarkingQuantity={data.assessment.peerMarkingQuantity}
-          onRowClick={handleRowClick}
         />
       </>
     )
