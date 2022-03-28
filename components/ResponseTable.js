@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Button, Header, List, Modal, Form, Card } from "semantic-ui-react";
+import PlaceholderSegment from "components/PlaceholderSegment";
 import { textToHTML } from "lib/common";
 
 export default function ResponseTable({ data, stats, peerMarkingQuantity }) {
@@ -55,6 +55,13 @@ function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
 function ResponseDetailsModal({ student, peers, markingStatus, questions, markingCriteria, result }) {
   const [ open, setOpen ] = useState(false);
 
+    if (!result.assessmentCompleted) return (
+      <PlaceholderSegment
+        iconName="close"
+        message="Not completed"
+        extraContent={`${student.name} hasn't answered their assessment.`}
+      />
+    )
   return (
     <Modal
       open={open}
