@@ -9,8 +9,8 @@ export default function ResponseTable({ data, stats, peerMarkingQuantity }) {
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell content="Student" width={9} />
-          <Table.HeaderCell content="Assessment Status" />
-          <Table.HeaderCell content="Marking Status" />
+          <Table.HeaderCell content="Assessment" />
+          <Table.HeaderCell content="Marking Progress" />
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -61,7 +61,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
       <PlaceholderSegment
         iconName="close"
         message="Not completed"
-        extraContent={`${student.name} hasn't answered their assessment.`}
+        extraContent={`${student.name} hasn't answered the assessment. The markers cannot mark this student's answers.`}
       />
     )
 
@@ -165,17 +165,20 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
           onRowClick={_e => setOpen(true)}
         />
       }
+      onClose={_e => setOpen(false)}
       size="large"
+      closeIcon
     >
       <Modal.Header content={`${student.name}'s Answers`} />
       <Modal.Content>
-        <Table celled>
+        <Table style={{ marginBottom: "2em" }} celled>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell content="Role" width={3} />
+              <Table.HeaderCell content="Role" />
               <Table.HeaderCell content="Name" />
               <Table.HeaderCell content="Email" />
-              <Table.HeaderCell content="Marking Status" />
+              <Table.HeaderCell content="Marking" />
+              <Table.HeaderCell content={`Marks out of ${questions.reduce((count, current) => count + current.marks, 0)}`} />
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -183,21 +186,35 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.Cell><Label content="Answering" ribbon/></Table.Cell>
               <Table.Cell content={student.name} />
               <Table.Cell content={student.email} />
-              <Table.Cell content="N/A" />
+              <Table.Cell content="N/A" disabled />
+              <Table.Cell content="N/A" disabled />
             </Table.Row>
             {
               result.peerMarking.map(peer => {
                 const user = peers.find(user => user.userRefID === peer.userRefID);
+                let marks = 0;
+
+                if (peer.markingCompleted) markingCriteria.questions.forEach((_q, index) => {
+                  marks += peer.responses.questions[index.toString()] ? parseInt(peer.responses.questions[index.toString()]) : 0
+                });
+
                 return (
                   <Table.Row negative={!peer.markingCompleted} positive={peer.markingCompleted} >
                     <Table.Cell content="Marking" />
                     <Table.Cell content={user.name} />
                     <Table.Cell content={user.email} />
                     <Table.Cell content={peer.markingCompleted ? "Completed" : "Not Completed"} />
+                    <Table.Cell content={peer.markingCompleted ? marks : "N/A"} />
                   </Table.Row>
                 )
               })
             }
+            <Table.Row>
+              <Table.Cell content="Teacher" />
+              <Table.Cell content="You" colSpan={2} />
+              <Table.Cell content="Completed" />
+              <Table.Cell content={0} />
+            </Table.Row>
           </Table.Body>
         </Table>
         {renderContent()}
