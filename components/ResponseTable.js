@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Button, Header, List, Modal, Form, Card, Label } from "semantic-ui-react";
+import { Table, Button, Header, List, Modal, Form, Card, Label, Divider } from "semantic-ui-react";
 import PlaceholderSegment from "components/PlaceholderSegment";
 import { textToHTML } from "lib/common";
 
@@ -55,6 +55,11 @@ function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
 
 function ResponseDetailsModal({ student, peers, markingStatus, questions, markingCriteria, result }) {
   const [ open, setOpen ] = useState(false);
+  const [ comments, setComments ] = useState({});
+
+  function onCommentChange() {
+
+  }
 
   function renderContent() {
     if (!result.assessmentCompleted) return (
@@ -66,91 +71,151 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
     )
 
     return (
-      <Form>
-      <Header content="Assessment Questions" />
-      {
-        questions.map((question, index) => {
-          return (
-            <Card
-              key={index}
-              color="red"
-              style={{ marginBottom: "3em" }}
-              fluid
-            >
-              <Card.Content
-                header={`${index + 1}. ${question.name}`}
-                meta={`${question.marks} ${question.marks === 1 ? "mark" : "marks"}`}
-              />
-              <Card.Content
-                meta={<strong>{student.name}'s answer:</strong>}
-                description={result.answers[index.toString()] ? textToHTML(result.answers[index.toString()]) : <i>No answer from student.</i>}
-              />
-              <Card.Content>
-              {
-                markingCriteria.questions[index].length === 0 ? <i>No marking criteria for this question.</i> :
-                markingCriteria.questions[index].map((item, pos) => {
-                  return (
-                    <Card color="green" fluid>
-                      <Card.Content
-                        header={`${index + 1}.${pos + 1} ${item.name}`}
-                      />
-                      {
-                        result.peerMarking.map(peer => {
-                          return (
-                            <Card.Content>
-                              <p><strong>{peers.find(user => user.userRefID === peer.userRefID).name}'s response</strong></p>
-                              {
-                                peer.markingCompleted ?
-                                  peer.responses.questions[`${index}.${pos}`] ?
-                                  textToHTML(peer.responses.questions[`${index}.${pos}`]) :
-                                  <i>No response from student marker.</i> :
-                                <i>No response from student marker.</i>
-                              }
-                            </Card.Content>
-                          )
-                        })
-                      }
-                    </Card>
-                  )
-                })
-              }
-              </Card.Content>
-              <Card.Content>
-                <List
-                  items={result.peerMarking.map(marker => {
-                    const student = peers.find(student => student.userRefID === marker.userRefID).name
-                    if (!marker.markingCompleted) return `${student} allocated 0 marks.`
-                    const marks = parseInt(marker.responses.questions[index.toString()])
-                    if (marks === 1) return `${student} allocated ${marks} mark.`
-                    return `${student} allocated ${marks} mark.`
-                  })}
+      <>
+        <Header content="Assessment Questions" />
+        {
+          questions.map((question, index) => {
+            return (
+              <Card
+                key={index}
+                color="red"
+                style={{ marginBottom: "3em" }}
+                fluid
+              >
+                <Card.Content
+                  header={`${index + 1}. ${question.name}`}
+                  meta={`${question.marks} ${question.marks === 1 ? "mark" : "marks"}`}
                 />
-              </Card.Content>
-                {/* <Form.Input
-                  name="marks"
-                  type="number"
-                  label={<label>Allocate Marks <FormInputPopup message="How many marks is the student's response worth? Required."/></label>}
-                  placeholder="Required."
-                  min={0}
-                  max={item.marks}
-                  readOnly={preview}
-                  onWheel={e => e.target.blur()}
-                  onChange={(e, {value}) => {
-                    onInput(e, {
-                      qIndex: index,
-                      value: value,
-                      marks: true
-                    })
-                  }}
-                  required
-                /> */}
-            </Card>
-          )
-        })
-      }
+                <Card.Content
+                  meta={<strong>{student.name}'s answer:</strong>}
+                  description={result.answers[index.toString()] ? textToHTML(result.answers[index.toString()]) : <i>No answer from student.</i>}
+                />
+                <Card.Content>
+                {
+                  markingCriteria.questions[index].length === 0 ? <i>No marking criteria for this question.</i> :
+                  markingCriteria.questions[index].map((item, pos) => {
+                    return (
+                      <Card color="green" fluid>
+                        <Card.Content
+                          header={`${index + 1}.${pos + 1} ${item.name}`}
+                        />
+                        {
+                          result.peerMarking.map(peer => {
+                            return (
+                              <Card.Content>
+                                <p><strong>{peers.find(user => user.userRefID === peer.userRefID).name}'s response</strong></p>
+                                {
+                                  peer.markingCompleted ?
+                                    peer.responses.questions[`${index}.${pos}`] ?
+                                    textToHTML(peer.responses.questions[`${index}.${pos}`]) :
+                                    <i>No response from student marker.</i> :
+                                  <i>No response from student marker.</i>
+                                }
+                              </Card.Content>
+                            )
+                          })
+                        }
+                        <Card.Content
+                          content={
+                            <Form.TextArea
+                              id={`${index + 1}.${pos + 1}`}
+                              label={`Your response to ${index + 1}.${pos + 1}`}
+                              rows={1}
+                            />
+                          }
+                        />
+                      </Card>
+                    )
+                  })
+                }
+                </Card.Content>
+                <Card.Content>
+                  <List
+                    items={result.peerMarking.map(marker => {
+                      const student = peers.find(student => student.userRefID === marker.userRefID).name;
+                      if (!marker.markingCompleted) return `${student} allocated 0 marks.`;
 
-      <Header content="General Marking Questions" />
-      </Form>
+                      const marks = parseInt(marker.responses.questions[index.toString()]);
+                      if (marks === 1) return `${student} allocated ${marks} mark.`;
+                      return `${student} allocated ${marks} mark.`;
+                    })}
+                  />
+                </Card.Content>
+                <Card.Content>
+                  <Form.Input
+                    id={index.toString()}
+                    type="number"
+                    label={`Marks for ${student.name}'s answer`}
+                    min={0}
+                    max={question.marks}
+                    onWheel={e => e.target.blur()}
+                    required
+                    size="mini"
+                    fluid
+                  />
+                  <Form.TextArea
+                    label={`Your Response to ${student.name}'s answer`}
+                    // onChange={(e, {value}) => {
+                    //   onInput(e, {
+                    //     qIndex: index,
+                    //     value: value,
+                    //     marks: true
+                    //   })
+                    // }}
+                    maxLength={1000}
+                    rows={2}
+                  />
+                </Card.Content>
+              </Card>
+            )
+          })
+        }
+
+        <Header content="General Marking Questions" />
+        {
+          markingCriteria.general.length === 0 ? <i>No general marking criteria.</i> :
+          markingCriteria.general.map((question, index) => {
+            return (
+              <Card color="olive" style={{ marginBottom: "2em" }} fluid>
+                <Card.Content
+                  header={`${index + 1}. ${question.name}`}
+                />
+                {
+                  result.peerMarking.map(peer => {
+                    return (
+                      <Card.Content>
+                        <p><strong>{peers.find(user => user.userRefID === peer.userRefID).name}'s response</strong></p>
+                        {
+                          peer.markingCompleted ?
+                            peer.responses.general[index.toString()] ?
+                            textToHTML(peer.responses.general[index.toString()]) :
+                            <i>No response from student marker.</i> :
+                          <i>No response from student marker.</i>
+                        }
+                      </Card.Content>
+                    )
+                  })
+                }
+                <Card.Content
+                  content={
+                    <Form.TextArea
+                    label="Your response"
+                    // onChange={(e, {value}) => {
+                    //   onInput(e, {
+                    //     qIndex: index,
+                    //     value: value,
+                    //     marks: true
+                    //   })
+                    // }}
+                    rows={1}
+                  />
+                  }
+                />
+              </Card>
+            )
+          })
+        }
+      </>
     )
   }
 
@@ -178,7 +243,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.HeaderCell content="Name" />
               <Table.HeaderCell content="Email" />
               <Table.HeaderCell content="Marking" />
-              <Table.HeaderCell content={`Marks out of ${questions.reduce((count, current) => count + current.marks, 0)}`} />
+              <Table.HeaderCell content={`Marks out of ${questions.reduce((count, current) => count + parseInt(current.marks), 0)}`} />
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -217,7 +282,22 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
             </Table.Row>
           </Table.Body>
         </Table>
-        {renderContent()}
+        <Form>
+          {renderContent()}
+          <Divider />
+          <Form.TextArea
+            id="overallComment"
+            label={`Overall comment for ${student.name}`}
+            // onChange={(e, {value}) => {
+            //   onInput(e, {
+            //     qIndex: index,
+            //     value: value,
+            //     marks: true
+            //   })
+            // }}
+            rows={3}
+          />
+        </Form>
       </Modal.Content>
       <Modal.Actions>
         <Button content="Close" onClick={_e => setOpen(false)} />
