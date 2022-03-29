@@ -156,4 +156,13 @@ export default function ({ user }) {
   )
 }
 
-export const getServerSideProps = withSessionSsr();
+export const getServerSideProps = withSessionSsr(({ req }) => {
+
+  // If the user is not a student (unauthorised access), then send to default dashboard page.
+  if (req.session.user.userType !== "student") return {
+    redirect: {
+      destination: "/dashboard",
+      permanent: false,
+    },
+  }
+});
