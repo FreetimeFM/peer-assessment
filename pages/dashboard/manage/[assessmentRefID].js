@@ -20,6 +20,8 @@ export default function ({ user }) {
     questions: []
   });
   const [ stats, setStats ] = useState();
+  const [ feedbackList, setFeedbackList ] = useState([]);
+  const [ submitting, setSubmitting ] = useState(false);
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -76,42 +78,34 @@ export default function ({ user }) {
     setStats(stats);
   }
 
-  async function handleSubmit(answers) {
-
-    if (Object.keys(answers).length !== assessment.questions.length) {
-      alert("Cannot submit. Answers cannot be empty.");
-      return;
-    }
-
-    for (const index in answers) {
-      if (answers[index] === "") {
-        alert("Cannot submit. Answers cannot be empty.");
-        return;
-      }
-    }
+  async function handleSubmit(data) {
+    setSubmitting(true);
 
     try {
-      const response = await fetchJson("/api/submit_assessment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ assessmentRefID: assessmentRefID, answers: answers })
-      });
+      // const response = await fetchJson("/api/submit_assessment", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Accept: "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     assessmentRefID: assessmentRefID,
+      //     ...data
+      //   })
+      // });
 
-      console.log(response);
+      // console.log(response);
+      // if (response.error) {
+      //   alert(response.clientMessage);
+      // } else {
+        alert("Your answers have been successfully submitted.");
+        setFeedbackList([ ...feedbackList, data ]);
+      // }
 
-      if (response.error) {
-        alert(response.clientMessage);
-        return;
-      }
-
-      alert("Your answers have been successfully submitted.");
-      window.location.assign("/dashboard");
     } catch (error) {
       alert("An unknown error has occured. Please contact your adminstrator.");
     }
+    setSubmitting(false);
   }
 
   function renderInformationTable() {
@@ -178,6 +172,9 @@ export default function ({ user }) {
           data={data}
           stats={stats}
           peerMarkingQuantity={data.assessment.peerMarkingQuantity}
+          feedbackList={feedbackList}
+          submitting={submitting}
+          onSubmit={handleSubmit}
         />
       </>
     )

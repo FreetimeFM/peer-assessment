@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Table, Button, Header, List, Modal, Form, Card, Label, Divider } from "semantic-ui-react";
 import PlaceholderSegment from "components/PlaceholderSegment";
+import { QuestionField } from "components/QuestionCard";
 import { textToHTML } from "lib/common";
 
-export default function ResponseTable({ data, stats, peerMarkingQuantity }) {
+export default function ResponseTable({ data, stats, peerMarkingQuantity, feedbackList = [], submitting, onSubmit }) {
   return (
     <Table celled selectable striped>
       <Table.Header>
@@ -26,6 +27,14 @@ export default function ResponseTable({ data, stats, peerMarkingQuantity }) {
               questions={data.assessment.questions}
               markingCriteria={data.assessment.markingCriteria}
               result={result}
+              feedback={feedbackList.find(feedback => feedback.userRefID === result.userRefID)}
+              submitting={submitting}
+              onSubmit={data => {
+                onSubmit({
+                  userRefID: result.userRefID,
+                  feedback: data
+                })
+              }}
             />
           )
         })}
@@ -53,12 +62,59 @@ function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
   )
 }
 
-function ResponseDetailsModal({ student, peers, markingStatus, questions, markingCriteria, result }) {
+function ResponseDetailsModal({ student, peers, markingStatus, questions, markingCriteria, result, feedback, submitting, onSubmit }) {
   const [ open, setOpen ] = useState(false);
-  const [ comments, setComments ] = useState({});
+  const [ answersFeedback, setAnswersFeedback ] = useState({});
+  const [ generalMarkingQuestionsFeedback, setGeneralMarkingQuestionsFeedback ] = useState({});
+  const [ overallComment, setOverallComment ] = useState("");
+  const [ marks, setMarks ] = useState(new Array(questions.length).fill(0));
 
-  function onCommentChange() {
+  if (feedback) {
+    console.log("feedback", feedback);
+  }
 
+  function onAssessmentResponseChange(index, value, forMarks = false) {
+
+    if (forMarks) {
+      const temp = marks.slice();
+      temp[index] = value;
+      setMarks(temp);
+    } else {
+      setAnswersFeedback({
+        ...answersFeedback,
+        [index]: value
+      })
+    }
+  }
+
+  function onGeneralResponseChange(_e, { name, value }) {
+    setGeneralMarkingQuestionsFeedback({
+      ...generalMarkingQuestionsFeedback,
+      [name]: value
+    })
+  }
+
+  function onClose(_e) {
+    setOpen(false);
+  }
+
+  function handleSubmit(_e) {
+    if (!document.forms["responseForm"].reportValidity()) return;
+    if (!confirm("Are you sure you want to submit? You wont be able to change your responses.")) return;
+
+    let questions = {};
+    marks.forEach((mark, index) => {
+      questions[index] = {
+        marks: mark,
+        feedback: answersFeedback[index.toString()] ? answersFeedback[index.toString()] : ""
+      }
+    });
+
+    onSubmit({
+      questions: questions,
+      general: generalMarkingQuestionsFeedback,
+      overallComment: overallComment,
+    })
   }
 
   function renderContent() {
@@ -95,14 +151,14 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                   markingCriteria.questions[index].length === 0 ? <i>No marking criteria for this question.</i> :
                   markingCriteria.questions[index].map((item, pos) => {
                     return (
-                      <Card color="green" fluid>
+                      <Card key={pos} color="green" fluid>
                         <Card.Content
                           header={`${index + 1}.${pos + 1} ${item.name}`}
                         />
                         {
-                          result.peerMarking.map(peer => {
+                          result.peerMarking.map((peer, peerIndex) => {
                             return (
-                              <Card.Content>
+                              <Card.Content key={peerIndex}>
                                 <p><strong>{peers.find(user => user.userRefID === peer.userRefID).name}'s response</strong></p>
                                 {
                                   peer.markingCompleted ?
@@ -115,15 +171,6 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                             )
                           })
                         }
-                        <Card.Content
-                          content={
-                            <Form.TextArea
-                              id={`${index + 1}.${pos + 1}`}
-                              label={`Your response to ${index + 1}.${pos + 1}`}
-                              rows={1}
-                            />
-                          }
-                        />
                       </Card>
                     )
                   })
@@ -143,27 +190,24 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 </Card.Content>
                 <Card.Content>
                   <Form.Input
-                    id={index.toString()}
                     type="number"
                     label={`Marks for ${student.name}'s answer`}
                     min={0}
                     max={question.marks}
                     onWheel={e => e.target.blur()}
+                    onChange={(_e, {value}) => {
+                      onAssessmentResponseChange(index, value, true);
+                    }}
                     required
-                    size="mini"
                     fluid
                   />
-                  <Form.TextArea
+                  <QuestionField
+                    key={index}
+                    type="long-text"
                     label={`Your Response to ${student.name}'s answer`}
-                    // onChange={(e, {value}) => {
-                    //   onInput(e, {
-                    //     qIndex: index,
-                    //     value: value,
-                    //     marks: true
-                    //   })
-                    // }}
-                    maxLength={1000}
-                    rows={2}
+                    onChange={(_e, {value}) => {
+                      onAssessmentResponseChange(index, value);
+                    }}
                   />
                 </Card.Content>
               </Card>
@@ -176,14 +220,14 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
           markingCriteria.general.length === 0 ? <i>No general marking criteria.</i> :
           markingCriteria.general.map((question, index) => {
             return (
-              <Card color="olive" style={{ marginBottom: "2em" }} fluid>
+              <Card key={index} color="olive" style={{ marginBottom: "2em" }} fluid>
                 <Card.Content
                   header={`${index + 1}. ${question.name}`}
                 />
                 {
-                  result.peerMarking.map(peer => {
+                  result.peerMarking.map((peer, peerIndex) => {
                     return (
-                      <Card.Content>
+                      <Card.Content key={peerIndex}>
                         <p><strong>{peers.find(user => user.userRefID === peer.userRefID).name}'s response</strong></p>
                         {
                           peer.markingCompleted ?
@@ -198,17 +242,13 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 }
                 <Card.Content
                   content={
-                    <Form.TextArea
-                    label="Your response"
-                    // onChange={(e, {value}) => {
-                    //   onInput(e, {
-                    //     qIndex: index,
-                    //     value: value,
-                    //     marks: true
-                    //   })
-                    // }}
-                    rows={1}
-                  />
+                    <QuestionField
+                      key={index}
+                      index={index}
+                      type={markingCriteria.general[index.toString()].type}
+                      label="Your Response"
+                      onChange={onGeneralResponseChange}
+                    />
                   }
                 />
               </Card>
@@ -230,7 +270,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
           onRowClick={_e => setOpen(true)}
         />
       }
-      onClose={_e => setOpen(false)}
+      onClose={onClose}
       size="large"
       closeIcon
     >
@@ -255,7 +295,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.Cell content="N/A" disabled />
             </Table.Row>
             {
-              result.peerMarking.map(peer => {
+              result.peerMarking.map((peer, index) => {
                 const user = peers.find(user => user.userRefID === peer.userRefID);
                 let marks = 0;
 
@@ -264,7 +304,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 });
 
                 return (
-                  <Table.Row negative={!peer.markingCompleted} positive={peer.markingCompleted} >
+                  <Table.Row key={index} negative={!peer.markingCompleted} positive={peer.markingCompleted} >
                     <Table.Cell content="Marking" />
                     <Table.Cell content={user.name} />
                     <Table.Cell content={user.email} />
@@ -278,29 +318,41 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.Cell content="Teacher" />
               <Table.Cell content="You" colSpan={2} />
               <Table.Cell content="Completed" />
-              <Table.Cell content={0} />
+              <Table.Cell content={marks.reduce((marks, current) => marks + parseInt(current), 0)} />
             </Table.Row>
           </Table.Body>
         </Table>
-        <Form>
+        <Divider />
+        <Form id="responseForm" loading={submitting}>
           {renderContent()}
           <Divider />
-          <Form.TextArea
-            id="overallComment"
+          <QuestionField
+            type="long-text"
             label={`Overall comment for ${student.name}`}
-            // onChange={(e, {value}) => {
-            //   onInput(e, {
-            //     qIndex: index,
-            //     value: value,
-            //     marks: true
-            //   })
-            // }}
-            rows={3}
+            onChange={(_e, {value}) => {
+              setOverallComment(value);
+            }}
           />
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Close" onClick={_e => setOpen(false)} />
+        <Button.Group
+          buttons={[
+            {
+              key: 0,
+              content: "Close",
+              onClick: onClose,
+            },
+            {
+              key: 1,
+              content: "Submit",
+              onClick: handleSubmit,
+              primary: true,
+              disabled: feedback ? true : false
+            },
+          ]}
+          fluid
+        />
       </Modal.Actions>
     </Modal>
   )
