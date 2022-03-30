@@ -108,7 +108,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
 
   function handleSubmit(_e) {
     if (!document.forms["responseForm"].reportValidity()) return;
-    if (!confirm("Are you sure you want to submit? You wont be able to change your responses.")) return;
+    if (!confirm("Are you sure you want to submit? You won't be able to change your responses.")) return;
 
     let markingQuestions = {};
     questions.forEach((_q, index) => {
@@ -375,7 +375,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               content: feedback ? "Preview Only" : "Submit",
               onClick: handleSubmit,
               primary: true,
-              disabled: feedback ? true : false
+              disabled: feedback || submitting ? true : false
             },
           ]}
           fluid

@@ -14,11 +14,7 @@ import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQue
 
 export default function ({ user }) {
   const assessmentRefID = useRouter().query.assessmentRefID;
-
-  const [ data, setData ] = useState({
-  const [ assessment, setAssessment ] = useState({
-    questions: []
-  });
+  const [ data, setData ] = useState({});
   const [ stats, setStats ] = useState();
   const [ feedbackList, setFeedbackList ] = useState([]);
   const [ submitting, setSubmitting ] = useState(false);
@@ -99,7 +95,7 @@ export default function ({ user }) {
       if (response.error) {
         alert(response.clientMessage);
       } else {
-        alert("Your answers have been successfully submitted.");
+        alert("Your feedback have been successfully submitted.");
         setFeedbackList([ ...feedbackList, data ]);
         console.log(data);
       }
