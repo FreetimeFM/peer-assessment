@@ -22,7 +22,7 @@ export default function QuestionCard({ index, question, onAnswerInput, preview =
   )
 }
 
-export function QuestionField({ index, type, onChange, label, placeholder, preview = false }) {
+export function QuestionField({ index, type, onChange, label, placeholder, value, preview = false }) {
   switch (type) {
     case "short-text":
       return (
@@ -30,6 +30,7 @@ export function QuestionField({ index, type, onChange, label, placeholder, previ
           name={index}
           label={label}
           placeholder={placeholder}
+          value={value}
           onChange={onChange}
           maxLength={getQuestionTypeByValue(type).maxLength}
           readOnly={preview}
@@ -42,6 +43,7 @@ export function QuestionField({ index, type, onChange, label, placeholder, previ
           name={index}
           label={label}
           placeholder={placeholder}
+          value={value}
           onChange={onChange}
           maxLength={getQuestionTypeByValue(type).maxLength}
           readOnly={preview}
