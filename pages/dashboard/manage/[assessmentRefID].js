@@ -55,6 +55,7 @@ export default function ({ user }) {
       } else {
         setData(result);
         parseData(result.results, result.students);
+        setFeedbackList(result.feedback);
       }
     } catch (error) {
       console.error(error);
@@ -70,7 +71,7 @@ export default function ({ user }) {
       stats[student.userRefID] = { markingStatus: 0 };
     });
 
-    results.map(result => {
+    results.forEach(result => {
       result.peerMarking.map(peer => {
         if (peer.markingCompleted) stats[peer.userRefID].markingStatus += 1;
       })
@@ -82,25 +83,26 @@ export default function ({ user }) {
     setSubmitting(true);
 
     try {
-      // const response = await fetchJson("/api/submit_assessment", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Accept: "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     assessmentRefID: assessmentRefID,
-      //     ...data
-      //   })
-      // });
+      const response = await fetchJson("/api/submit_marking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          assessmentRefID: assessmentRefID,
+          ...data
+        })
+      });
 
-      // console.log(response);
-      // if (response.error) {
-      //   alert(response.clientMessage);
-      // } else {
+      console.log(response);
+      if (response.error) {
+        alert(response.clientMessage);
+      } else {
         alert("Your answers have been successfully submitted.");
         setFeedbackList([ ...feedbackList, data ]);
-      // }
+        console.log(data);
+      }
 
     } catch (error) {
       alert("An unknown error has occured. Please contact your adminstrator.");

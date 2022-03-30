@@ -9,9 +9,10 @@ export default function ResponseTable({ data, stats, peerMarkingQuantity, feedba
     <Table celled selectable striped>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell content="Student" width={9} />
+          <Table.HeaderCell content="Student" />
           <Table.HeaderCell content="Assessment" />
-          <Table.HeaderCell content="Marking Progress" />
+          <Table.HeaderCell content="Student peer marking progress" />
+          <Table.HeaderCell content="Marked" />
         </Table.Row>
       </Table.Header>
       <Table.Body>
@@ -32,7 +33,7 @@ export default function ResponseTable({ data, stats, peerMarkingQuantity, feedba
               onSubmit={data => {
                 onSubmit({
                   userRefID: result.userRefID,
-                  feedback: data
+                  ...data
                 })
               }}
             />
@@ -43,7 +44,7 @@ export default function ResponseTable({ data, stats, peerMarkingQuantity, feedba
   );
 }
 
-function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
+function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick, feedback }) {
   return (
     <Table.Row onClick={onRowClick} style={{ cursor: "pointer" }} >
       <Table.Cell content={name} />
@@ -58,30 +59,37 @@ function Row({ name, assessmentStatus, markingStatus = [0, 0], onRowClick }) {
         warning={markingStatus[0] > 0 && markingStatus[0] < markingStatus[1]}
         error={markingStatus[0] === 0}
       />
+      <Table.Cell
+        content={feedback ? "Yes" : "No"}
+        positive={feedback !== undefined}
+        error={feedback === undefined}
+      />
     </Table.Row>
   )
 }
 
 function ResponseDetailsModal({ student, peers, markingStatus, questions, markingCriteria, result, feedback, submitting, onSubmit }) {
   const [ open, setOpen ] = useState(false);
-  const [ answersFeedback, setAnswersFeedback ] = useState({});
-  const [ generalMarkingQuestionsFeedback, setGeneralMarkingQuestionsFeedback ] = useState({});
-  const [ overallComment, setOverallComment ] = useState("");
-  const [ marks, setMarks ] = useState(new Array(questions.length).fill(0));
+  const [ marks, setMarks ] = useState([]);
+  const [ markingQuestionsFeedback ,setMarkingQuestionsFeedback ] = useState(
+    feedback ? ( feedback.markingCriteria.questions ? feedback.markingCriteria.questions : {} ) : {}
+  );
+  const [ generalMarkingQuestionsFeedback, setGeneralMarkingQuestionsFeedback ] = useState(
+    feedback ? ( feedback.markingCriteria.general ? feedback.markingCriteria.general : {} ) : {}
+  );
+  const [ overallComment, setOverallComment ] = useState(
+    feedback ? ( feedback.overallComment ? feedback.overallComment : "No comment." ) : ""
+  );
 
-  if (feedback) {
-    console.log("feedback", feedback);
-  }
-
-  function onAssessmentResponseChange(index, value, forMarks = false) {
+  function onMarkingQuestionResponseChange(index, value, forMarks = false) {
 
     if (forMarks) {
       const temp = marks.slice();
       temp[index] = value;
       setMarks(temp);
     } else {
-      setAnswersFeedback({
-        ...answersFeedback,
+      setMarkingQuestionsFeedback({
+        ...markingQuestionsFeedback,
         [index]: value
       })
     }
@@ -102,19 +110,21 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
     if (!document.forms["responseForm"].reportValidity()) return;
     if (!confirm("Are you sure you want to submit? You wont be able to change your responses.")) return;
 
-    let questions = {};
-    marks.forEach((mark, index) => {
-      questions[index] = {
-        marks: mark,
-        feedback: answersFeedback[index.toString()] ? answersFeedback[index.toString()] : ""
+    let markingQuestions = {};
+    questions.forEach((_q, index) => {
+      markingQuestions[index] = {
+        marks: marks[index] ? marks[index] : 0,
+        feedback: markingQuestionsFeedback[index.toString()] ? markingQuestionsFeedback[index.toString()] : ""
       }
     });
 
     onSubmit({
-      questions: questions,
-      general: generalMarkingQuestionsFeedback,
+      markingCriteria: {
+        general: generalMarkingQuestionsFeedback,
+        questions: markingQuestions,
+      },
       overallComment: overallComment,
-    })
+    });
   }
 
   function renderContent() {
@@ -122,7 +132,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
       <PlaceholderSegment
         iconName="close"
         message="Not completed"
-        extraContent={`${student.name} hasn't answered the assessment. The markers cannot mark this student's answers.`}
+        extraContent={`${student.name} hasn't answered the assessment. The peer markers cannot mark this student's answers.`}
       />
     )
 
@@ -187,26 +197,31 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                       return `${student} allocated ${marks} mark.`;
                     })}
                   />
-                </Card.Content>
-                <Card.Content>
                   <Form.Input
                     type="number"
-                    label={`Marks for ${student.name}'s answer`}
+                    label={`Allocate marks for ${student.name}'s answer`}
                     min={0}
                     max={question.marks}
+                    value={feedback?.markingCriteria?.questions[index]?.marks}
+                    readOnly={feedback !== undefined}
                     onWheel={e => e.target.blur()}
                     onChange={(_e, {value}) => {
-                      onAssessmentResponseChange(index, value, true);
+                      onMarkingQuestionResponseChange(index, value, true);
                     }}
                     required
-                    fluid
+                    size="mini"
+                    inline
                   />
+                </Card.Content>
+                <Card.Content>
                   <QuestionField
                     key={index}
                     type="long-text"
                     label={`Your Response to ${student.name}'s answer`}
+                    value={feedback?.markingCriteria?.questions[index]?.feedback}
+                    preview={feedback !== undefined}
                     onChange={(_e, {value}) => {
-                      onAssessmentResponseChange(index, value);
+                      onMarkingQuestionResponseChange(index, value);
                     }}
                   />
                 </Card.Content>
@@ -246,6 +261,8 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                       key={index}
                       index={index}
                       type={markingCriteria.general[index.toString()].type}
+                      value={feedback?.markingCriteria?.general[index]}
+                      preview={feedback !== undefined}
                       label="Your Response"
                       onChange={onGeneralResponseChange}
                     />
@@ -268,6 +285,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
           assessmentStatus={result.assessmentCompleted}
           markingStatus={markingStatus}
           onRowClick={_e => setOpen(true)}
+          feedback={feedback}
         />
       }
       onClose={onClose}
@@ -282,7 +300,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.HeaderCell content="Role" />
               <Table.HeaderCell content="Name" />
               <Table.HeaderCell content="Email" />
-              <Table.HeaderCell content="Marking" />
+              <Table.HeaderCell content="Marked" />
               <Table.HeaderCell content={`Marks out of ${questions.reduce((count, current) => count + parseInt(current.marks), 0)}`} />
             </Table.Row>
           </Table.Header>
@@ -304,20 +322,27 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 });
 
                 return (
-                  <Table.Row key={index} negative={!peer.markingCompleted} positive={peer.markingCompleted} >
-                    <Table.Cell content="Marking" />
+                  <Table.Row
+                    key={index}
+                    negative={!peer.markingCompleted}
+                    positive={peer.markingCompleted}
+                  >
+                    <Table.Cell content="Peer marking" />
                     <Table.Cell content={user.name} />
                     <Table.Cell content={user.email} />
-                    <Table.Cell content={peer.markingCompleted ? "Completed" : "Not Completed"} />
+                    <Table.Cell content={peer.markingCompleted ? "Yes" : "No"} />
                     <Table.Cell content={peer.markingCompleted ? marks : "N/A"} />
                   </Table.Row>
                 )
               })
             }
-            <Table.Row>
-              <Table.Cell content="Teacher" />
+            <Table.Row
+              negative={feedback === undefined}
+              positive={feedback !== undefined}
+            >
+              <Table.Cell content="Marking" />
               <Table.Cell content="You" colSpan={2} />
-              <Table.Cell content="Completed" />
+              <Table.Cell content={feedback ? "Yes" : "No"} />
               <Table.Cell content={marks.reduce((marks, current) => marks + parseInt(current), 0)} />
             </Table.Row>
           </Table.Body>
@@ -329,6 +354,8 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
           <QuestionField
             type="long-text"
             label={`Overall comment for ${student.name}`}
+            value={overallComment}
+            preview={feedback !== undefined}
             onChange={(_e, {value}) => {
               setOverallComment(value);
             }}
@@ -345,7 +372,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
             },
             {
               key: 1,
-              content: "Submit",
+              content: feedback ? "Preview Only" : "Submit",
               onClick: handleSubmit,
               primary: true,
               disabled: feedback ? true : false
