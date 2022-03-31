@@ -1,14 +1,37 @@
-export function getQuestionTypeByValue(value) {
+/**
+ * The type of question object.
+ */
+type QuestionType = {
+  text: String,
+  value: String,
+  iconName?: String,
+  description?: String,
+  maxLength?: Number,
+  marking?: Boolean,
+  disabled?: Boolean
+}
+
+/**
+ * Gets the details of the question by its identifier.
+ * @param value The identifier of the question type.
+ * @returns The QuestionType object with details about the question type.
+ */
+export function getQuestionTypeByValue(value: String): QuestionType {
   return questionTypes.find(item => item.value === value);
 }
 
-export function getMarkingQuestionsTypes() {
-  return questionTypes.filter(item => {
-    if (item.marking) return item;
-  })
+/**
+ * Gets the details of question types that are suitable as marking criteria.
+ * @returns Array of QuestionType objects.
+ */
+export function getMarkingQuestionsTypes(): Array<QuestionType> {
+  return questionTypes.filter(item => item.marking);
 }
 
-export const questionTypes = [{
+/**
+ * An array of question types.
+ */
+export const questionTypes: Array<QuestionType> = [{
   text: "Short Text",
   value: "short-text",
   iconName: "font",
