@@ -121,9 +121,12 @@ export default function ({ user }) {
         } else {
           alert(`Your feedback has been successfully submitted. You have ${peersToMark.length - peerIndex - 1} student(s) left to mark.`);
           scroll(0, 0);
-          changePeer();
           setMarkingQuestionsFeedback({});
           setGeneralMarkingQuestionsFeedback({});
+
+          document.forms["markingForm"].reset();
+
+          changePeer();
         }
       }
 
@@ -191,7 +194,7 @@ export default function ({ user }) {
     return (
       <>
         <Metadata title={markingDetails.assessment.name} />
-        <Form onSubmit={handleSubmit} loading={submitting} >
+        <Form id="markingForm" onSubmit={handleSubmit} loading={submitting} >
           <Segment.Group raised>
             <Segment content={
                 <Header
