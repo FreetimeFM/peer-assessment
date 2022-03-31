@@ -15,9 +15,7 @@ export default function ({ user }) {
   const assessmentRefID = useRouter().query.assessmentRefID;
   const previewMode = user.userType !== "student";
   const [ submitting, setSubmitting ] = useState(false);
-  const [ assessment, setAssessment ] = useState({
-    questions: []
-  });
+  const [ data, setData ] = useState({});
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true
@@ -51,7 +49,7 @@ export default function ({ user }) {
         setFetchOptions({ ...fetchOptions, error: response?.clientMessage });
 
       } else {
-        setAssessment(response.result);
+        setData(response.result);
       }
     } catch (error) {
       console.error(error);
@@ -64,7 +62,7 @@ export default function ({ user }) {
   async function handleSubmit(answers) {
     setSubmitting(true);
 
-    if (Object.keys(answers).length !== assessment.questions.length) {
+    if (Object.keys(answers).length !== data.assessment.questions.length) {
       alert("Cannot submit. Answers cannot be empty.");
       setSubmitting(false);
       return;
@@ -107,52 +105,52 @@ export default function ({ user }) {
     setSubmitting(false);
   }
 
-  if (fetchOptions.fetching) return (
-    <Container content={
+  function renderContent() {
+    if (fetchOptions.fetching) return (
       <PlaceholderSegment iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
-    } />
-  )
+    )
 
-  if (fetchOptions.error) return (
-    <Container content={
+    if (fetchOptions.error) return (
       <PlaceholderSegment iconName="close" message="Error." extraContent={fetchOptions.error} />
-    } />
-  )
+    )
 
-  if (assessment.completed) return (
-    <Container
-      content={
-        <PlaceholderSegment
-          iconName="check"
-          message="You have completed answering this assessment."
-          extraContent={
-            <Link href={`/dashboard/mark/${assessmentRefID}`} >
-              <Button content="Start peer marking" primary />
-            </Link>
-          }
-        />
-      }
-    />
-  )
+    if (data.completed) return (
+      <PlaceholderSegment
+        iconName="check"
+        message="You have completed answering this assessment."
+        extraContent={
+          <Link href={`/dashboard/mark/${assessmentRefID}`} >
+            <Button content="Start peer marking" primary />
+          </Link>
+        }
+      />
+    )
+
+    return (
+      <>
+        <Metadata title={data.assessment.name} />
+        <Segment.Group>
+          <Segment content={<Header content={data.assessment.name} size="huge"/>} />
+          <Segment content={data.assessment.description || data.assessment.description !== "" ? textToHTML(data.assessment.description) : "No description provided."} />
+          <Segment content={
+              <AssessmentQuestions
+                questions={data.assessment.questions}
+                onSubmit={handleSubmit}
+                submitting={submitting}
+                preview={previewMode}
+              />
+            }
+          />
+        </Segment.Group>
+      </>
+    )
+  }
 
   return (
-    <Container>
-      <Metadata title={assessment.name} />
-      <Message content="This is what the students will see." hidden={!previewMode} info />
-      <Segment.Group>
-        <Segment content={<Header content={assessment.name} size="huge"/>} />
-        <Segment content={assessment.description || assessment.description !== "" ? assessment.description : "No description provided."} />
-        <Segment content={
-            <AssessmentQuestions
-              questions={assessment.questions}
-              onSubmit={handleSubmit}
-              submitting={submitting}
-              preview={previewMode}
-            />
-          }
-        />
-      </Segment.Group>
-    </Container>
+    <Container
+      content={renderContent()}
+      style={{ padding: "2em 0" }}
+    />
   )
 }
 
