@@ -34,6 +34,7 @@ export function QuestionField({ index, type, onChange, label, placeholder, value
           onChange={onChange}
           maxLength={getQuestionTypeByValue(type).maxLength}
           readOnly={preview}
+          autoComplete="off"
         />
       );
 
