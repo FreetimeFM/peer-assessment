@@ -23,6 +23,7 @@ export default withSessionApi(async function ({req, res}) {
     const { error, result } = await createAssessment({
         ...req.body,
         peerMarkingQuantity: peerMarkingQty,
+        stage: "overview",
       },
       assignPeerMarking(studentRefIDs.data, peerMarkingQty)
     );
