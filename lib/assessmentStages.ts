@@ -16,26 +16,37 @@ export const stages: Array<StageType> = [
     name: "Overview",
     value: "overview",
     teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
+    studentDescription: "The assessment is not available yet."
   },
   {
     name: "Assessment",
     value: "assess",
     teacherDescription: "Students will only be able to view and answer the assessment questions.",
+    studentDescription: "You will be able to answer the assessment questions."
+  },
+  {
+    name: "Post Assessment",
+    value: "assess",
+    teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
+    studentDescription: "The assessment is not available to mark yet."
   },
   {
     name: "Marking",
     value: "mark",
     teacherDescription: "Students will only be able to mark their peers using the marking criteria.",
+    studentDescription: "You will be able to mark your peers."
   },
   {
-    name: "Closed",
-    value: "closed",
-    teacherDescription: "Students will only be able to mark their peers using the marking criteria.",
+    name: "Post Marking",
+    value: "mark",
+    teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
+    studentDescription: "The assessment is not available for feedback yet."
   },
   {
     name: "Feedback",
     value: "feedback",
     teacherDescription: "Students will only be able to see feedback from you and other students.",
+    studentDescription: "You will be able to view feedback from your peers and your teacher."
   },
 ]
 
