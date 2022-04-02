@@ -26,7 +26,7 @@ export const stages: Array<StageType> = [
   },
   {
     name: "Post Assessment",
-    value: "assess",
+    value: "post-assess",
     teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
     studentDescription: "The assessment is not available to mark yet."
   },
@@ -38,7 +38,7 @@ export const stages: Array<StageType> = [
   },
   {
     name: "Post Marking",
-    value: "mark",
+    value: "post-mark",
     teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
     studentDescription: "The assessment is not available for feedback yet."
   },
