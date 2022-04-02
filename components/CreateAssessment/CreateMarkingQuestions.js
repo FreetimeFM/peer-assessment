@@ -98,6 +98,14 @@ function DisplayMarkingQuestions({ questions, onRemoveQuestion }) {
           meta={`Type: ${getQuestionTypeByValue(question.type).text}, Marks: ${question.marks}`}
         />
         <Card.Content content={renderQuestionsAtIndex(index)} />
+        <Card.Content>
+          <Form.Input
+            type="number"
+            label={<label>Allocate Marks <FormInputPopup message="Student markers will allocate marks for this question."/></label>}
+            placeholder="Student markers will allocate marks for this question."
+            readOnly={true}
+          />
+        </Card.Content>
       </Card>
     )
   })
