@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Modal, Button, Card, Divider, Message } from "semantic-ui-react";
+import { Form, Modal, Button, Card, Divider, Message, Header } from "semantic-ui-react";
 
 import { QuestionField } from "components/QuestionCard";
 import FormInputPopup from "components/FormInputPopup";
@@ -14,12 +14,16 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
         onAddQuestion={onAddQuestion}
         questionNames={questions.map(item => item.name)}
       />
-      <Divider content="Assessment Questions" horizontal/>
+      <Header
+        content="Assessment Questions Preview"
+        subheader="Here is a preview of each assessment questions and its marking criteria."
+        size="large"
+      />
       <Message
         header="No marking criteria."
         content={
           <>
-            To add a marking criteria specific to an <strong>assessment</strong> question, click <i>"Add marking question"</i>. Ensure that you{" "}
+            To add marking criteria specific to an <strong>assessment</strong> question, click <i>"Add marking question"</i>. Ensure that you{" "}
             select the assessment questions you want from the <i>"Select Assessment Questions"</i> field. Then enter the details and click{" "}
             <i>"Add"</i>.
           </>
@@ -36,7 +40,12 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
         questions={questions}
         onRemoveQuestion={onRemoveQuestion}
       />
-      <Divider content="General Marking Questions" horizontal/>
+      <Divider/>
+      <Header
+        content="General Marking Criteria"
+        subheader="Here is a preview of the general marking criteria that applies to the assessment as a whole."
+        size="large"
+      />
       <DisplayGeneralMarkingQuestions
         questions={generalMarkingQuestions}
         onRemoveQuestion={onRemoveGeneralQuestion}
