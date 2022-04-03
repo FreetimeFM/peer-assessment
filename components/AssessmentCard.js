@@ -1,11 +1,16 @@
 import Link from "next/link"
-import { Card, Button, Modal, Table } from "semantic-ui-react"
-import { useState } from "react"
+import { Card, Button, Modal, Table, Message } from "semantic-ui-react"
+import { useEffect, useState } from "react"
 
-import { getLocalDate, textToHTML } from "lib/common"
+import { textToHTML } from "lib/common"
+import { getStageByValue } from "lib/assessmentStages"
 
 export default function AssessmentCard({ details, teacher, past = false }) {
-  const { name, link } = getButtonData(teacher, details.stage);
+  const [buttonData, setButtonData] = useState(false);
+
+  useEffect(() => {
+    setButtonData(getButtonData(teacher, details.stage));
+  }, [])
 
   return (
     <Card style={{ width: "400px" }}>
@@ -19,18 +24,19 @@ export default function AssessmentCard({ details, teacher, past = false }) {
       <Card.Content
         description={
           <>
-            Assessment Status: { details.assessmentCompleted ? "Completed" : "Not Completed" } <br />
-            Marking Status: { getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity) }
+            <strong>Stage:</strong> {getStageByValue(details.stage).name}<br />
+            <strong>Assessment Status: </strong> {details.assessmentCompleted ? "Completed" : "Not Completed"}<br />
+            <strong>Marking Status:</strong> {getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity)}
           </>
         }
       />
       <Card.Content extra>
-        <Button.Group fluid widths={link ? 2 : 1} >
-        <InfoModal details={details} link={{name, link}} teacher={teacher} past={past} />
+        <Button.Group fluid widths={2} >
+        <InfoModal details={details} teacher={teacher} past={past} />
           {
-            link ?
-            <Link href={link}>
-              <Button content={name} primary />
+            buttonData ?
+            <Link href={buttonData.link}>
+              <Button content={buttonData.name} primary />
             </Link> : null
           }
         </Button.Group>
@@ -39,19 +45,33 @@ export default function AssessmentCard({ details, teacher, past = false }) {
   )
 }
 
-function InfoModal({trigger = <Button>Learn More</Button>, details, link, teacher}) {
+function InfoModal({details, teacher}) {
   const [open, setOpen] = useState(false);
+  const [stageData, setStageData] = useState(false);
+  const [buttonData, setButtonData] = useState(false);
+
+  useEffect(() => {
+    setStageData(getStageByValue(details.stage));
+    setButtonData(getButtonData(teacher, details.stage));
+  }, [])
 
   return (
     <Modal
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
       open={open}
-      trigger={trigger}
+      trigger={<Button content="Learn More" />}
       closeIcon
     >
       <Modal.Header>Assessment Details</Modal.Header>
       <Modal.Content>
+
+        <Message
+          header={<><strong>Stage:</strong> {stageData.name}</>}
+          content={stageData.studentDescription}
+          info
+        />
+
         <Table celled>
           <Table.Body>
             <Table.Row>
@@ -70,7 +90,7 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, link, teache
               teacher ? null :
               <Table.Row>
                 <Table.Cell><strong>Teacher</strong></Table.Cell>
-                <Table.Cell>{details.teacher.name} ({details.teacher.email})</Table.Cell>
+                <Table.Cell>{details.teacher.name} (<Link href={`mailto:${details.teacher.email}`} >{details.teacher.email}</Link>)</Table.Cell>
               </Table.Row>
             }
             <Table.Row>
@@ -99,8 +119,7 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, link, teache
             </Table.Row> */}
           </Table.Body>
         </Table>
-        <p><strong>Brief Description</strong></p>
-        {details.briefDescription === undefined || details.briefDescription === "" ? "No brief description given." : textToHTML(details.briefDescription)}
+        {details.briefDescription === (undefined || "") ? <i>No brief description given.</i> : textToHTML(details.briefDescription)}
       </Modal.Content>
       <Modal.Actions>
         <Button
@@ -108,9 +127,9 @@ function InfoModal({trigger = <Button>Learn More</Button>, details, link, teache
           onClick={() => setOpen(false)}
         />
         {
-          link ?
-          <Link href={link.link}>
-            <Button content={link.name} primary />
+          buttonData ?
+          <Link href={buttonData.link}>
+            <Button content={buttonData.name} primary />
           </Link> : null
         }
       </Modal.Actions>
@@ -157,7 +176,6 @@ function getButtonData(isTeacher, stage, refID) {
       data = false;
       break;
   }
-
   return data;
 }
 
