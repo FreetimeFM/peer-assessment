@@ -39,7 +39,7 @@ export default function AssessmentCard({ details, teacher, assessmentRefID }) {
         <Button.Group fluid widths={2} >
         <InfoModal details={details} teacher={teacher} assessmentRefID={assessmentRefID} />
           {
-            buttonData ?
+            buttonData && details.stage === "assess" && !details.assessmentCompleted ?
             <Link href={buttonData.link}>
               <Button content={buttonData.name} primary />
             </Link> : null
@@ -53,7 +53,8 @@ export default function AssessmentCard({ details, teacher, assessmentRefID }) {
 /**
  * Gets the name of the button and a link based on usertype and assessment stage.
  * @param {boolean} isTeacher If the usertype is a teacher.
- * @param {string} stage The stage of the assessment
+ * @param {string} stage The stage of the assessment.
+ * @param {string} refID The assessmentRefID.
  * @returns The button name and url for Link href as JSON: { name, link }
  */
 export function getButtonData(isTeacher, stage, refID) {

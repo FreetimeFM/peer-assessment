@@ -19,7 +19,7 @@ export const stages: Array<StageType> = [
     studentDescription: "The assessment is not available yet."
   },
   {
-    name: "Assessment",
+    name: "Assessing",
     value: "assess",
     teacherDescription: "Students will only be able to view and answer the assessment questions.",
     studentDescription: "You will be able to answer the assessment questions."
