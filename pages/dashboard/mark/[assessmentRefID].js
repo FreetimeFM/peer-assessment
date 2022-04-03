@@ -156,10 +156,35 @@ export default function ({ user }) {
 
   function renderContent() {
     if (fetchOptions.fetching) return (
-      <PlaceholderSegment iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+      <PlaceholderSegment
+        iconName="hourglass half"
+        message="We're fetching your assessment details."
+        extraContent="Please wait."
+      />
     )
 
-    if (fetchOptions.error !== "") return <PlaceholderSegment iconName="close" message="Error." extraContent={fetchOptions.error} />
+    if (fetchOptions.error !== "") return (
+      <PlaceholderSegment
+        iconName="close"
+        message="We're having trouble fetching your assessment details."
+        extraContent={fetchOptions.error}
+      />
+    )
+
+    if (markingDetails.redirect) {
+      let message = "The marking stage has ended.";
+
+      if (markingDetails.stage === "overview") message = "The assessment hasn't started yet.";
+      else if (markingDetails.stage === ("assess" || "post-assess")) message = "The marking stage hasn't started yet.";
+
+      return (
+        <PlaceholderSegment
+          iconName="close"
+          message={message}
+          extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
+        />
+      )
+    }
 
     if (peersToMark.length === 0 && user.userType === "student") return (
       <PlaceholderSegment
