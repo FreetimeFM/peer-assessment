@@ -130,8 +130,8 @@ export default function ({ user }) {
       <>
         <Metadata title={data.assessment.name} />
         <Segment.Group>
-          <Segment content={<Header content={data.assessment.name} size="huge"/>} />
-          <Segment content={data.assessment.description || data.assessment.description !== "" ? textToHTML(data.assessment.description) : "No description provided."} />
+          <Segment content={<Header content={data.assessment.name} subheader={data.assessment.class.name} size="huge"/>}/>
+          <Segment content={data.assessment.description || data.assessment.description !== "" ? textToHTML(data.assessment.description) : <i>No description provided.</i>} />
           <Segment content={
               <AssessmentQuestions
                 questions={data.assessment.questions}
