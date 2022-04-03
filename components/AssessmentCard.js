@@ -25,8 +25,13 @@ export default function AssessmentCard({ details, teacher, past = false }) {
         description={
           <>
             <strong>Stage:</strong> {getStageByValue(details.stage).name}<br />
-            <strong>Assessment Status: </strong> {details.assessmentCompleted ? "Completed" : "Not Completed"}<br />
-            <strong>Marking Status:</strong> {getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity)}
+            {
+              teacher ? null :
+              <>
+                <strong>Assessment Status: </strong> {details.assessmentCompleted ? "Completed" : "Not Completed"}<br />
+                <strong>Marking Status:</strong> {getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity)}
+              </>
+            }
           </>
         }
       />
@@ -68,7 +73,7 @@ function InfoModal({details, teacher}) {
 
         <Message
           header={<><strong>Stage:</strong> {stageData.name}</>}
-          content={stageData.studentDescription}
+          content={teacher ? stageData.teacherDescription : stageData.studentDescription}
           info
         />
 
@@ -88,22 +93,25 @@ function InfoModal({details, teacher}) {
             </Table.Row>
             {
               teacher ? null :
-              <Table.Row>
-                <Table.Cell><strong>Teacher</strong></Table.Cell>
-                <Table.Cell>{details.teacher.name} (<Link href={`mailto:${details.teacher.email}`} >{details.teacher.email}</Link>)</Table.Cell>
-              </Table.Row>
+              <>
+                <Table.Row>
+                  <Table.Cell><strong>Teacher</strong></Table.Cell>
+                  <Table.Cell>{details.teacher.name} (<Link href={`mailto:${details.teacher.email}`} >{details.teacher.email}</Link>)</Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell><strong>Assessment Completed</strong></Table.Cell>
+                  <Table.Cell>{ details.assessmentCompleted ? "Completed" : "Not Completed" }</Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell><strong>Marking Completed</strong></Table.Cell>
+                  <Table.Cell>{ getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity) }</Table.Cell>
+                </Table.Row>
+              </>
+
             }
             <Table.Row>
               <Table.Cell><strong>Peer Marking Quantity</strong></Table.Cell>
               <Table.Cell>{details.peerMarkingQuantity}</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Assessment Completed</strong></Table.Cell>
-              <Table.Cell>{ details.assessmentCompleted ? "Completed" : "Not Completed" }</Table.Cell>
-            </Table.Row>
-            <Table.Row>
-              <Table.Cell><strong>Marking Completed</strong></Table.Cell>
-              <Table.Cell>{ getMarkingCompletedText(details.markingCompleted, details.peerMarkingQuantity) }</Table.Cell>
             </Table.Row>
             {/* <Table.Row>
               <Table.Cell><strong>Release Date</strong></Table.Cell>
