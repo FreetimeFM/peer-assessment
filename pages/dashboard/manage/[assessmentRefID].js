@@ -12,7 +12,7 @@ import { placeholderTemplate } from "components/PlaceholderSegment";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
 
-export default function ({ user }) {
+export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
   const [ data, setData ] = useState({});
   const [ stats, setStats ] = useState();
@@ -33,6 +33,7 @@ export default function ({ user }) {
       ...fetchOptions,
       fetching: true
     });
+    let tempFetchOptions = fetchOptions;
 
     try {
       const { error, result } = await fetchJson("/api/get_assessment_details", {
@@ -47,7 +48,7 @@ export default function ({ user }) {
       console.log("result", result);
 
       if (error) {
-        setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
+        tempFetchOptions = { ...tempFetchOptions, error: "An unknown error has occured. Please contact your administrator." }
       } else {
         setData(result);
         parseData(result.results, result.students);
@@ -55,10 +56,9 @@ export default function ({ user }) {
       }
     } catch (error) {
       console.error(error);
-      setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
+      tempFetchOptions = { ...tempFetchOptions, error: "An unknown error has occured. Please contact your administrator." }
     }
-
-    setFetchOptions({ ...fetchOptions, fetched: true, fetching: false });
+    setFetchOptions({ ...tempFetchOptions, fetched: true, fetching: false });
   }
 
   function parseData(results, students) {
@@ -244,6 +244,7 @@ export default function ({ user }) {
 
   function renderOutput() {
     if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching details", "We're fetching the assessment details.");
+    console.log(fetchOptions)
     if (fetchOptions.error) return placeholderTemplate("error", "Error", fetchOptions.error);
 
     return (
