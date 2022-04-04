@@ -190,11 +190,10 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                   <List
                     items={result.peerMarking.map(marker => {
                       const student = peers.find(student => student.userRefID === marker.userRefID).name;
-                      if (!marker.markingCompleted) return `${student} allocated 0 marks.`;
+                      if (!marker.markingCompleted) return null
 
                       const marks = parseInt(marker.responses.questions[index.toString()]);
-                      if (marks === 1) return `${student} allocated ${marks} mark.`;
-                      return `${student} allocated ${marks} mark.`;
+                      return `Marks by ${student}: ${marks}`;
                     })}
                   />
                   <Form.Input
