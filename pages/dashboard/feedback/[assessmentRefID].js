@@ -152,10 +152,6 @@ export default function () {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                <Table.Row>
-                  <Table.Cell content={`${data.assessment.teacher.name} (${data.assessment.teacher.email})`} />
-                  <Table.Cell content={data.teacherFeedback ? `${stats.teacherMarks}` : "N/A"} />
-                </Table.Row>
                 {
                   data.peerMarking.map((peer, index) => {
                     let marks = 0
@@ -165,13 +161,17 @@ export default function () {
                     });
 
                     return (
-                      <Table.Row>
+                      <Table.Row key={index}>
                         <Table.Cell content={`Marker ${index + 1}`} />
                         <Table.Cell content={marks} />
                       </Table.Row>
                     )
                   })
                 }
+                <Table.Row>
+                  <Table.Cell content={`${data.assessment.teacher.name} (${data.assessment.teacher.email})`} />
+                  <Table.Cell content={data.teacherFeedback ? `${stats.teacherMarks}` : "N/A"} />
+                </Table.Row>
               </Table.Body>
             </Table>
           </Segment>
@@ -196,7 +196,8 @@ export default function () {
                 return (
                   <Card
                     key={index}
-                    style={{ marginBottom: "2em" }}
+                    color="red"
+                    style={{ margin: "2em 0" }}
                     fluid
                   >
                     <Card.Content header={`${index + 1}. ${question.name}`} />
@@ -207,6 +208,69 @@ export default function () {
                         data.answers[index.toString()] === undefined || data.answers[index.toString()] === "" ?
                         textToHTML(data.answers[index.toString()]) :
                         <i>No answer.</i>
+                      }
+                    </Card.Content>
+
+                    <Card.Content>
+                      {
+                        data.assessment.markingCriteria.questions[index].length === 0 ? <i>No marking criteria for this question.</i> :
+                        data.assessment.markingCriteria.questions[index].map((question, i) => {
+                          return (
+                            <Card
+                              key={i}
+                              color="green"
+                              style={{ margin: "1em 0" }}
+                              fluid
+                            >
+                              <Card.Content header={`${index + 1}.${i + 1}. ${question.name}`} />
+                              {
+                                data.peerMarking.map((peer, peerIndex) => {
+                                  return (
+                                    <Card.Content key={peerIndex}>
+                                      <p><strong>Marker {peerIndex + 1} responded:</strong></p>
+                                      {
+                                        peer.markingCompleted ?
+                                          peer.responses.questions[`${index}.${i}`] ?
+                                          textToHTML(peer.responses.questions[`${index}.${i}`]) :
+                                          <i>No response.</i> :
+                                        <i>No response.</i>
+                                      }
+                                    </Card.Content>
+                                  )
+                                })
+                              }
+                            </Card>
+                          )
+                        })
+                      }
+                    </Card.Content>
+
+                    <Card.Content
+                      content={
+                        <>
+                          <List
+                            items={
+                              data.peerMarking.map((marker, m) => {
+                                if (!marker.markingCompleted) return null;
+                                const marks = parseInt(marker.responses.questions[index.toString()]);
+                                return `Marker ${m + 1} allocated ${marks} ${marks === 1 ? "mark" : "marks"}.`;
+                              })
+                            }
+                          />
+                          <p>
+                            {data.assessment.teacher.name} allocated {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks)}
+                            {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks) === 1 ? " mark" : " marks"}.
+                          </p>
+                        </>
+                      }
+                    />
+
+                    <Card.Content>
+                      <p><strong>{data.assessment.teacher.name} responded:</strong></p>
+                      {
+                        data.teacherFeedback?.markingCriteria?.questions[index.toString()] === undefined ||
+                        data.teacherFeedback?.markingCriteria?.questions[index.toString()] === "" ?
+                        <i>No response.</i> : textToHTML(data.teacherFeedback?.markingCriteria?.questions[index.toString()].feedback)
                       }
                     </Card.Content>
                   </Card>
