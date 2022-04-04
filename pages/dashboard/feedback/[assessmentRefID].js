@@ -189,6 +189,31 @@ export default function () {
               </>
             }
           </Segment>
+
+          <Segment>
+            {
+              data.assessment.questions.map((question, index) => {
+                return (
+                  <Card
+                    key={index}
+                    style={{ marginBottom: "2em" }}
+                    fluid
+                  >
+                    <Card.Content header={`${index + 1}. ${question.name}`} />
+
+                    <Card.Content>
+                      <p><strong>You answered:</strong></p>
+                      {
+                        data.answers[index.toString()] === undefined || data.answers[index.toString()] === "" ?
+                        textToHTML(data.answers[index.toString()]) :
+                        <i>No answer.</i>
+                      }
+                    </Card.Content>
+                  </Card>
+                )
+              })
+            }
+          </Segment>
           <Segment>
             <Link href="/dashboard">
               <Button content="Exit" negative fluid />
