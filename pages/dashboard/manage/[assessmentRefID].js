@@ -285,7 +285,7 @@ export default function () {
     return (
       <>
         <Message
-          header={<><strong>Stage:</strong> {data.assessment.stage}</>}
+          header={<><strong>Stage:</strong> {getStageByValue(data.assessment.stage).name}</>}
           content={getStageByValue(data.assessment.stage).teacherDescription}
           info
         />
