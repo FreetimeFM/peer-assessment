@@ -67,17 +67,13 @@ export default function () {
       />
     )
 
-    if (data.redirect) {
-      if (data.stage === "overview") message = "The assessment hasn't started yet.";
-
-      return (
-        <PlaceholderSegment
-          iconName="close"
-          message="Your teacher hasn't made feedback available yet"
-          extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
-        />
-      )
-    }
+    if (data.redirect) return (
+      <PlaceholderSegment
+        iconName="close"
+        message="Your teacher hasn't made feedback available yet."
+        extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
+      />
+    )
 
     return <h1>ID: {assessmentRefID}</h1>
   }
