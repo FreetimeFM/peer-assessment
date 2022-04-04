@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, Container, Header, Segment, Table, Accordion, Tab, Form } from "semantic-ui-react";
+import { Button, Container, Header, Segment, Table, Accordion, Tab, Form, Message, Modal, List, Step } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import fetchJson from "lib/iron-session/fetchJson";
@@ -11,6 +11,7 @@ import ResponseTable from "components/ResponseTable";
 import { placeholderTemplate } from "components/PlaceholderSegment";
 import AssessmentQuestions from "components/AssessmentQuestions";
 import MarkingQuestions, { GeneralMarkingQuestions } from "components/MarkingQuestions";
+import { getNextStage, getStageByValue, isLastStage, stages } from "lib/assessmentStages";
 
 export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
@@ -18,6 +19,7 @@ export default function () {
   const [ stats, setStats ] = useState();
   const [ feedbackList, setFeedbackList ] = useState([]);
   const [ submitting, setSubmitting ] = useState(false);
+  const [ openStageModal, setOpenStageModal ] = useState(false);
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -106,10 +108,99 @@ export default function () {
     setSubmitting(false);
   }
 
+  async function handleNextStage(_e) {
+    if (!confirm(`Are you sure you want to change the assessment stage to: ${getNextStage(data.assessment.stage).name}?`)) return;
+    if (isLastStage(data.assessment.stage)) return;
+    setSubmitting(true);
+
+    const nextStage = getNextStage(data.assessment.stage).value;
+
+    try {
+      const { error, result, clientMessage } = await fetchJson("/api/change_assessment_stage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          assessmentRefID: assessmentRefID,
+          stage: nextStage
+        })
+      });
+
+      console.log(result);
+
+      if (error) {
+        if (clientMessage) alert(clientMessage);
+        alert("An error has occured while changing the assessment stage. Please contact your administrator.");
+
+      } else {
+        alert("The assessment stage has been changed.");
+        const tempData = data;
+        tempData.assessment.stage = nextStage;
+        setData(tempData);
+      }
+
+    } catch (error) {
+      alert("An unknown error has occured while changing the assessment stage. Please contact your adminstrator.");
+    }
+    setSubmitting(false);
+  }
+
   function renderInformationTable() {
     return (
       <>
+        <Modal
+          open={openStageModal}
+          onOpen={_e => setOpenStageModal(true)}
+          onClose={_e => setOpenStageModal(false)}
+          trigger={
+            <Message
+              header={<><strong>Current Assessment Stage:</strong> {getStageByValue(data.assessment.stage).name}</>}
+              content={
+                <>
+                  <p>{getStageByValue(data.assessment.stage).teacherDescription}</p>
+                  <Button content="Change Stage" size="small" primary/>
+                </>
+              }
+              info
+            />
+          }
+          closeIcon
+        >
+          <Modal.Header content="Change assessment stage" />
+          <Modal.Content>
+            <Step.Group
+              items={stages.map(stage => {
+                return {
+                  key: stage.value,
+                  title: `${stage.name} ${data.assessment.stage === stage.value ? "(Current Stage)" : ""}`,
+                  description: stage.teacherDescription,
+                  active: data.assessment.stage === stage.value,
+                }
+              })}
+              vertical
+              ordered
+              fluid
+            />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button content="Close" onClick={_e => setOpenStageModal(false)} />
+            <Button
+              content="Next Stage"
+              onClick={handleNextStage}
+              disabled={isLastStage(data.assessment.stage) || submitting}
+              primary
+            />
+          </Modal.Actions>
+        </Modal>
+
         <Table celled striped fixed>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell content="Assessment Information" colSpan={2} />
+            </Table.Row>
+          </Table.Header>
           <Table.Body>
             <Table.Row>
               <Table.Cell content={<strong>Assessment ID</strong>} />
@@ -155,10 +246,38 @@ export default function () {
               content: getDescription("marking", data.assessment.markingDescription)
             },
           ]}
-          defaultActiveIndex={[0,1,2]}
           exclusive={false}
+          styled
           fluid
         />
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell content="Student marker" />
+              <Table.HeaderCell content="Peers" />
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {
+              data.results.map((result, index) => {
+                const marker = data.students.find(student => student.userRefID === result.userRefID);
+                return (
+                  <Table.Row key={index}>
+                    <Table.Cell content={`${marker.name} (${marker.email})`} />
+                    <Table.Cell>
+                      <List
+                        items={result.peerMarking.map(peer => {
+                          const peerData = data.students.find(student => student.userRefID === peer.userRefID);
+                          return (`${peerData.name} (${peerData.email})`)
+                        })}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                )
+              })
+            }
+          </Table.Body>
+        </Table>
       </>
     )
   }
@@ -166,6 +285,11 @@ export default function () {
   function renderResults() {
     return (
       <>
+        <Message
+          header={<><strong>Stage:</strong> {data.assessment.stage}</>}
+          content={getStageByValue(data.assessment.stage).teacherDescription}
+          info
+        />
         <ResponseTable
           data={data}
           stats={stats}
@@ -244,7 +368,6 @@ export default function () {
 
   function renderOutput() {
     if (fetchOptions.fetching) return placeholderTemplate("fetch", "Fetching details", "We're fetching the assessment details.");
-    console.log(fetchOptions)
     if (fetchOptions.error) return placeholderTemplate("error", "Error", fetchOptions.error);
 
     return (
