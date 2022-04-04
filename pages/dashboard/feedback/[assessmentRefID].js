@@ -143,6 +143,38 @@ export default function () {
         <Segment.Group>
           <Segment content={<Header content={data.assessment.name} subheader={data.assessment.class.name} size="huge"/>}/>
 
+          <Segment>
+            <Table celled>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell content="User" />
+                  <Table.HeaderCell content={`Marks out of ${stats.marks}`} />
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                <Table.Row>
+                  <Table.Cell content={`${data.assessment.teacher.name} (${data.assessment.teacher.email})`} />
+                  <Table.Cell content={data.teacherFeedback ? `${stats.teacherMarks}` : "N/A"} />
+                </Table.Row>
+                {
+                  data.peerMarking.map((peer, index) => {
+                    let marks = 0
+
+                    data.assessment.questions.forEach((_q, i) => {
+                      marks += parseInt(peer.responses.questions[i.toString()])
+                    });
+
+                    return (
+                      <Table.Row>
+                        <Table.Cell content={`Marker ${index + 1}`} />
+                        <Table.Cell content={marks} />
+                      </Table.Row>
+                    )
+                  })
+                }
+              </Table.Body>
+            </Table>
+          </Segment>
 
           <Segment>
             {
