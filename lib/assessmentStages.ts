@@ -27,7 +27,7 @@ export const stages: Array<StageType> = [
   {
     name: "Post Assessment",
     value: "post-assess",
-    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to check answers.",
+    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to allow you to check answers. You can start the next stage at any time.",
     studentDescription: "The assessment is not available to mark yet."
   },
   {
@@ -39,7 +39,7 @@ export const stages: Array<StageType> = [
   {
     name: "Post Marking",
     value: "post-mark",
-    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to check responses.",
+    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to allow you to check responses and give feedback. You can move to the next stage at any time.",
     studentDescription: "The assessment is not available for feedback yet."
   },
   {
