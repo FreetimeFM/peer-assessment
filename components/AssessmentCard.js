@@ -39,7 +39,7 @@ export default function AssessmentCard({ details, teacher, assessmentRefID }) {
         <Button.Group fluid widths={2} >
         <InfoModal details={details} teacher={teacher} assessmentRefID={assessmentRefID} />
           {
-            buttonData && details.stage === "assess" && !details.assessmentCompleted ?
+            buttonData ?
             <Link href={buttonData.link}>
               <Button content={buttonData.name} primary />
             </Link> : null
