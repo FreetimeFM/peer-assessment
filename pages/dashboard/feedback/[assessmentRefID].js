@@ -1,8 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Container } from "semantic-ui-react";
+import Link from "next/link";
+import { Container, Button } from "semantic-ui-react";
+
 import fetchJson from "lib/iron-session/fetchJson";
 import { withSessionSsr } from "lib/iron-session/withSession";
+import PlaceholderSegment from "components/PlaceholderSegment";
 
 export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
@@ -48,6 +51,34 @@ export default function () {
   }
 
   function renderContent() {
+    if (fetchOptions.fetching) return (
+      <PlaceholderSegment
+        iconName="hourglass half"
+        message="We're fetching your assessment details."
+        extraContent="Please wait."
+      />
+    )
+
+    if (fetchOptions.error) return (
+      <PlaceholderSegment
+        iconName="close"
+        message="We're having trouble fetching your assessment details."
+        extraContent={fetchOptions.error}
+      />
+    )
+
+    if (data.redirect) {
+      if (data.stage === "overview") message = "The assessment hasn't started yet.";
+
+      return (
+        <PlaceholderSegment
+          iconName="close"
+          message="Your teacher hasn't made feedback available yet"
+          extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
+        />
+      )
+    }
+
     return <h1>ID: {assessmentRefID}</h1>
   }
 
