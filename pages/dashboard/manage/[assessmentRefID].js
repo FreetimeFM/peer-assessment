@@ -180,7 +180,6 @@ export default function () {
                 }
               })}
               vertical
-              ordered
               fluid
             />
           </Modal.Content>
@@ -250,7 +249,7 @@ export default function () {
           styled
           fluid
         />
-        <Table>
+        <Table striped celled>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell content="Student marker" />

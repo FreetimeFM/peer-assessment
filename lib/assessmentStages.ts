@@ -27,7 +27,7 @@ export const stages: Array<StageType> = [
   {
     name: "Post Assessment",
     value: "post-assess",
-    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to allow you to check answers. You can start the next stage at any time.",
+    teacherDescription: "Same as the 'Overview' stage. This stage will allow you to check answers. You can start the next stage at any time.",
     studentDescription: "The assessment is not available to mark yet."
   },
   {
