@@ -27,7 +27,7 @@ export const stages: Array<StageType> = [
   {
     name: "Post Assessment",
     value: "post-assess",
-    teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
+    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to check answers.",
     studentDescription: "The assessment is not available to mark yet."
   },
   {
@@ -39,7 +39,7 @@ export const stages: Array<StageType> = [
   {
     name: "Post Marking",
     value: "post-mark",
-    teacherDescription: "Students will only be able to view details of the assessment in their dashboard.",
+    teacherDescription: "Same as the 'Overview' stage. This is a temporary stage to check responses.",
     studentDescription: "The assessment is not available for feedback yet."
   },
   {
@@ -57,4 +57,26 @@ export const stages: Array<StageType> = [
  */
 export function getStageByValue(value: String): StageType {
   return stages.find(stage => stage.value === value);
+}
+
+/**
+ * Gets the next stage.
+ * @param currentValue The current stage.
+ * @returns The StageType of the next stage or null is currentValue is the last stage.
+ */
+export function getNextStage(currentValue: String): StageType {
+  if (isLastStage(currentValue)) return null;
+  const index = stages.findIndex(stage => stage.value === currentValue);
+  return stages[index + 1];
+}
+
+/**
+ * Checks if the specified stage is the last assessment stage.
+ * @param value The stage to check.
+ * @returns True if the stage is the last stage otherwise false.
+ */
+export function isLastStage(value: String): Boolean {
+  const index = stages.findIndex(stage => stage.value === value);
+  if (index === -1) return true;
+  return index === stages.length - 1 ? true : false;
 }
