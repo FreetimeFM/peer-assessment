@@ -1,15 +1,18 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Container, Button } from "semantic-ui-react";
+import { Container, Button, Segment, Header, Card, Table } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
 import { withSessionSsr } from "lib/iron-session/withSession";
 import PlaceholderSegment from "components/PlaceholderSegment";
+import Metadata from "components/Metadata";
+import { textToHTML } from "lib/common";
 
 export default function () {
   const assessmentRefID = useRouter().query.assessmentRefID;
   const [ data, setData ] = useState();
+  const [ stats, setStats ] = useState({});
   const [ fetchOptions, setFetchOptions ] = useState({
     fetched: false,
     fetching: true,
@@ -40,7 +43,27 @@ export default function () {
       console.log(result);
 
       if (error) setFetchOptions({ ...fetchOptions, error: "An unknown error has occured. Please contact your administrator." })
-      else setData(result);
+      else {
+        setData(result);
+
+        let tempStats = {
+          marks: result.assessment.questions.reduce((count, question) => count + parseInt(question.marks), 0),
+        }
+
+        if (result.teacherFeedback) {
+          let marks = 0;
+          for (const question in result.teacherFeedback.markingCriteria.questions) {
+            if (Object.hasOwnProperty.call(result.teacherFeedback.markingCriteria.questions, question)) {
+              marks += parseInt(result.teacherFeedback.markingCriteria.questions[question].marks);
+            }
+          }
+          tempStats = {
+            ...tempStats,
+            teacherMarks: marks
+          }
+        }
+        setStats(tempStats);
+      }
 
     } catch (error) {
       console.error(error);
@@ -75,7 +98,45 @@ export default function () {
       />
     )
 
-    return <h1>ID: {assessmentRefID}</h1>
+    if (!data.assessmentCompleted) return (
+      <>
+        <Metadata title={data.assessment.name} />
+        <Segment.Group>
+          <Segment content={<Header content={data.assessment.name} subheader={data.assessment.class.name} size="huge"/>}/>
+
+          <Segment>
+            {
+              data.teacherFeedback?.overallComment === undefined || data.teacherFeedback?.overallComment === "" ?
+              <i>No overall comment from {data.assessment.teacher.name}.</i> :
+              <>
+                <Header
+                  content={`Overall comment from ${data.assessment.teacher.name}`}
+                  size="small"
+                />
+                {textToHTML(data.teacherFeedback.overallComment)}
+              </>
+            }
+          </Segment>
+
+          <Segment
+            content={
+              <PlaceholderSegment
+                iconName="close"
+                message="No feedback to show"
+                extraContent="Since, you have not completed answering your assessment, there is no feedback to display."
+              />
+            }
+          />
+
+          <Segment>
+            <Link href="/dashboard">
+              <Button content="Exit" negative fluid />
+            </Link>
+          </Segment>
+        </Segment.Group>
+      </>
+    )
+
   }
 
   return (
