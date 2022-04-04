@@ -137,6 +137,34 @@ export default function () {
       </>
     )
 
+    return (
+      <>
+        <Metadata title={data.assessment.name} />
+        <Segment.Group>
+          <Segment content={<Header content={data.assessment.name} subheader={data.assessment.class.name} size="huge"/>}/>
+
+
+          <Segment>
+            {
+              data.teacherFeedback?.overallComment === undefined || data.teacherFeedback?.overallComment === "" ?
+              <i>No summary from {data.assessment.teacher.name}.</i> :
+              <>
+                <Header
+                  content={`Overall comment from ${data.assessment.teacher.name}`}
+                  size="small"
+                />
+                {textToHTML(data.teacherFeedback.overallComment)}
+              </>
+            }
+          </Segment>
+          <Segment>
+            <Link href="/dashboard">
+              <Button content="Exit" negative fluid />
+            </Link>
+          </Segment>
+        </Segment.Group>
+      </>
+    )
   }
 
   return (
