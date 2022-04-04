@@ -175,7 +175,7 @@ export default function ({ user }) {
       let message = "The marking stage has ended.";
 
       if (markingDetails.stage === "overview") message = "The assessment hasn't started yet.";
-      else if (markingDetails.stage === ("assess" || "post-assess")) message = "The marking stage hasn't started yet.";
+      else if (markingDetails.stage === "assess" || markingDetails.stage === "post-assess") message = "The marking stage hasn't started yet.";
 
       return (
         <PlaceholderSegment
