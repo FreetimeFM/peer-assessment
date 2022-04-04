@@ -21,7 +21,6 @@ export default withSessionApi(async ({req, res}) => {
     })
 
     const { error, result } = await getStudentFeedback(req.body.assessmentRefID, req.session.user.refID);
-    console.log(error, result);
     if (error) return errorResponse(res, 100);
     return res.status(200).json({ error: false, result: result });
 
