@@ -29,7 +29,8 @@ export function InfoModal({ trigger = <Button content="Learn More" />, details, 
         <Message
           header={<><strong>Stage:</strong> {stageData.name}</>}
           content={teacher ? stageData.teacherDescription : stageData.studentDescription}
-          info />
+          info
+        />
 
         <Table celled>
           <Table.Body>
