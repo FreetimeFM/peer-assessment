@@ -171,6 +171,19 @@ export default function CreateAssessment() {
   }
 
   /**
+   * Stores the instructions for each assessment question.
+   */
+  function handleAddInstructions(index, text) {
+    if (text === "") {
+      alert("Marking instructions cannot be empty.")
+      return;
+    }
+    let tempQuestions = questions.slice();
+    tempQuestions[index].instructions = text;
+    setQuestions(tempQuestions);
+  }
+
+  /**
    * Removes the general marking question.
    */
   function handleRemoveGeneralMarkingQuestion(index) {
@@ -217,38 +230,40 @@ export default function CreateAssessment() {
   async function submitAssessment() {
     // If no classes were obtained from server, don't submit assessment.
     if (classList.length === 0) return alert("Unable to retrieve classes. Please contact your adminstrator.");
+    if (!confirm("Are you sure you want to submit?")) return;
     setSubmitting(true);
 
-    let empty = true;
+    let emptyMarkingQuestions = true, emptyInstructions = true;
 
-    // Checks if marking criteria has been added at all.
-    questions.forEach(element => {
-      if (element.marking) {
-        if (element.marking.length > 0) empty = false;
+    // Checks if marking criteria and marking instructions have been added at all.
+    questions.forEach(question => {
+      if (question.marking) {
+        if (question.marking.length > 0) emptyMarkingQuestions = false;
       }
-    });
-    if (generalMarkingQuestions.length > 0) empty = false;
 
-    // If no marking criteria, send alert to user.
-    if (empty) {
-      if (!confirm("You have not added any marking criteria, do you still want to submit?")) {
+      if (question.instructions) emptyInstructions = false;
+    });
+    if (generalMarkingQuestions.length > 0) emptyMarkingQuestions = false;
+
+    // If no marking criteria or instructions, send alert to user.
+    if (emptyMarkingQuestions && emptyInstructions) {
+      if (!confirm("You have not added any marking questions or instructions, do you still want to submit?")) {
         setSubmitting(false);
         return;
       }
     }
 
-    const markingQuestions = questions.map(question => {
-      if (question.marking) return question.marking;
-      else return [];
-    });
+    let markingQuestions = [], assessmentQuestions = [], instructions = {};
 
-    // Converts array of items to array of objects.
-    const assessmentQuestions = questions.map(question => {
-      return {
+    // Extracts question data into separate arrays or objects.
+    questions.forEach((question, index) => {
+      markingQuestions.push(question.marking ? question.marking : []);
+      assessmentQuestions.push({
         name: question.name,
         marks: question.marks,
-        type: question.type
-      }
+        type: question.type,
+      });
+      if (question.instructions) instructions[index.toString()] = question.instructions;
     });
 
     // Payload.
@@ -258,6 +273,7 @@ export default function CreateAssessment() {
       markingCriteria: {
         general: generalMarkingQuestions,
         questions: markingQuestions,
+        questionInstructions: instructions
       }
     }
 
@@ -325,6 +341,7 @@ export default function CreateAssessment() {
             onAddQuestion={handleAddMarkingQuestion}
             onRemoveQuestion={handleRemoveMarkingQuestion}
             onRemoveGeneralQuestion={handleRemoveGeneralMarkingQuestion}
+            onAddInstructions={handleAddInstructions}
           />
         )
 
