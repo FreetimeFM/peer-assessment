@@ -6,15 +6,19 @@ import FormInputPopup from "components/FormInputPopup";
 import { getDropdownOptions } from "lib/common";
 import { getMarkingQuestionsTypes, getQuestionTypeByValue } from "lib/questionTypes";
 
+/**
+ * Displays other components related to creating and showing marking criteria.
+ */
 export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onAddQuestion, onRemoveQuestion, onRemoveGeneralQuestion }) {
-
   return (
     <>
+      {/* Shows button to create marking question */}
       <CreateMarkingQuestion
         onAddQuestion={onAddQuestion}
         questionNames={questions.map(item => item.name)}
       />
       <Divider content="Assessment Questions" horizontal/>
+      {/* Displays assessment questions and marking criteria */}
       <Message
         header="No marking criteria."
         content={
@@ -37,6 +41,7 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
         onRemoveQuestion={onRemoveQuestion}
       />
       <Divider content="General Marking Questions" horizontal/>
+      {/* Displays general marking criteria */}
       <DisplayGeneralMarkingQuestions
         questions={generalMarkingQuestions}
         onRemoveQuestion={onRemoveGeneralQuestion}
@@ -49,13 +54,24 @@ export function CreateMarkingQuestions({ questions, generalMarkingQuestions, onA
   );
 }
 
+/**
+ * Displays assessment questions and their marking criteria.
+ */
 function DisplayMarkingQuestions({ questions, onRemoveQuestion }) {
+
+  /**
+   * Returns an array of Card components containing the marking criteria for that given question.
+   * @param {number} index The index of the question array.
+   * @returns Array of Card components.
+   */
   function renderQuestionsAtIndex(index) {
+    // if there is no marking criteria for that question.
     if (!questions[index].marking) return "No marking criteria for this assessment question."
     else {
       if (questions[index].marking.length === 0) return "No marking criteria for this assessment question."
     }
 
+    // Creates array of cards containing marking criteria
     return questions[index].marking.map((question, pos) => {
       return (
         <Card
@@ -85,6 +101,7 @@ function DisplayMarkingQuestions({ questions, onRemoveQuestion }) {
     })
   }
 
+  // Creates card for each assessment question.
   return questions.map((question, index) => {
     return (
       <Card
@@ -103,7 +120,11 @@ function DisplayMarkingQuestions({ questions, onRemoveQuestion }) {
   })
 }
 
+/**
+ * Displays the general marking criteria.
+ */
 function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
+  // If there is no marking criteria display info message.
   if (questions.length === 0) return (
     <Message
       header="No general marking criteria."
@@ -118,6 +139,7 @@ function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
     />
   )
 
+  // Creates a card for each general marking question.
   return questions.map((question, pos) => {
     return (
       <Card
@@ -148,8 +170,14 @@ function DisplayGeneralMarkingQuestions({ questions, onRemoveQuestion }) {
   })
 }
 
+/**
+ * Facilitates the creation of marking criteria using a Modal component.
+ */
 function CreateMarkingQuestion({ questionNames, onAddQuestion }) {
+  // Converts question types for marking into array of items suitable for dropdown component.
   const markingQuestionTypes = getDropdownOptions(getMarkingQuestionsTypes());
+
+  // Converts all questions into array of items for dropdown component.
   const questionsDropdown = questionNames.map((name, index) => {
     return {
       key: index,
@@ -162,9 +190,12 @@ function CreateMarkingQuestion({ questionNames, onAddQuestion }) {
     name: "",
     type: markingQuestionTypes[0].value,
   }
-  const [ open, setOpen ] = useState(false);
+  const [ open, setOpen ] = useState(false); // Determines whether modal is visible.
   const [ question, setQuestion ] = useState(defaultQuestionData);
 
+  /**
+   * Sends question data to the parent component.
+   */
   function onAdd(_e) {
     if (question.name.length === 0) {
       alert("The marking question cannot be empty.");
@@ -175,6 +206,9 @@ function CreateMarkingQuestion({ questionNames, onAddQuestion }) {
     setQuestion(defaultQuestionData);
   }
 
+  /**
+   * Closes the component.
+   */
   function onCancel(_e) {
     setOpen(false);
     setQuestion(defaultQuestionData);

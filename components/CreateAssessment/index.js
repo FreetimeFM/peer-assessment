@@ -7,7 +7,6 @@ import { CreateAssessmentQuestions } from "./CreateAssessmentQuestions";
 import { CreateMarkingQuestions } from "./CreateMarkingQuestions";
 
 export default function CreateAssessment() {
-
   const [ stage, setStage ] = useState(1);
   const [ formData, setFormData ] = useState({
     name: "",
@@ -31,6 +30,7 @@ export default function CreateAssessment() {
     errorList: []
   });
 
+  // Steps for the Step component.
   const steps = [
     {
       key: 1,
@@ -58,7 +58,11 @@ export default function CreateAssessment() {
     fetchClasses();
   }, [])
 
+  /**
+   * Gets data from the server.
+   */
   async function fetchClasses() {
+    // If already fetched don't run it again.
     if (fetchOptions.fetched) return;
     setFetchOptions({
       ...fetchOptions,
@@ -103,8 +107,9 @@ export default function CreateAssessment() {
     setFetchOptions({ fetched: true, fetching: false });
   }
 
-  // ## Stage 1 methods.
-
+  /**
+   * Stores userinput.
+   */
   function handleFormChange(_e, {name, value}) {
     setFormData({
       ...formData,
@@ -112,33 +117,40 @@ export default function CreateAssessment() {
     });
   }
 
-  // ## Stage 2 methods.
-
+  /**
+   * Stores new assessment question.
+   */
   function handleAddAssessmentQuestion(question) {
     // TODO: question validation.
     if (document.getElementById("form").checkValidity())
     setQuestions(questions.concat(question));
   }
 
+  /**
+   * Handles the removal of an assessment question.
+   */
   function handleRemoveQuestion(index) {
     if (confirm("Are you sure you want to remove the question? If you have applied marking criteria to this question, it will be removed.")) {
       setQuestions(questions.filter((item, pos) => pos !== index ? item : null));
     }
   }
 
-  // ## Stage 3 methods.
-
+  /**
+   * Stores the new marking question.
+   */
   function handleAddMarkingQuestion(question) {
     const qAdd = {
       name: question.name,
       type: question.type
     }
 
+    // If no assessment question index specified store as general marking criteria.
     if (question.index.length === 0) {
       setGeneralMarkingQuestions([ ...generalMarkingQuestions, qAdd ]);
     } else {
       let tempQuestions = questions.slice();
 
+      // Store questions for each assessment question specified.
       question.index.forEach(i => {
         if (!tempQuestions[i].marking) tempQuestions[i].marking = [qAdd];
         else tempQuestions[i].marking = [ ...tempQuestions[i].marking, qAdd];
@@ -148,6 +160,9 @@ export default function CreateAssessment() {
     }
   }
 
+  /**
+   * Removes the marking question.
+   */
   function handleRemoveMarkingQuestion(aIndex, mIndex) {
     if (!confirm("Are you sure you want to remove the marking question?")) return;
     let tempQuestions = questions.slice();
@@ -155,13 +170,17 @@ export default function CreateAssessment() {
     setQuestions(tempQuestions);
   }
 
+  /**
+   * Removes the general marking question.
+   */
   function handleRemoveGeneralMarkingQuestion(index) {
     if (!confirm("Are you sure you want to remove the marking question?")) return;
     setGeneralMarkingQuestions(generalMarkingQuestions.filter((_question, pos) => pos !== index));
   }
 
-  // ## Shared methods.
-
+  /**
+   * Switches to the next stage.
+   */
   function handleNext(_e) {
 
     if (stage === 1) {
@@ -184,17 +203,25 @@ export default function CreateAssessment() {
     }
   }
 
+  /**
+   * Reverses stage.
+   */
   function handleBack() {
     if (stage <= 1) return;
     setStage(stage - 1);
   }
 
+  /**
+   * Submits all the assessment data.
+   */
   async function submitAssessment() {
+    // If no classes were obtained from server, don't submit assessment.
     if (classList.length === 0) return alert("Unable to retrieve classes. Please contact your adminstrator.");
     setSubmitting(true);
 
     let empty = true;
 
+    // Checks if marking criteria has been added at all.
     questions.forEach(element => {
       if (element.marking) {
         if (element.marking.length > 0) empty = false;
@@ -202,6 +229,7 @@ export default function CreateAssessment() {
     });
     if (generalMarkingQuestions.length > 0) empty = false;
 
+    // If no marking criteria, send alert to user.
     if (empty) {
       if (!confirm("You have not added any marking criteria, do you still want to submit?")) {
         setSubmitting(false);
@@ -214,6 +242,7 @@ export default function CreateAssessment() {
       else return [];
     });
 
+    // Converts array of items to array of objects.
     const assessmentQuestions = questions.map(question => {
       return {
         name: question.name,
@@ -222,6 +251,7 @@ export default function CreateAssessment() {
       }
     });
 
+    // Payload.
     const submit = {
       ...formData,
       questions: assessmentQuestions,
@@ -236,6 +266,7 @@ export default function CreateAssessment() {
     console.log("payload", submit);
 
     try {
+      // Submits the data.
       const { error, result } = await fetchJson("/api/create/assessment", {
         method: "POST",
         headers: {
@@ -281,6 +312,9 @@ export default function CreateAssessment() {
     setSubmitting(false);
   }
 
+  /**
+   * Responsible for rendering components for each stage.
+   */
   function renderStage() {
     switch (stage) {
       case 3:
@@ -314,6 +348,9 @@ export default function CreateAssessment() {
     }
   }
 
+  /**
+   * Displays buttons at the bottom of forms.
+   */
   function renderButtons() {
     switch (stage) {
       case 3:
@@ -364,6 +401,7 @@ export default function CreateAssessment() {
     }
   }
 
+  // Displays all the components.
   return (
     <>
       <Message
