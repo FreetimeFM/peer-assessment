@@ -316,6 +316,14 @@ export default function () {
                       )
                     })
                   }
+                  <Card.Content>
+                    <p><strong>{data.assessment.teacher.name} responded:</strong></p>
+                    {
+                      data.teacherFeedback?.markingCriteria?.general[index.toString()] === undefined ||
+                      data.teacherFeedback?.markingCriteria?.general[index.toString()] === "" ?
+                      <i>No response.</i> : textToHTML(data.teacherFeedback?.markingCriteria?.general[index.toString()])
+                    }
+                  </Card.Content>
                 </Card>
               )
             })
