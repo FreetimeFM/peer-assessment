@@ -103,6 +103,11 @@ export const ErrorMessages = {
     clientMessage: "The assessment doesn't exist.",
     httpStatusCode: 404
   },
+  170: {
+    message: "Cannot change stage.",
+    clientMessage: "The stage cannot be changed.",
+    httpStatusCode: 403
+  },
   200: {
     message: "Unknown client-side error.",
     clientMessage: "An error has occured. Please contact your adminstrator.",

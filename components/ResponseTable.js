@@ -190,11 +190,10 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                   <List
                     items={result.peerMarking.map(marker => {
                       const student = peers.find(student => student.userRefID === marker.userRefID).name;
-                      if (!marker.markingCompleted) return `${student} allocated 0 marks.`;
+                      if (!marker.markingCompleted) return null
 
                       const marks = parseInt(marker.responses.questions[index.toString()]);
-                      if (marks === 1) return `${student} allocated ${marks} mark.`;
-                      return `${student} allocated ${marks} mark.`;
+                      return `Marks by ${student}: ${marks}`;
                     })}
                   />
                   <Form.Input
@@ -305,13 +304,6 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            <Table.Row>
-              <Table.Cell><Label content="Answering" ribbon/></Table.Cell>
-              <Table.Cell content={student.name} />
-              <Table.Cell content={student.email} />
-              <Table.Cell content="N/A" disabled />
-              <Table.Cell content="N/A" disabled />
-            </Table.Row>
             {
               result.peerMarking.map((peer, index) => {
                 const user = peers.find(user => user.userRefID === peer.userRefID);
@@ -340,7 +332,7 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               negative={feedback === undefined}
               positive={feedback !== undefined}
             >
-              <Table.Cell content="Marking" />
+              <Table.Cell><Label content="Marking" ribbon/></Table.Cell>
               <Table.Cell content="You" colSpan={2} />
               <Table.Cell content={feedback ? "Yes" : "No"} />
               <Table.Cell content={marks.reduce((marks, current) => marks + parseInt(current), 0)} />

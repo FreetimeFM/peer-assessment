@@ -94,6 +94,7 @@ export default function CurrentAssessments({ user }) {
               key={index}
               details={assessment}
               teacher={user.userType === "teacher"}
+              assessmentRefID={assessment.assessmentRefID}
             />
           );
         })}
