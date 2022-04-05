@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { Button, Container, Header, Message, Segment } from "semantic-ui-react";
+import { Button, Container, Header, Segment } from "semantic-ui-react";
 
 import { withSessionSsr } from "lib/iron-session/withSession";
 import AssessmentQuestions from "components/AssessmentQuestions";
@@ -107,22 +107,48 @@ export default function ({ user }) {
 
   function renderContent() {
     if (fetchOptions.fetching) return (
-      <PlaceholderSegment iconName="hourglass half" message="Please wait." extraContent="We're fetching your assessment details." />
+      <PlaceholderSegment
+        iconName="hourglass half"
+        message="We're fetching your assessment details."
+        extraContent="Please wait."
+      />
     )
 
     if (fetchOptions.error) return (
-      <PlaceholderSegment iconName="close" message="Error." extraContent={fetchOptions.error} />
+      <PlaceholderSegment
+        iconName="close"
+        message="We're having trouble fetching your assessment details."
+        extraContent={fetchOptions.error}
+      />
     )
+
+    if (data.redirect && data.stage) {
+      let extraContent = null;
+
+      if (data.stage === "mark") extraContent=(<Link href={`/dashboard/mark/${assessmentRefID}`}><Button content="Start Marking" primary /></Link>);
+      else if (data.stage === "feedback") extraContent=(<Link href={`/dashboard/feedback/${assessmentRefID}`}><Button content="View Feedback" primary /></Link>);
+      else if (data.stage === "overview") return (
+        <PlaceholderSegment
+          iconName="close"
+          message="The assessment hasn't started yet."
+          extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
+        />
+      )
+
+      return (
+        <PlaceholderSegment
+          iconName="close"
+          message="You cannot answer this assessment since that stage has ended."
+          extraContent={extraContent ? extraContent : <Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
+        />
+      )
+    }
 
     if (data.completed) return (
       <PlaceholderSegment
         iconName="check"
         message="You have completed answering this assessment."
-        extraContent={
-          <Link href={`/dashboard/mark/${assessmentRefID}`} >
-            <Button content="Start peer marking" primary />
-          </Link>
-        }
+        extraContent={<Link href="/dashboard/assessments"><Button content="Back to Assessments" primary /></Link>}
       />
     )
 
@@ -130,8 +156,8 @@ export default function ({ user }) {
       <>
         <Metadata title={data.assessment.name} />
         <Segment.Group>
-          <Segment content={<Header content={data.assessment.name} size="huge"/>} />
-          <Segment content={data.assessment.description || data.assessment.description !== "" ? textToHTML(data.assessment.description) : "No description provided."} />
+          <Segment content={<Header content={data.assessment.name} subheader={data.assessment.class.name} size="huge"/>}/>
+          <Segment content={data.assessment.description || data.assessment.description !== "" ? textToHTML(data.assessment.description) : <i>No description provided.</i>} />
           <Segment content={
               <AssessmentQuestions
                 questions={data.assessment.questions}

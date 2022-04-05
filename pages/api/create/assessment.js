@@ -23,6 +23,7 @@ export default withSessionApi(async function ({req, res}) {
     const { error, result } = await createAssessment({
         ...req.body,
         peerMarkingQuantity: peerMarkingQty,
+        stage: "overview",
       },
       assignPeerMarking(studentRefIDs.data, peerMarkingQty)
     );
@@ -57,12 +58,18 @@ function assignPeerMarking(studentRefIDs, peerMarkingQuantity) {
     });
   }
 
-  return assignments.map(assignment => {
-    return {
-      userRefID: assignment[0],
-      peers: assignment.slice(1)
-    }
+  let peerList = [];
+
+  assignments.forEach(assignment => {
+    assignment.forEach((refID, index) => {
+      if (index !== 0) peerList.push({
+        marker: assignment[0],
+        peer: refID,
+      })
+    });
   });
+
+  return peerList;
 }
 
 // Adapted from https://stackoverflow.com/a/2450976

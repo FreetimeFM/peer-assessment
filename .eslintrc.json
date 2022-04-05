@@ -2,6 +2,5 @@
   "extends": [
     "next/core-web-vitals",
     "plugin:react-hooks/recommended"
-  ],
-  "quotes": ["error", "double"]
+  ]
 }
