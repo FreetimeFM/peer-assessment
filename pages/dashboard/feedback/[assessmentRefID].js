@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Container, Button, Segment, Header, Card, Table } from "semantic-ui-react";
+import { Container, Button, Segment, Header, Card, Table, List } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
 import { withSessionSsr } from "lib/iron-session/withSession";
@@ -174,9 +174,7 @@ export default function () {
                 </Table.Row>
               </Table.Body>
             </Table>
-          </Segment>
 
-          <Segment>
             {
               data.teacherFeedback?.overallComment === undefined || data.teacherFeedback?.overallComment === "" ?
               <i>No summary from {data.assessment.teacher.name}.</i> :
@@ -191,13 +189,18 @@ export default function () {
           </Segment>
 
           <Segment>
+          <Header
+            content="Assessment Questions"
+            subheader="Marking criteria for specific assessment questions."
+            size="large"
+          />
             {
               data.assessment.questions.map((question, index) => {
                 return (
                   <Card
                     key={index}
                     color="red"
-                    style={{ margin: "2em 0" }}
+                    style={{ margin: "3em 0" }}
                     fluid
                   >
                     <Card.Content header={`${index + 1}. ${question.name}`} />
@@ -278,6 +281,43 @@ export default function () {
               })
             }
           </Segment>
+
+          <Segment>
+          <Header
+            content="General Marking Criteria"
+            subheader="Marking criteria for the assessment as a whole."
+            size="large"
+          />
+          {
+            data.assessment.markingCriteria.general.length === 0 ? <i>No general marking criteria.</i> :
+            data.assessment.markingCriteria.general.map((question, index) => {
+              return (
+                <Card key={index} color="olive" style={{ margin: "2em 0" }} fluid>
+                  <Card.Content
+                    header={`${index + 1}. ${question.name}`}
+                  />
+                  {
+                    data.peerMarking.map((peer, peerIndex) => {
+                      return (
+                        <Card.Content key={peerIndex}>
+                          <p><strong>Marker {peerIndex + 1} responded:</strong></p>
+                          {
+                            peer.markingCompleted ?
+                              peer.responses.general[index.toString()] ?
+                              textToHTML(peer.responses.general[index.toString()]) :
+                              <i>No response.</i> :
+                            <i>No response.</i>
+                          }
+                        </Card.Content>
+                      )
+                    })
+                  }
+                </Card>
+              )
+            })
+          }
+          </Segment>
+
           <Segment>
             <Link href="/dashboard">
               <Button content="Exit" negative fluid />
