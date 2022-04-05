@@ -32,3 +32,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# testing results
+/testing/results/
+
+# fauna secret
+.faunarc
