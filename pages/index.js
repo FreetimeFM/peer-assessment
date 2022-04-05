@@ -103,9 +103,8 @@ export default function Home() {
       return;
 
     } catch (error) {
-
       // Checks if there is custom error data and displays it.
-      if (error?.data?.hasOwnProperty("clientMessage")) setApiError(error.data.clientMessage);
+      if (error.data.result?.clientMessage) setApiError(error.data.result.clientMessage);
 
       // If no custom error data is found.
       else setApiError("An error has occured. Please contact your administrator.");
@@ -130,7 +129,7 @@ export default function Home() {
               </Header>
               <Divider />
 
-              <Message content={apiError} error/>
+              <Message  hidden={apiError === ""} content={apiError} error/>
 
               <Form.Input
                 name="email"

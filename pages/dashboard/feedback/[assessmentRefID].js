@@ -154,7 +154,8 @@ export default function () {
               <Table.Body>
                 {
                   data.peerMarking.map((peer, index) => {
-                    let marks = 0
+                    if (!peer.markingCompleted) return null;
+                    let marks = 0;
 
                     data.assessment.questions.forEach((_q, i) => {
                       marks += parseInt(peer.responses.questions[i.toString()])
@@ -275,8 +276,8 @@ export default function () {
                     <Card.Content>
                       <p><strong>{data.assessment.teacher.name} responded:</strong></p>
                       {
-                        data.teacherFeedback?.markingCriteria?.questions[index.toString()] === undefined ||
-                        data.teacherFeedback?.markingCriteria?.questions[index.toString()] === "" ?
+                        data.teacherFeedback?.markingCriteria?.questions[index.toString()].feedback === undefined ||
+                        data.teacherFeedback?.markingCriteria?.questions[index.toString()].feedback === "" ?
                         <i>No response.</i> : textToHTML(data.teacherFeedback?.markingCriteria?.questions[index.toString()].feedback)
                       }
                     </Card.Content>
@@ -316,6 +317,14 @@ export default function () {
                       )
                     })
                   }
+                  <Card.Content>
+                    <p><strong>{data.assessment.teacher.name} responded:</strong></p>
+                    {
+                      data.teacherFeedback?.markingCriteria?.general[index.toString()] === undefined ||
+                      data.teacherFeedback?.markingCriteria?.general[index.toString()] === "" ?
+                      <i>No response.</i> : textToHTML(data.teacherFeedback?.markingCriteria?.general[index.toString()])
+                    }
+                  </Card.Content>
                 </Card>
               )
             })
