@@ -170,7 +170,7 @@ export default function () {
                 }
                 <Table.Row>
                   <Table.Cell content={`${data.assessment.teacher.name} (${data.assessment.teacher.email})`} />
-                  <Table.Cell content={data.teacherFeedback ? `${stats.teacherMarks}` : "N/A"} />
+                  <Table.Cell content={stats.teacherMarks ? `${stats.teacherMarks}` : "N/A"} />
                 </Table.Row>
               </Table.Body>
             </Table>
@@ -260,10 +260,14 @@ export default function () {
                               })
                             }
                           />
-                          <p>
-                            {data.assessment.teacher.name} allocated {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks)}
-                            {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks) === 1 ? " mark" : " marks"}.
-                          </p>
+                          {
+                            data.teacherFeedback?.markingCriteria?.questions[index.toString()]?.marks ?
+                            <p>
+                              ({data.assessment.teacher.name} allocated {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks)}
+                              {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks) === 1 ? " mark" : " marks"}.)
+                            </p> : <p>{data.assessment.teacher.name} did not allocate marks.</p>
+                          }
+
                         </>
                       }
                     />
