@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Container, Button, Segment, Header, Card, Table, List } from "semantic-ui-react";
+import { Container, Button, Segment, Header, Card, Table, List, Divider } from "semantic-ui-react";
 
 import fetchJson from "lib/iron-session/fetchJson";
 import { withSessionSsr } from "lib/iron-session/withSession";
@@ -210,8 +210,7 @@ export default function () {
                       <p><strong>You answered:</strong></p>
                       {
                         data.answers[index.toString()] === undefined || data.answers[index.toString()] === "" ?
-                        textToHTML(data.answers[index.toString()]) :
-                        <i>No answer.</i>
+                        <i>No answer.</i> : textToHTML(data.answers[index.toString()])
                       }
                     </Card.Content>
 
@@ -252,6 +251,14 @@ export default function () {
                     <Card.Content
                       content={
                         <>
+                          {
+                            data.assessment.markingCriteria.questionInstructions[index.toString()] ?
+                            <>
+                              <p><strong>Marking Instructions</strong></p>
+                              {textToHTML(data.assessment.markingCriteria.questionInstructions[index.toString()])}
+                            </> : <i>No marking instructions provided.</i>
+                          }
+                          <Divider />
                           <List
                             items={
                               data.peerMarking.map((marker, m) => {
