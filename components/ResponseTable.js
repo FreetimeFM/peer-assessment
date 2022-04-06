@@ -187,6 +187,14 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 }
                 </Card.Content>
                 <Card.Content>
+                  {
+                    markingCriteria.questionInstructions[index.toString()] ?
+                    <>
+                      <p><strong>Marking Instructions</strong></p>
+                      {textToHTML(markingCriteria.questionInstructions[index.toString()])}
+                    </> : <i>No marking instructions provided.</i>
+                  }
+                  <Divider />
                   <List
                     items={result.peerMarking.map(marker => {
                       const student = peers.find(student => student.userRefID === marker.userRefID).name;
@@ -275,6 +283,17 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
     )
   }
 
+  function getTeacherTotalMarks() {
+    let marks = 0;
+    for (const key in feedback.markingCriteria.questions) {
+      if (Object.hasOwnProperty.call(feedback.markingCriteria.questions, key)) {
+        console.log(feedback.markingCriteria.questions[key].marks)
+        marks += parseInt(feedback.markingCriteria.questions[key].marks);
+      }
+    }
+    return marks;
+  }
+
   return (
     <Modal
       open={open}
@@ -335,7 +354,10 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
               <Table.Cell><Label content="Marking" ribbon/></Table.Cell>
               <Table.Cell content="You" colSpan={2} />
               <Table.Cell content={feedback ? "Yes" : "No"} />
-              <Table.Cell content={marks.reduce((marks, current) => marks + parseInt(current), 0)} />
+              <Table.Cell content={
+                  feedback !== undefined ? getTeacherTotalMarks() : marks.reduce((marks, current) => marks + parseInt(current), 0)
+                }
+              />
             </Table.Row>
           </Table.Body>
         </Table>

@@ -1,4 +1,4 @@
-import { Card, Form } from "semantic-ui-react";
+import { Card, Divider, Form } from "semantic-ui-react";
 
 import FormInputPopup from "./FormInputPopup";
 import { QuestionField } from "./QuestionCard";
@@ -23,6 +23,7 @@ export default function ({ data, onInput, preview = false }) {
         />
         <Card.Content>
           {
+            data.markingCriteria.questions[index].length === 0 ? <i>No marking criteria for this question.</i> :
             data.markingCriteria.questions[index].map((item, pos) => {
               return (
                 <QuestionField
@@ -41,6 +42,16 @@ export default function ({ data, onInput, preview = false }) {
               )
             })
           }
+        </Card.Content>
+        <Card.Content>
+          {
+            data.markingCriteria.questionInstructions[index.toString()] ?
+            <>
+              <p><strong>Marking Instructions</strong></p>
+              {textToHTML(data.markingCriteria.questionInstructions[index.toString()])}
+            </> : <i>No marking instructions provided.</i>
+          }
+          <Divider />
           <Form.Input
             name="marks"
             type="number"
