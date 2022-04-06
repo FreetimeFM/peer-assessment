@@ -187,6 +187,14 @@ function ResponseDetailsModal({ student, peers, markingStatus, questions, markin
                 }
                 </Card.Content>
                 <Card.Content>
+                  {
+                    markingCriteria.questionInstructions[index.toString()] ?
+                    <>
+                      <p><strong>Marking Instructions</strong></p>
+                      {textToHTML(markingCriteria.questionInstructions[index.toString()])}
+                    </> : <i>No marking instructions provided.</i>
+                  }
+                  <Divider />
                   <List
                     items={result.peerMarking.map(marker => {
                       const student = peers.find(student => student.userRefID === marker.userRefID).name;
