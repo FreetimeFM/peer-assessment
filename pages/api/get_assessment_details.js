@@ -42,7 +42,7 @@ export default withSessionApi(async ({req, res}) => {
     }
 
     // Gets and checks assessment details.
-    const { error, result } = await getAssessmentDetailsByAssessmentRefID(id, req.session.user.refID === "teacher")
+    const { error, result } = await getAssessmentDetailsByAssessmentRefID(id, req.session.user.userType === "teacher")
     if (error) {
       if (!result) return res.status(getHttpStatus(150)).json(createErrorPayload(150));
       else return res.status(getHttpStatus(100)).json(createErrorPayload(100));
