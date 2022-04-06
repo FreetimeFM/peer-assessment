@@ -1,20 +1,24 @@
 import { Form } from "semantic-ui-react";
 import FormInputPopup from "../FormInputPopup";
 
+/**
+ * Displays a form which allows the teacher to enter details about the assessment.
+ */
 export function CreateAssessmentForm({ formData, classList, onFormChange }) {
-
   return (
     <>
       <Form.Group widths="equal">
+        {/* Enter the name of the assessment */}
         <Form.Input
           name="name"
-          label={<label>Name <FormInputPopup message="The name of the assessment. 70 characters maximum. Required." /></label>}
+          label={<label>Assessment Name <FormInputPopup message="The name of the assessment. 70 characters maximum. Required." /></label>}
           placeholder="Required."
           value={formData.name}
           maxLength={70}
           onChange={onFormChange}
           required
         />
+        {/* Enter the release date of the assessment. Currently disabled. */}
         <Form.Input
           name="releaseDate"
           label={<label>Release Date <FormInputPopup message="The assessment will be accessible to students at this date. Required." /></label>}
@@ -27,6 +31,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
       </Form.Group>
 
       <Form.Group widths="equal">
+        {/* Select the class from the dropdown. The list of classes is loaded before opening the form. */}
         <Form.Dropdown
           name="classRefID"
           label={<label>Class <FormInputPopup message="Choose the class you want to assign this assessment to." /></label>}
@@ -40,6 +45,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           selection
           required
         />
+        {/* Choose the peer marking quantity */}
         <Form.Input
           name="peerMarkingQuantity"
           type="number"
@@ -60,7 +66,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           required
         />
       </Form.Group>
-
+      {/* Enter a brief description of the assessment */}
       <Form.TextArea
         name="briefDescription"
         label={
@@ -75,7 +81,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         rows={3}
         onChange={onFormChange}
       />
-
+      {/* Enter a detailed description that will be shown during the assessment */}
       <Form.TextArea
         name="description"
         label={
@@ -90,7 +96,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         rows={6}
         onChange={onFormChange}
       />
-
+      {/* Enter a description that will be shown during marking */}
       <Form.TextArea
         name="markingDescription"
         label={
@@ -105,7 +111,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         rows={6}
         onChange={onFormChange}
       />
-
+      {/* Enter the submission deadline. Currently disabled */}
       <Form.Group widths="equal">
         <Form.Input
           name="submissionDeadline"
@@ -116,6 +122,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           required
           disabled
         />
+        {/* Enter the marking deadline. Currently disabled */}
         <Form.Input
           name="markingDeadline"
           label={<label>Marking Deadline <FormInputPopup message="The date students have to mark their peers by. Required." /></label>}
@@ -126,7 +133,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           disabled
         />
       </Form.Group>
-
+      {/* Select files to upload to show students during the assessment */}
       <Form.Group widths="equal">
         <Form.Input
           name="assessmentFiles"
@@ -137,6 +144,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
           required
           disabled
         />
+        {/* Select files to upload to show students during marking. */}
         <Form.Input
           name="markingFiles"
           label={<label>Marking Files <FormInputPopup message="These files will be available to students in the marking stage." /></label>}

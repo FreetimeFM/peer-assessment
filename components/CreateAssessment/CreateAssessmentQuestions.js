@@ -6,7 +6,9 @@ import { QuestionField } from "components/QuestionCard";
 import { getDropdownOptions } from "lib/common";
 import { questionTypes, getQuestionTypeByValue } from "lib/questionTypes";
 
-// TODO: Create own modals as popup boxes.
+/**
+ * General component which displays the assessment questions.
+ */
 export function CreateAssessmentQuestions({ questions, onAddQuestion, onRemoveQuestion }) {
   return (
     <>
@@ -22,6 +24,9 @@ export function CreateAssessmentQuestions({ questions, onAddQuestion, onRemoveQu
   );
 }
 
+/**
+ * Displays the assessment questions.
+ */
 function DisplayAssessmentQuestions({ questions, onRemove }) {
 
   return questions.map((question, index) => {
@@ -52,7 +57,11 @@ function DisplayAssessmentQuestions({ questions, onRemove }) {
   })
 }
 
+/**
+ * Displays a modal or popup box to allow the teacher to create a question.
+ */
 function CreateAssessmentQuestion({ onAddQuestion }) {
+  // Converts question type objects to array of items suitable for dropdown component.
   const qTypes = getDropdownOptions(questionTypes);
   const defaultQuestionData = {
     name: "",
@@ -60,9 +69,12 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
     type: qTypes[0].value
   }
 
-  const [ open, setOpen ] = useState(false);
-  const [ question, setQuestion ] = useState(defaultQuestionData);
+  const [ open, setOpen ] = useState(false); // Determines whether modal is visible.
+  const [ question, setQuestion ] = useState(defaultQuestionData); // Stores the question data.
 
+  /**
+   * Sends the question data to the parent component.
+   */
   function onAdd(_e) {
     if (question.name.length === 0) return;
     onAddQuestion(question);
@@ -70,6 +82,9 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
     setQuestion(defaultQuestionData);
   }
 
+  /**
+   * Closes the modal.
+   */
   function onCancel(_e) {
     setOpen(false);
     setQuestion(defaultQuestionData);
@@ -90,6 +105,7 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
       <Modal.Header content="Create an assessment question." />
       <Modal.Content>
         <Form>
+          {/* Field to enter the question */}
           <Form.Input
             name="name"
             label={<label>Assessment Question <FormInputPopup message="The question you want to assess. 150 characters maximum. Required."/></label>}
@@ -102,6 +118,7 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
             required
           />
           <Form.Group>
+            {/* Number field to enter the marks */}
             <Form.Input
               name="marks"
               type="number"
@@ -116,6 +133,7 @@ function CreateAssessmentQuestion({ onAddQuestion }) {
               width="4"
               required
             />
+            {/* Dropdown field to choose the type of question */}
             <Form.Dropdown
               name="type"
               label={<label>Type <FormInputPopup message="The type of question. Required."/></label>}
