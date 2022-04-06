@@ -38,6 +38,17 @@ export function QuestionField({ index, type, onChange, label, placeholder, value
         />
       );
 
+    case "file":
+      return (
+        <Form.Input
+          name={index}
+          label={label}
+          type="file"
+          onChange={onChange}
+          disabled={preview}
+        />
+      )
+
     default:
       return (
         <Form.TextArea
