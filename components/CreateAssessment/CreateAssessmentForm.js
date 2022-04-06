@@ -11,7 +11,7 @@ export function CreateAssessmentForm({ formData, classList, onFormChange }) {
         {/* Enter the name of the assessment */}
         <Form.Input
           name="name"
-          label={<label>Name <FormInputPopup message="The name of the assessment. 70 characters maximum. Required." /></label>}
+          label={<label>Assessment Name <FormInputPopup message="The name of the assessment. 70 characters maximum. Required." /></label>}
           placeholder="Required."
           value={formData.name}
           maxLength={70}
