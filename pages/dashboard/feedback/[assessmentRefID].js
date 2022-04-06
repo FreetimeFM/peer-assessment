@@ -271,8 +271,8 @@ export default function () {
                           {
                             data.teacherFeedback?.markingCriteria?.questions[index.toString()]?.marks ?
                             <p>
-                              ({data.assessment.teacher.name} allocated {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks)}
-                              {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks) === 1 ? " mark" : " marks"}.)
+                              {data.assessment.teacher.name} allocated {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks)}
+                              {parseInt(data.teacherFeedback.markingCriteria.questions[index.toString()].marks) === 1 ? " mark" : " marks"}.
                             </p> : <p>{data.assessment.teacher.name} did not allocate marks.</p>
                           }
 
