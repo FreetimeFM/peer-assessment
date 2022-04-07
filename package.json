@@ -5,8 +5,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "playwright test"
+    "lint": "next lint"
   },
   "dependencies": {
     "faunadb": "^4.5.2",
