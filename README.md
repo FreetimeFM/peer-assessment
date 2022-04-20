@@ -1,34 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Peer Assessment System
 
-## Getting Started
+Peer Assessment is a great tool to improve a student’s knowledge on a given topic. Students mark their peers and give feedback on their performance as opposed to lecturers marking all the students.
 
-First, run the development server:
+However, it takes a lot of time and effort for lecturers to set up peer assessment for the whole class effectively. Therefore, a system was created in the form of a web application to handle the following:
+- Allow lecturers/teachers to create assessments and distribute them to students in a class.
+- Gather answers from students.
+- Randomly assign students to mark their peers.
+- Facilitate peer marking to gather marks and feedback from student markers.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What can the system do?
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+There are three types of users: Adminstrator (admin), teacher and student.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+- **Admins** can
+  - Create users and view list of users.
+  - Create classes and view list of classes.
+- **Teachers** can
+  - Create assessments for a class.
+    - Add assessment questions.
+    - Add marking criteria/questions to each assessment question.
+  - Manage assessments.
+    - View a student's answers and feedback.
+    - Give feedback and marks on a student's answer.
+    - See which student has completed the assessment and marking.
+    - Begin/End assessment and marking to prevent access and late submissions.
+- **Students** can
+  - View details about the assessments.
+  - Answer the assessment questions.
+  - Mark their peers and give feedback.
+  - View feedback from their peers and teacher.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+---
 
-## Learn More
+## How did you make it?
+The web application was built with <a href="https://nextjs.org/" target="_blank">Next.js</a>, a full stack JavaScript framework built on top of <a href="https://reactjs.org/" target="_blank">React</a>. Components from the <a href="https://react.semantic-ui.com/" target="_blank">Semantic UI React</a> library were used in the design and <a href="https://fauna.com/" target="_blank">Fauna</a> as the database.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Can I use it?
+You are free to use the system in any way as it is licensed under MIT. However, it is currently not recommended for real world use.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Please email [a.c.baretto@dundee.ac.uk](mailto:a.c.baretto@dundee.ac.uk) for more information or to request a demonstration.
