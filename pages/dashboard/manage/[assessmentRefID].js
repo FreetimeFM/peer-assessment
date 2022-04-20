@@ -252,8 +252,8 @@ export default function () {
         <Table striped celled>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell content="Student marker" />
-              <Table.HeaderCell content="Peers" />
+              <Table.HeaderCell content="Student" />
+              <Table.HeaderCell content="Markers" />
             </Table.Row>
           </Table.Header>
           <Table.Body>
