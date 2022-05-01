@@ -43,13 +43,20 @@ export default withSessionApi(async function ({req, res}) {
   }
 })
 
+/**
+ * Creates an array of objects containing the assignments of student markers to peers.
+ * @param {Array<String>} studentRefIDs An array of student ref ids.
+ * @param {Number} peerMarkingQuantity The peer marking quantity of the assessment.
+ * @returns An array of objects.
+ */
 function assignPeerMarking(studentRefIDs, peerMarkingQuantity) {
 
-  const shuffled = shuffle(studentRefIDs);
-  let assignments = shuffled.map(value => {
+  const shuffled = shuffle(studentRefIDs); // Shuffles array.
+  let assignments = shuffled.map(value => { // Creates a 2D array with shuffled content in the first column.
     return [value];
   });
 
+  // Based on peer marking quantity, sets extra columns to the rotated array.
   for (let i = 0; i < peerMarkingQuantity; i++) {
     const rotated = rotateArray(shuffled, i + 1);
 
@@ -72,8 +79,11 @@ function assignPeerMarking(studentRefIDs, peerMarkingQuantity) {
   return peerList;
 }
 
-// Adapted from https://stackoverflow.com/a/2450976
-// Randomises position of elements in the array.
+/**
+ * Randomises position of elements in the array. Adapted from https://stackoverflow.com/a/2450976
+ * @param {Array} input An array to shuffle.
+ * @returns The shuffled array.
+ */
 function shuffle(input) {
   const array = input.slice();
   let currentIndex = array.length, randomIndex = 0;
@@ -93,8 +103,12 @@ function shuffle(input) {
   return array;
 }
 
-// Adapted from https://stackoverflow.com/a/58326608
-// Rotates the array like a wheel.
+/**
+ * Rotates the array like a wheel by a specified number of elements. Adapted from https://stackoverflow.com/a/58326608
+ * @param {Array} array The array to rotate.
+ * @param {Number} count The amount of elements to rotate the array by.
+ * @returns The rotated array.
+ */
 function rotateArray(array, count) {
   return [...array.slice(count, array.length), ...array.slice(0, count)];
 }
