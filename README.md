@@ -41,5 +41,3 @@ The web application was built with <a href="https://nextjs.org/" target="_blank"
 
 ## Can I use it?
 You are free to use the system in any way as it is licensed under MIT. However, it is currently not recommended for real world use.
-
-Please email [a.c.baretto@dundee.ac.uk](mailto:a.c.baretto@dundee.ac.uk) for more information or to request a demonstration.
